@@ -1,0 +1,21 @@
+﻿DELETE FROM [dbo].[types];
+INSERT INTO [dbo].[types] ([id], [name]) VALUES
+(0, ''),
+(1, 'Eau'),
+(2, 'Feu'),
+(3, 'Plante'),
+(4, 'Electrik'),
+(5, 'Normal'),
+(6, 'Combat'),
+(7, 'Glace'),
+(8, 'Roche'),
+(9, 'Sol'),
+(10, 'Acier'),
+(11, 'Tenèbres'),
+(12, 'Psy'),
+(13, 'Insecte'),
+(14, 'Poison'),
+(15, 'Vol'),
+(16, 'Spectre'),
+(17, 'Dragon'),
+(18, 'Fée');

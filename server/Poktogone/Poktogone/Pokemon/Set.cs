@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+
+using Poktogone.Main;
 
 namespace Poktogone.Pokemon
 {
@@ -176,5 +179,16 @@ namespace Poktogone.Pokemon
             return new Set(baseName, baseHp, new Base(baseName, type1, type2, baseStat), moves, item, evDist, nature);
         }
 
+        public static Set FromDB(SqlHelper dbo, int id)
+        {
+            SqlDataReader r = dbo.Select(new Table("sets", id)
+                                        .Join("pokemons", "sets::poke")
+                                        .Join("moves", "sets::move1")
+                                        .Join("moves", "sets::move2")
+                                        .Join("moves", "sets::move3")
+                                        .Join("moves", "sets::move4")
+                                        /*...*/);
+            return null; // new Set();
+        }
     }
 }

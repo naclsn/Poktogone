@@ -8,9 +8,25 @@ namespace Poktogone.Pokemon
 {
     public enum Type
     {
-        Fire,
-        Grass,
-        Water,
+        None,
+        Eau,
+        Feu,
+        Plante,
+        Electrik,
+        Normal,
+        Combat,
+        Glace,
+        Roche,
+        Sol,
+        Acier,
+        Tenèbres,
+        Psy,
+        Insecte,
+        Poison,
+        Vol,
+        Spectre,
+        Dragon,
+        Fée,
         Oof
     }
 
@@ -20,24 +36,25 @@ namespace Poktogone.Pokemon
         {
             switch (int.Parse(c))
             {
-                case 01: return Type.Fire;
-                case 02: return Type.Grass;
-                case 03: return Type.Water;
-                case 04: return Type.Oof;
-                case 05: return Type.Oof;
-                case 06: return Type.Oof;
-                case 07: return Type.Oof;
-                case 08: return Type.Oof;
-                case 09: return Type.Oof;
-                case 10: return Type.Oof;
-                case 11: return Type.Oof;
-                case 12: return Type.Oof;
-                case 13: return Type.Oof;
-                case 14: return Type.Oof;
-                case 15: return Type.Oof;
-                case 16: return Type.Oof;
-                case 17: return Type.Oof;
-                case 18: return Type.Oof;
+                case 00: return Type.None;
+                case 01: return Type.Eau;
+                case 02: return Type.Feu;
+                case 03: return Type.Plante;
+                case 04: return Type.Electrik;
+                case 05: return Type.Normal;
+                case 06: return Type.Combat;
+                case 07: return Type.Glace;
+                case 08: return Type.Roche;
+                case 09: return Type.Sol;
+                case 10: return Type.Acier;
+                case 11: return Type.Tenèbres;
+                case 12: return Type.Psy;
+                case 13: return Type.Insecte;
+                case 14: return Type.Poison;
+                case 15: return Type.Vol;
+                case 16: return Type.Spectre;
+                case 17: return Type.Dragon;
+                case 18: return Type.Fée;
                 default: return Type.Oof;
             }
         }
