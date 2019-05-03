@@ -1,5 +1,5 @@
 ﻿DELETE FROM [dbo].[pokemons];
-INSERT INTO [dbo].[pokemons] ([id], [nom], [type1], [type2], [pdv], [atk], [def], [spa], [spd], [spe]) VALUES
+INSERT INTO [dbo].[pokemons] ([id], [name], [type1], [type2], [hp], [atk], [def], [spa], [spd], [spe]) VALUES
 (1, 'Pikachu', 4, 0, 35, 55, 40, 50, 50, 90),
 (2, 'Dracofeu', 2, 15, 78, 84, 78, 109, 85, 100),
 (3, 'Florizarre', 3, 14, 80, 82, 83, 100, 100, 80),

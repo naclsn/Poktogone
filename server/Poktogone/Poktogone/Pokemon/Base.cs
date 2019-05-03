@@ -80,9 +80,9 @@ namespace Poktogone.Pokemon
 
             this.type1 = type1;
             this.type2 = type2;
-            
-            foreach (var stat in Enum.GetValues(typeof(StatTarget)))
-                this._stats[(int)stat] = baseStat[(int)stat];
+
+            for (int k = 0; k < 5; k++)
+                this._stats[k] = baseStat[k];
         }
     }
 }

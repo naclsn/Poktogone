@@ -47,15 +47,12 @@ namespace Poktogone.Pokemon
             this.power = power;
             this.accuracy = accuracy;
             this.basePP = basePP;
+            this.pp = basePP;
         }
 
-        /**
-         * "name+type+sps+power+accuracy+basePP"
-         */
-        public static Move Parse(String arg, char sep = '+')
+        public override string ToString()
         {
-            String[] data = arg.Split(sep);
-            return new Move(data[0], TypeExtensions.Parse(data[1]), SpsExtensions.Parse(data[2]), int.Parse(data[3]), int.Parse(data[4]), int.Parse(data[5]));
+            return this.name;
         }
     }
 }

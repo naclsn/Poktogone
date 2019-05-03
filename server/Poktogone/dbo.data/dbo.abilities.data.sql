@@ -1,5 +1,5 @@
-﻿DELETE FROM [dbo].[talents];
-INSERT INTO [dbo].[talents] ([id], [nom]) VALUES
+﻿DELETE FROM [dbo].[abilities];
+INSERT INTO [dbo].[abilities] ([id], [name]) VALUES
 (1, 'Static'),
 (2, 'Lightning rod'),
 (3, 'Blaze'),

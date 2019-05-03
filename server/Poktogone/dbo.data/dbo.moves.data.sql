@@ -1,5 +1,5 @@
 ﻿DELETE FROM [dbo].[moves];
-INSERT INTO [dbo].[moves] ([id], [name], [type], [spc], [prec], [dmg], [effect]) VALUES
+INSERT INTO [dbo].[moves] ([id], [name], [type], [sps], [accuracy], [power], [effect]) VALUES
 (1, 'Surf', 1, 2, 100, 90, 0),
 (2, 'Hydro-cannon', 1, 2, 85, 110, 0),
 (3, 'Danse pluie', 1, 0, 100, 0, 16),

@@ -1,5 +1,5 @@
-﻿DELETE FROM [dbo].[objets];
-INSERT INTO [dbo].[objets] ([id], [nom], [desc], [uniq]) VALUES
+﻿DELETE FROM [dbo].[items];
+INSERT INTO [dbo].[items] ([id], [name], [desc], [uniq]) VALUES
 (1, 'Baie Iapapa', 'Soigne 50% des pdv lorsqu''à 25% de pdv ou moins', 1),
 (2, 'Baie Sitrus', 'Soigne 25% des pdv lorsqu''à 50% des pdv ou moins', 1),
 (3, 'Veste de Combat', 'Augmente la Défense Spéciale mais empêche l''utilisation d''attaques n''infligeant pas de dégâts ', 0),

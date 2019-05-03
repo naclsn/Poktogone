@@ -16,5 +16,20 @@ namespace Poktogone.Battle
             this.name = name;
             this.pokemons = pokemons;
         }
+
+        public String GetName()
+        {
+            return this.name;
+        }
+
+        public override string ToString()
+        {
+            String pokemons = "";
+
+            foreach (var p in this.pokemons)
+                pokemons += $"\n\t{p}";
+
+            return $"{this.name} with: {pokemons}";
+        }
     }
 }

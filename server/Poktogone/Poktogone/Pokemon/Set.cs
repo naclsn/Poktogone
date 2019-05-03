@@ -16,7 +16,7 @@ namespace Poktogone.Pokemon
         AttackSpecial,
         DefenceSpecial,
         Speed,
-        Oof
+        HP
     }
 
     public static class StatTargetExtensions
@@ -30,7 +30,8 @@ namespace Poktogone.Pokemon
                 case "spa": return StatTarget.AttackSpecial;
                 case "spd": return StatTarget.DefenceSpecial;
                 case "spe": return StatTarget.Speed;
-                default: return StatTarget.Oof;
+                case "pdv": return StatTarget.HP; // TODO: rename in DB "pdv" to "hp"
+                default: throw new FormatException($"'{c}' is not a valid StatTarget");
             }
         }
         public static bool IsPhysical(this StatTarget st)
@@ -44,6 +45,19 @@ namespace Poktogone.Pokemon
         public static Sps GetSps(this StatTarget st)
         {
             return st.IsSpecial() ? Sps.Special : st.IsPhysical() ? Sps.Physic : Sps.Stat;
+        }
+        public static String ShortString(this StatTarget st)
+        {
+            switch (st)
+            {
+                case StatTarget.Attack: return "atk";
+                case StatTarget.Defence: return "def";
+                case StatTarget.AttackSpecial: return "spa";
+                case StatTarget.DefenceSpecial: return "spd";
+                case StatTarget.Speed: return "spe";
+                case StatTarget.HP: return "pdv"; // TODO: rename in DB "pdv" to "hp"
+                default: return "oof";
+            }
         }
     }
 
@@ -88,7 +102,7 @@ namespace Poktogone.Pokemon
         }
     }
 
-    class Set 
+    class Set
     {
         readonly String customName;
 
@@ -150,45 +164,53 @@ namespace Poktogone.Pokemon
             this._nature = nature;
         }
 
-        /**
-         * Data order:
-         * "baseName,[type1],[type2],baseHp,baseAttack,baseDefence,baseAttackSpecial,baseDefenceSpecial,baseSpeed,[moves1],[moves2],[moves3],[moves4],[item],[ev],[nature]"
-         */
-        public static Set Parse(String arg, char sep = ',')
-        {
-            String[] data = arg.Split(sep);
-            String baseName = data[0];
-
-            Type type1 = TypeExtensions.Parse(data[1]);
-            Type type2 = TypeExtensions.Parse(data[2]);
-
-            int baseHp = int.Parse(data[3]);
-            int[] baseStat = new int[5];
-            foreach (var stat in Enum.GetValues(typeof(StatTarget)))
-                baseStat[(int)stat] = int.Parse(data[(int)stat + 4]);
-
-            Move[] moves = new Move[4]; // 10 + 4 * 5
-            for (int k = 0; k < 4; k++)
-                moves[k] = Move.Parse(data[k + 9]);
-
-            Item item = Item.Parse(data[13]);
-
-            EVDist evDist = new EVDist(data[14], data[15]);
-            Nature nature = new Nature(data[16], data[17]);
-
-            return new Set(baseName, baseHp, new Base(baseName, type1, type2, baseStat), moves, item, evDist, nature);
-        }
-
         public static Set FromDB(SqlHelper dbo, int id)
         {
-            SqlDataReader r = dbo.Select(new Table("sets", id)
-                                        .Join("pokemons", "sets::poke")
-                                        .Join("moves", "sets::move1")
-                                        .Join("moves", "sets::move2")
-                                        .Join("moves", "sets::move3")
-                                        .Join("moves", "sets::move4")
-                                        /*...*/);
-            return null; // new Set();
+            var r = dbo.Select(
+                new Table("sets", id)
+                    .Join("pokemons", "sets.pokemon")
+                    .Join("moves AS move1", "sets.move1")
+                    .Join("moves AS move2", "sets.move2")
+                    .Join("moves AS move3", "sets.move3")
+                    .Join("moves AS move4", "sets.move4")
+                    .Join("abilities", "sets.ability")
+                    .Join("items", "sets.item"),
+                "sets.name", "pokemons.hp", "pokemons.type1", "pokemons.type2",
+                "pokemons.name", "pokemons.hp", "pokemons.atk", "pokemons.def", "pokemons.spa", "pokemons.spd", "pokemons.spe", // baseStat
+                "move1.name", "move1.type", "move1.sps", "move1.power", "move1.accuracy", // move1
+                "move2.name", "move2.type", "move2.sps", "move2.power", "move2.accuracy", // move2
+                "move3.name", "move3.type", "move3.sps", "move3.power", "move3.accuracy", // move3
+                "move4.name", "move4.type", "move4.sps", "move4.power", "move4.accuracy", // move4
+                "items.name", "items.uniq", // item
+                "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
+            )[0];
+
+            int[] baseStat = new int[5];
+            for (int k = 0; k < 5; k++)
+                baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]);
+
+            Base thisBase = new Base(r["pokemons.name"], TypeExtensions.Parse(r["pokemons.type1"]), TypeExtensions.Parse(r["pokemons.type2"]), baseStat);
+
+            Move[] thisMoves = new Move[4];
+            for (int k = 1; k < 5; k++)
+                thisMoves[k - 1] = new Move(r[$"move{k}.name"], TypeExtensions.Parse(r[$"move{k}.type"]), SpsExtensions.Parse(r[$"move{k}.sps"]), int.Parse(r[$"move{k}.power"]), int.Parse(r[$"move{k}.accuracy"]), 42);
+
+            Item thisItem = new Item(r["items.name"], r["items.uniq"] == "1");
+
+            EVDist thisEV = new EVDist(r["sets.EV1"], r["sets.EV2"]);
+            Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
+
+            return new Set(r["sets.name"], int.Parse(r["pokemons.hp"]), thisBase, thisMoves, thisItem, thisEV, thisNature);
+        }
+
+        public override string ToString()
+        {
+            String moves = "";
+
+            foreach (var p in this.moves)
+                moves += $"\n\t\t- {p}";
+
+            return $"{this.baseStat.name} '{this.customName}' @{this.item}{moves}";
         }
     }
 }

@@ -19,45 +19,33 @@ namespace Poktogone.Main
             Program.dbo = new SqlHelper();
             Program.dbo.Connect(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "Database.mdf"));
 
-            //String c = "SELECT * FROM [sets] JOIN [pokemons] WHERE [pokemons].id = poke ORDER BY [nom] DESC";
-            String c = "SELECT nom, pdv, type1, type2 FROM sets, pokemons WHERE sets.id = 42 AND poke = pokemons.id";
-            using (SqlDataReader reader = Program.dbo.Select(c)) if (reader != null)
-            {
-                while (reader.Read())
-                    Console.WriteLine("{0}, {1}, {2}, {3}", reader[0], reader[1], reader[2], reader[3]);
-                reader.Close();
-            }
-
-            return 0;
-
-            Trainer P1 = new Trainer(args[1], ParseSets(args[2]));
-            Trainer P2 = new Trainer(args[3], ParseSets(args[4]));
+            Random r = new Random();
+            Trainer P1 = new Trainer("Jean", ParseSets($"{r.Next(42) + 1};{r.Next(42) + 1};{r.Next(42) + 1}"));
+            Trainer P2 = new Trainer("Paul", ParseSets($"{r.Next(42) + 1};{r.Next(42) + 1};{r.Next(42) + 1}"));
 
             Battle.Battle battle = new Battle.Battle(P1, P2);
+            Console.WriteLine(battle);
+            Console.Write("Press Enter to start... ");
+            Console.ReadLine();
+            Console.Clear();
 
             if (battle.Start())
-                do battle.InputCommand(int.Parse(Console.ReadLine()), Console.ReadLine());
+                do
+                {
+                    Console.WriteLine(battle);
+                    Console.Write("What should who do ? (your player num, then your commande): ");
+                    if (battle.InputCommand(int.Parse(Console.ReadLine()), Console.ReadLine()) < 0)
+                        Console.WriteLine("Wrong player number! (nice try tho)");
+                    Console.Write("Press Enter to continue... ");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
                 while (battle.State != BattleState.VictoryP1 || battle.State != BattleState.VictoryP2);
             else
                 return (int)battle.State; // Console.WriteLine("Couln't start battle.");
 
             Console.WriteLine(battle.State);
             return 0;
-        }
-
-        /**
-         * Data arg:
-         * "[pok1];[pok2];[pok3]"
-         */
-        static Set[] ParseTeam(String arg, char sep = ';')
-        {
-            Set[] r = new Set[3];
-            int k = 0;
-
-            foreach (String pok in arg.Split(sep))
-                r[k++] = Set.Parse(pok);
-
-            return r;
         }
 
         /**

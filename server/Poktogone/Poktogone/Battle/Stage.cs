@@ -17,6 +17,7 @@ namespace Poktogone.Battle
 
     enum TerrainType
     {
+        Normal,
         Eletric,
         Grassy,
         Misty,
@@ -25,5 +26,18 @@ namespace Poktogone.Battle
 
     class Stage
     {
+        private WeatherType weather;
+        private TerrainType terrain;
+
+        public Stage()
+        {
+            this.weather = WeatherType.ClearSky;
+            this.terrain = TerrainType.Normal;
+        }
+
+        public override string ToString()
+        {
+            return $"\n\tweather: {this.weather}\n\tterrain: {this.terrain}";
+        }
     }
 }

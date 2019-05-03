@@ -17,13 +17,9 @@ namespace Poktogone.Pokemon
             this.oneUse = isOneUse;
         }
 
-        /**
-         * "name+isOneUse"
-         */
-        public static Item Parse(String arg, char sep = '+')
+        public override string ToString()
         {
-            String[] data = arg.Split(sep);
-            return new Item(data[0], int.Parse(data[1]) == 1);
+            return this.name;
         }
     }
 }
