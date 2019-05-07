@@ -28,6 +28,22 @@ namespace Poktogone.Pokemon
         }
     }
 
+    struct Effect
+    {
+        public int id;
+        public String desc;
+        public int percent;
+        public int value;
+
+        public Effect(int id, String desc, int precent, int value)
+        {
+            this.id = id;
+            this.desc = desc;
+            this.percent = precent;
+            this.value = value;
+        }
+    }
+
     class Move
     {
         public readonly String name;
@@ -36,10 +52,22 @@ namespace Poktogone.Pokemon
         public readonly int power;
         public readonly int accuracy;
 
+        private readonly Effect[] _effects;
+        public Effect? this[int effectId]
+        {
+            get
+            {
+                foreach (Effect e in this._effects)
+                    if (e.id == effectId)
+                        return e;
+                return null;
+            }
+        }
+        
         public readonly int basePP;
         private int pp;
 
-        public Move(String name, Type type, Sps sps, int power, int accuracy, int basePP)
+        public Move(String name, Type type, Sps sps, int power, int accuracy, int basePP, Effect[] effects)
         {
             this.name = name;
             this.type = type;
@@ -48,11 +76,17 @@ namespace Poktogone.Pokemon
             this.accuracy = accuracy;
             this.basePP = basePP;
             this.pp = basePP;
+            this._effects = effects;
         }
-
+        
         public override string ToString()
         {
             return this.name;
+        }
+
+        public static Move TmpFromName(String name)
+        {
+            return new Move(name, 0, 0, 0, 0, 0, null);
         }
     }
 }

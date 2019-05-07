@@ -132,6 +132,27 @@ namespace Poktogone.Pokemon
             }
         }
 
+        private int _indexNextMove;
+        public Move NextMove
+        {
+            get
+            {
+                if (-1 < this._indexNextMove)
+                    return this.moves[this._indexNextMove];
+                return null;
+            }
+            set
+            {
+                for (int k = 0; k < this.moves.Length; k++)
+                    if (this.moves[k].name == value.name)
+                    {
+                        this._indexNextMove = k;
+                        return;
+                    }
+                this._indexNextMove = -1;
+            }
+        }
+
         public int this[StatTarget stat]
         {
             get
@@ -139,8 +160,8 @@ namespace Poktogone.Pokemon
                 int mod = this._mod[(int)stat];
                 int baz = this.baseStat[stat]; // base stats
                 double r = baz + (stat == this._evDist.ev1 || stat == this._evDist.ev2 ? 63 : 0); // EVs
-                r = (int)(r * (mod < 0 ? 1/(1 - .5 * mod) : 1 + .5 * mod)); // modif
-                return (int)(r * (this._nature.up == stat ? 1.1 : this._nature.down == stat ? .9 : 1)); // nature
+                r = (int)(r * (this._nature.up == stat ? 1.1 : this._nature.down == stat ? .9 : 1)); // nature
+                return (int)(r * (mod < 0 ? 1 / (1 - .5 * mod) : 1 + .5 * mod)); // modif
             }
             set // e.g.: shif gears -> pok[StatTarget] = 2 --> actualy does +2
             {
@@ -162,6 +183,8 @@ namespace Poktogone.Pokemon
 
             this._evDist = evDist;
             this._nature = nature;
+
+            this._indexNextMove = -1;
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
@@ -177,23 +200,37 @@ namespace Poktogone.Pokemon
                     .Join("items", "sets.item"),
                 "sets.name", "pokemons.hp", "pokemons.type1", "pokemons.type2",
                 "pokemons.name", "pokemons.hp", "pokemons.atk", "pokemons.def", "pokemons.spa", "pokemons.spd", "pokemons.spe", // baseStat
-                "move1.name", "move1.type", "move1.sps", "move1.power", "move1.accuracy", // move1
-                "move2.name", "move2.type", "move2.sps", "move2.power", "move2.accuracy", // move2
-                "move3.name", "move3.type", "move3.sps", "move3.power", "move3.accuracy", // move3
-                "move4.name", "move4.type", "move4.sps", "move4.power", "move4.accuracy", // move4
+                "move1.id", "move1.name", "move1.type", "move1.sps", "move1.power", "move1.accuracy", "move1.pp", // move1
+                "move2.id", "move2.name", "move2.type", "move2.sps", "move2.power", "move2.accuracy", "move2.pp", // move2
+                "move3.id", "move3.name", "move3.type", "move3.sps", "move3.power", "move3.accuracy", "move3.pp", // move3
+                "move4.id", "move4.name", "move4.type", "move4.sps", "move4.power", "move4.accuracy", "move4.pp", // move4
                 "items.name", "items.uniq", // item
                 "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
             )[0];
 
             int[] baseStat = new int[5];
             for (int k = 0; k < 5; k++)
-                baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]);
+                baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]) + 31; // 31: IVs
 
             Base thisBase = new Base(r["pokemons.name"], TypeExtensions.Parse(r["pokemons.type1"]), TypeExtensions.Parse(r["pokemons.type2"]), baseStat);
 
             Move[] thisMoves = new Move[4];
             for (int k = 1; k < 5; k++)
-                thisMoves[k - 1] = new Move(r[$"move{k}.name"], TypeExtensions.Parse(r[$"move{k}.type"]), SpsExtensions.Parse(r[$"move{k}.sps"]), int.Parse(r[$"move{k}.power"]), int.Parse(r[$"move{k}.accuracy"]), 42);
+            {
+                List<Effect> moveEffects = new List<Effect>();
+                var r_ = dbo.Select(
+                    new Table("moves", int.Parse(r[$"move{k}.id"]))
+                        .Join("movesxeffects", "move", "moves.id")
+                        .Join("effects", "moves.effect"),
+                    "effects.id", "effects.desc", "movesxeffects.percent", "movesxeffects.value"
+                );
+                foreach (var effect in r_)
+                {
+                    moveEffects.Add(new Effect(int.Parse(effect["effect.id"]), effect["effect.desc"], int.Parse(effect["movesxeffects.percent"]), int.Parse(effect["movesxeffects.value"])));
+                }
+
+                thisMoves[k - 1] = new Move(r[$"move{k}.name"], TypeExtensions.Parse(r[$"move{k}.type"]), SpsExtensions.Parse(r[$"move{k}.sps"]), int.Parse(r[$"move{k}.power"]), int.Parse(r[$"move{k}.accuracy"]), int.Parse(r[$"move{k}.pp"]), moveEffects.ToArray());
+            }
 
             Item thisItem = new Item(r["items.name"], r["items.uniq"] == "1");
 
@@ -203,14 +240,24 @@ namespace Poktogone.Pokemon
             return new Set(r["sets.name"], int.Parse(r["pokemons.hp"]), thisBase, thisMoves, thisItem, thisEV, thisNature);
         }
 
-        public override string ToString()
+        public String GetName()
+        {
+            return $"{this.baseStat.name} '{this.customName}'";
+        }
+
+        public override String ToString()
         {
             String moves = "";
+            String potentialNext = "";
 
             foreach (var p in this.moves)
                 moves += $"\n\t\t- {p}";
 
-            return $"{this.baseStat.name} '{this.customName}' @{this.item}{moves}";
+            Move nextMove = this.NextMove;
+            if (nextMove != null)
+                potentialNext = nextMove.ToString();
+
+            return $"{this.GetName()} @{this.item}{moves}{potentialNext}";
         }
     }
 }

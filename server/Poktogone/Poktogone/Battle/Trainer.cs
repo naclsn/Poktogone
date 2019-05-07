@@ -11,10 +11,35 @@ namespace Poktogone.Battle
         private String name;
         private Pokemon.Set[] pokemons;
 
+        private int _indexPokemonOut;
+        public Pokemon.Set Pokemon
+        {
+            get { return this.pokemons[_indexPokemonOut]; }
+        }
+        private String _nextCommand;
+        public String NextAction
+        {
+            get { return this._nextCommand; }
+            set
+            {
+                this._nextCommand = value;
+
+                if (value.StartsWith("attack"))
+                    this.Pokemon.NextMove = Poktogone.Pokemon.Move.TmpFromName(value.Replace("attack", "").Trim());
+            }
+        }
+
         public Trainer(String name, Pokemon.Set[] pokemons)
         {
             this.name = name;
             this.pokemons = pokemons;
+            this._indexPokemonOut = 0;
+            this._nextCommand = "...";
+        }
+
+        public void SwitchTo(int i)
+        {
+            this._indexPokemonOut = i;
         }
 
         public String GetName()
@@ -29,7 +54,7 @@ namespace Poktogone.Battle
             foreach (var p in this.pokemons)
                 pokemons += $"\n\t{p}";
 
-            return $"{this.name} with: {pokemons}";
+            return $"{this.name} with: {pokemons}\nnext action: {this.NextAction}";
         }
     }
 }

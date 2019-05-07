@@ -26,33 +26,38 @@ namespace Poktogone.Main
     {
         List<String> tables;
         List<String> joins;
+        List<String> idColumns;
 
         public Table()
         {
-            this.tables = new List<string>();
-            this.joins = new List<string>();
+            this.tables = new List<String>();
+            this.joins = new List<String>();
+            this.idColumns = new List<String>();
         }
 
         public Table(String table, int id) : this()
         {
-            this.tables.Add(table);
-            this.joins.Add(id.ToString());
+            this.Join(table, "id", id.ToString());
         }
 
-        // idName: name of the id in one of the previous tables
-        public Table Join(String table, String idName)
+        public Table Join(String table, String idColumn, String idName)
         {
             this.tables.Add(table);
             this.joins.Add(idName);
+            this.idColumns.Add(idColumn);
             return this;
         }
 
-        // id: raw value of the id
+        // idName: name of the id in one of the previous tables (by default, join on '[table].[id]')
+        public Table Join(String table, String idName)
+        {
+            return this.Join(table, "id", idName);
+        }
+
+        // id: raw value of the id (by default, join on '[table].[id]')
         public Table Join(String table, int id)
         {
-            this.tables.Add(table);
-            this.joins.Add(id.ToString());
-            return this;
+            return this.Join(table, "id", id.ToString());
         }
 
         public override string ToString()
@@ -67,7 +72,7 @@ namespace Poktogone.Main
             {
                 String tableName = "";
                 String tableAlias = "";
-
+                
                 if (this.tables[k].Contains(" AS ")) // "table AS t" --> "[table] AS [t]"
                 {
                     String[] tmp = this.tables[k].Replace(" AS ", "@").Split('@');
@@ -86,11 +91,11 @@ namespace Poktogone.Main
                 if (this.joins[k].Contains('.')) // "other.bla" --> "[table].[id] = [other].[bla]"
                 {
                     String[] tmp = this.joins[k].Split(".".ToCharArray(), 2);
-                    where += $".[id] = [{tmp[0]}].[{tmp[1]}]";
+                    where += $".[{this.idColumns[k]}] = [{tmp[0]}].[{tmp[1]}]";
                 }
                 else // "42" --> "[table].[id] = 42"
                 {
-                    where += $".[id] = '{this.joins[k]}'";
+                    where += $".[{this.idColumns[k]}] = '{this.joins[k]}'";
                 }
 
                 tableSep = ", ";

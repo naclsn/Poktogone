@@ -32,6 +32,7 @@ namespace Poktogone.Main
             if (battle.Start())
                 do
                 {
+
                     Console.WriteLine(battle);
                     Console.Write("What should who do ? (your player num, then your commande): ");
                     if (battle.InputCommand(int.Parse(Console.ReadLine()), Console.ReadLine()) < 0)
@@ -61,6 +62,11 @@ namespace Poktogone.Main
                 r[k++] = Set.FromDB(Program.dbo, int.Parse(id));
 
             return r;
+        }
+
+        public static void DamageCalculator(Stage stage, Set atk, Set def, Trainer defTrainer)
+        {
+            /*-*/
         }
     }
 }

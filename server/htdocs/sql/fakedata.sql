@@ -7,7 +7,7 @@ INSERT INTO users (`id`, `name`, `pass`, `elo`) VALUES
     (NULL, 'Jean', '$2y$10$cH09FUHVEKIaJ53X0/WhI.F0zeZ9OVtNCsmJxHngc6/4qCD0YWhr2', 1000), -- 1234
     (NULL, 'Paul', '$2y$10$u40qgi0/BP/NRRSLMiz/qOZFg.EAZlUesEjX4iJYQSsJEMpyebxNK', 1000); -- piou
 
-INSERT INTO battles (`id`, `date`, `winner`, `loser`) VALUES
+INSERT INTO battles (`id`, `date`, `winner`, `loser`, `P1`, `P2`, `status`) VALUES
     (NULL, NOW(), 2, 1, 2, 1, "end"),
     (NULL, NOW(), NULL, NULL, 1, 2, "start");
 
