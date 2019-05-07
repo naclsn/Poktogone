@@ -24,7 +24,9 @@ namespace Poktogone.Battle
             {
                 this._nextCommand = value;
 
-                if (value.StartsWith("attack"))
+                if (value == "...")
+                    this.Pokemon.NextMove = null;
+                else if (value.StartsWith("attack"))
                     this.Pokemon.NextMove = Poktogone.Pokemon.Move.TmpFromName(value.Replace("attack", "").Trim());
             }
         }
@@ -34,7 +36,7 @@ namespace Poktogone.Battle
             this.name = name;
             this.pokemons = pokemons;
             this._indexPokemonOut = 0;
-            this._nextCommand = "...";
+            this.NextAction = "...";
         }
 
         public void SwitchTo(int i)

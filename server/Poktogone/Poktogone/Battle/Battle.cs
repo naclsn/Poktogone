@@ -55,9 +55,9 @@ namespace Poktogone.Battle
                 BattleState[] S = { BattleState.WaitingP2, BattleState.WaitingP1};
 
                 if (this.State == S[player])
-                    Console.WriteLine($"The player {P[player].GetName()} changes its mind and does '{c}'.");
+                    Console.WriteLine($"The player {P[player].GetName()} changes its mind and will do '{c}'.");
                 else
-                    Console.WriteLine($"The player {P[player].GetName()} does '{c}'.");
+                    Console.WriteLine($"The player {P[player].GetName()} will do '{c}'.");
                 P[player].NextAction = c;
 
                 if (this.State != BattleState.Waiting && this.State != S[player])
@@ -88,6 +88,8 @@ namespace Poktogone.Battle
                 Main.Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[0]);
             else if (this.P2.NextAction.StartsWith("switch"))
                 this.P2.SwitchTo(int.Parse(this.P2.NextAction.Replace("switch", "").Trim()));
+
+            this.DoEndTurn();
         }
 
         /**
@@ -97,8 +99,8 @@ namespace Poktogone.Battle
         {
             Trainer[] r = new Trainer[] { null, null };
 
-            int prio1 = this.P1.NextAction.StartsWith("attack") /*si attaque*/ ? this.P1.Pokemon.NextMove[42/*id de l'effet "prio"*/].Value.value : 6;
-            int prio2 = this.P2.NextAction.StartsWith("attack") /*si attaque*/ ? this.P2.Pokemon.NextMove[42/*id de l'effet "prio"*/].Value.value : 6;
+            int prio1 = this.P1.NextAction.StartsWith("attack") /*si attaque*/ ? this.P1.Pokemon.NextMove[42/*id de l'effet "prio"*/].GetValueOrDefault(new Effect(0)).value : 6;
+            int prio2 = this.P2.NextAction.StartsWith("attack") /*si attaque*/ ? this.P2.Pokemon.NextMove[42/*id de l'effet "prio"*/].GetValueOrDefault(new Effect(0)).value : 6;
 
             if (prio1 < prio2)
             {
@@ -118,6 +120,16 @@ namespace Poktogone.Battle
             }
 
             return r;
+        }
+
+        public void DoEndTurn()
+        {
+            // damage pokemon from weather
+            // damage pokemon from hazards
+            // heal pokemon from berries
+
+            this.P1.NextAction = "...";
+            this.P2.NextAction = "...";
         }
 
         public bool Start() // return false if battle settings invalids, in this case state will be `BattleState.Unknown`

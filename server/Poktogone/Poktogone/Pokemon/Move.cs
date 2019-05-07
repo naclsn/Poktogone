@@ -42,6 +42,8 @@ namespace Poktogone.Pokemon
             this.percent = precent;
             this.value = value;
         }
+
+        public Effect(int value) : this(0, "", 100, value) { }
     }
 
     class Move

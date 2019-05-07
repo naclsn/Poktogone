@@ -143,12 +143,13 @@ namespace Poktogone.Pokemon
             }
             set
             {
-                for (int k = 0; k < this.moves.Length; k++)
-                    if (this.moves[k].name == value.name)
-                    {
-                        this._indexNextMove = k;
-                        return;
-                    }
+                if (value != null)
+                    for (int k = 0; k < this.moves.Length; k++)
+                        if (this.moves[k].name == value.name)
+                        {
+                            this._indexNextMove = k;
+                            return;
+                        }
                 this._indexNextMove = -1;
             }
         }
@@ -255,7 +256,7 @@ namespace Poktogone.Pokemon
 
             Move nextMove = this.NextMove;
             if (nextMove != null)
-                potentialNext = nextMove.ToString();
+                potentialNext = $"\n\t\the will use {nextMove}";
 
             return $"{this.GetName()} @{this.item}{moves}{potentialNext}";
         }
