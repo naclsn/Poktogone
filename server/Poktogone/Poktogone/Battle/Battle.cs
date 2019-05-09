@@ -21,8 +21,6 @@ namespace Poktogone.Battle
 
     class Battle
     {
-        private Random rng;
-
         private Trainer P1;
         private Trainer P2;
 
@@ -36,8 +34,6 @@ namespace Poktogone.Battle
 
         public Battle(Trainer P1, Trainer P2)
         {
-            this.rng = new Random();
-
             this.P1 = P1;
             this.P2 = P2;
 
@@ -114,7 +110,7 @@ namespace Poktogone.Battle
             }
             else
             {
-                int bla = this.rng.Next(2);
+                int bla = Main.Program.RngNext(2);
                 r[bla] = this.P1;
                 r[1 - bla] = this.P2;
             }

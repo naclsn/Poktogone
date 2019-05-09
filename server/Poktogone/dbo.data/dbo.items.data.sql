@@ -16,4 +16,5 @@ INSERT INTO [dbo].[items] ([id], [name], [desc], [uniq]) VALUES
 (14, 'Graine Psy', 'Augmente la défense du pokemon sous le terrain psy', 1),
 (15, 'Orbe Toxic', 'Inflige Toxic au porteur', 0),
 (16, 'Baie Yache', 'Diminue les dégâts d''une attaque glace super-efficace', 1),
-(17, 'Orbe Lumière', 'Augmente les dégâts des attaques de Pikachu', 0);
+(17, 'Orbe Lumière', 'Augmente les dégâts des attaques de Pikachu', 0),
+(18, 'Méga-gemme', 'Permet à un pokemon de méga-évoluer', 0);

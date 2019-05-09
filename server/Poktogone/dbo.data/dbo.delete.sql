@@ -1,0 +1,9 @@
+﻿DELETE FROM [dbo].[sets];
+DELETE FROM [dbo].[pokemons];
+DELETE FROM [dbo].[moves];
+DELETE FROM [dbo].[effects];
+DELETE FROM [dbo].[movesxeffects];
+DELETE FROM [dbo].[abilities];
+DELETE FROM [dbo].[items];
+DELETE FROM [dbo].[matchups];
+DELETE FROM [dbo].[types];

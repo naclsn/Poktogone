@@ -85,4 +85,4 @@ INSERT INTO [dbo].[pokemons] ([id], [name], [type1], [type2], [hp], [atk], [def]
 (83, 'Mysdibule-Mega', 10, 18, 50, 105, 125, 55, 95, 50),
 (84, 'Diancie-Mega', 8, 18, 50, 160, 110, 160, 110, 110),
 (85, 'Latias-Mega', 12, 17, 80, 100, 120, 140, 150, 110),
-(86, 'Deepfried-Chrysacier', 2, 10, 75, 125, 150, 50, 150, 50);
+(86, 'Deepfried-Chrysacier', 2, 10, 50, 125, 150, 75, 149, 51);

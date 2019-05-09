@@ -222,12 +222,12 @@ namespace Poktogone.Pokemon
                 var r_ = dbo.Select(
                     new Table("moves", int.Parse(r[$"move{k}.id"]))
                         .Join("movesxeffects", "move", "moves.id")
-                        .Join("effects", "moves.effect"),
+                        .Join("effects", "movesxeffects.effect"),
                     "effects.id", "effects.desc", "movesxeffects.percent", "movesxeffects.value"
                 );
                 foreach (var effect in r_)
                 {
-                    moveEffects.Add(new Effect(int.Parse(effect["effect.id"]), effect["effect.desc"], int.Parse(effect["movesxeffects.percent"]), int.Parse(effect["movesxeffects.value"])));
+                    moveEffects.Add(new Effect(int.Parse(effect["effects.id"]), effect["effects.desc"], int.Parse(effect["movesxeffects.percent"]), int.Parse(effect["movesxeffects.value"])));
                 }
 
                 thisMoves[k - 1] = new Move(r[$"move{k}.name"], TypeExtensions.Parse(r[$"move{k}.type"]), SpsExtensions.Parse(r[$"move{k}.sps"]), int.Parse(r[$"move{k}.power"]), int.Parse(r[$"move{k}.accuracy"]), int.Parse(r[$"move{k}.pp"]), moveEffects.ToArray());

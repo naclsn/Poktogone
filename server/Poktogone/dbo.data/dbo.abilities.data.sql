@@ -71,4 +71,9 @@ INSERT INTO [dbo].[abilities] ([id], [name]) VALUES
 (69, 'Electric surge'),
 (70, 'Psychic surge'),
 (71, 'Beast boost'),
-(72, 'Soul-heart');
+(72, 'Soul-heart'),
+(73, 'Tough claws'),
+(74, 'Drought'),
+(75, 'Mega launcher'),
+(76, 'Magic bounce'),
+(77, 'Swift swim');
