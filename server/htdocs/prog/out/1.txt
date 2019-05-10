@@ -1,0 +1,41 @@
+Battle between thoses players (currently: Starting):
+
+* Jean with: 
+	Dracofeu 'Physical sweeper' @Orbe Vie
+		- Danse lames
+		- Retour
+		- Boutefeu
+		- Atterissage
+	Latias 'Special sweeper' @Restes
+		- Pl‚nitude
+		- Dracochoc
+		- Psycho
+		- Anti-br–me
+	Gardevoir 'Scarf sweeper' @Mouchoir Choix
+		- Choc-psy
+		- Pouvoir Lunaire
+		- Voeu soin
+		- Place Holder
+
+* Paul with: 
+	Florizarre 'Sun sweeper' @Orbe Vie
+		- Place Holder
+		- Bombe beurk
+		- Pl‚nitude
+		- Place Holder
+	Dracofeu 'Physical sweeper' @Orbe Vie
+		- Danse lames
+		- Retour
+		- Boutefeu
+		- Atterissage
+	Metalosse 'Assault Vest Attacker' @Veste de Combat
+		- Poing m‚t‚or
+		- Seisme
+		- Pisto-poing
+		- Luminocanon
+
+stage: 
+	weather: ClearSky
+	terrain: Normal
+
+Press Enter to start... 

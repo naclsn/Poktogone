@@ -1,0 +1,89 @@
+[log]info: Connecting to sqllocaldb
+[log]info: 	Connected!
+[log]info: Loading players' sets
+[log]info: 	Loaded!
+Battle between thoses players (currently: Starting):
+
+* Paul with: 
+	Dracofeu 'Physical sweeper' @Orbe Vie
+		- Danse lames
+		- Retour
+		- Boutefeu
+		- Atterissage
+	Florizarre 'Sun sweeper' @Orbe Vie
+		- Lance Soleil
+		- Bombe beurk
+		- Pl‚nitude
+		- PC feu
+	Tortank 'Tortank' @Restes
+		- Tour rapide
+		- Ebullition
+		- Laser glace
+		- Toxic
+next action: ...
+
+* Jean with: 
+	Airmure 'Stall defog phaze' @Restes
+		- Hurlement
+		- Atterissage
+		- Anti-br–me
+		- Toxic
+	Suicune 'Defensive sweeper' @Restes
+		- Pl‚nitude
+		- Poursuite
+		- Laser glace
+		- Clonage
+	Suicune 'PP staller' @Restes
+		- Clonage
+		- Ebullition
+		- Hurlement
+		- Toxic
+next action: ...
+
+stage: 
+	weather: ClearSky
+	terrain: Normal
+
+Press Enter to start... Battle between thoses players (currently: Waiting):
+
+* Paul with: 
+	Dracofeu 'Physical sweeper' @Orbe Vie
+		- Danse lames
+		- Retour
+		- Boutefeu
+		- Atterissage
+	Florizarre 'Sun sweeper' @Orbe Vie
+		- Lance Soleil
+		- Bombe beurk
+		- Pl‚nitude
+		- PC feu
+	Tortank 'Tortank' @Restes
+		- Tour rapide
+		- Ebullition
+		- Laser glace
+		- Toxic
+next action: ...
+
+* Jean with: 
+	Airmure 'Stall defog phaze' @Restes
+		- Hurlement
+		- Atterissage
+		- Anti-br–me
+		- Toxic
+	Suicune 'Defensive sweeper' @Restes
+		- Pl‚nitude
+		- Poursuite
+		- Laser glace
+		- Clonage
+	Suicune 'PP staller' @Restes
+		- Clonage
+		- Ebullition
+		- Hurlement
+		- Toxic
+next action: ...
+
+stage: 
+	weather: ClearSky
+	terrain: Normal
+
+Your player num: 

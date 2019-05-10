@@ -2,12 +2,35 @@
     class ConX {
 
         private $conn;
-        public $debug;
+
+        private $debug;
+        private $debug_color;
+
+        // escape table names character, placed around all tables name in any requests
+        private $etn_s;
+        private $etn_e;
 
         function __construct($dbname, $as="root", $pass="", $infos=false, $mysql_host="127.0.0.1", $charset="utf8") {
-            $c = $infos ? $infos : "mysql:host=$mysql_host;charset=$charset";
-            $this->conn = new PDO("$c;dbname=$dbname", $as, $pass, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+            if ($as) {
+                $c = $infos ? $infos : "mysql:host=$mysql_host;charset=$charset";
+                $this->conn = new PDO("$c;dbname=$dbname", $as, $pass, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+            } else $this->conn = new PDO($dbname, null, null);
+
             $this->debug = false;
+            $this->etn_s = '`';
+            $this->etn_e = '`';
+        }
+
+        function set_debug($is=true, $code_color="#FF0000") {
+            $this->debug = true;
+            $this->debug_color = $code_color;
+            return $this;
+        }
+
+        function set_escape($char='`', $end=null) {
+            $this->etn_s = $char;
+            $this->etn_e = $end === null ? $char : $end;
+            return $this;
         }
 
         function query($c) {
@@ -31,7 +54,7 @@
 
         function prepare_execute($string, $data) {
             if ($this->debug)
-                echo "<code class=\"sql-request\">".$this->prepared($string, $data)."</code><br>\n";
+                echo "<code class=\"conx-debug\" style=\"color: $this->debug_color;\">".$this->prepared($string, $data)."</code><br>\n";
 
             $r = $this->conn->prepare($string);
             $r->execute($data);
@@ -39,7 +62,10 @@
         }
 
         function build_where($where, &$execute_array, &$execute_index='a') {
-            $where_builder = empty($where) ? "WHERE 1" : "WHERE ";
+            if (empty($where))
+                return "";
+
+            $where_builder = "WHERE ";
             $sep = "";
 
             foreach ($where as $k => $v) {
@@ -91,7 +117,7 @@
                 $value_builder.= $value;
 
             // FROM ..
-            $table_builder = "FROM `".(is_array($table) ? join("` JOIN `", $table) : $table)."`";
+            $table_builder = "FROM $this->etn_s".(is_array($table) ? join("$this->etn_e JOIN $this->etn_s", $table) : $table)."$this->etn_e";
 
             // WHERE ..
             $where_builder = $this->build_where($where, $execute_array, $execute_index);
@@ -146,12 +172,12 @@
                 $tuple_builder = join("), (", $tuple_builder);
             }
 
-            $r = $this->prepare_execute("INSERT INTO `$table` ($keywords_builder) VALUES ($tuple_builder)", $execute_array);
+            $r = $this->prepare_execute("INSERT INTO $this->etn_s$table$this->etn_e ($keywords_builder) VALUES ($tuple_builder)", $execute_array);
 
             if (!$id_return)
                 return $r;
 
-            return select($table, "MAX($id_return)")->fetch()[0];
+            return $this->select($table, "MAX($id_return)")->fetch()[0];
         }
 
         function update($table, $data, $where) {
@@ -165,18 +191,18 @@
 
             $where_builder = $this->build_where($where, $data);
 
-            return $this->prepare_execute("UPDATE `$table` SET $change_builder $where_builder", $data);
+            return $this->prepare_execute("UPDATE $this->etn_s$table$this->etn_e SET $change_builder $where_builder", $data);
         }
 
         function delete($table, $where) {
             $execute_array = array();
             $where_builder = $this->build_where($where, $execute_array);
 
-            return $this->prepare_execute("DELETE FROM `$table` WHERE $where_builder", $execute_array);
+            return $this->prepare_execute("DELETE FROM $this->etn_s$table$this->etn_e WHERE $where_builder", $execute_array);
         }
 
         function list_enum($table, $column) { // TODO: refaire ; en vrai c'est bien fait, mais on peut se passer d'utiliser une RegEX pour ça...
-            $sql = "SHOW COLUMNS FROM `$table` LIKE '$column'";
+            $sql = "SHOW COLUMNS FROM $this->etn_s$table$this->etn_e LIKE '$column'";
             $result = query($sql);
             $row = $result->fetch();
             $type = $row['Type'];
