@@ -12,14 +12,17 @@ namespace Poktogone.Main
 {
     class Program
     {
-        static private SqlHelper dbo;
-        static private bool isFromCmd;
-        static private Random rng;
+        static private SqlHelper dbo; // Ued to query to the local Pokemon DB (the .mdf file).
+        static private bool isFromCmd; // Used to know weather called with or without arguments.
+        static private Random rng; // Grlobal RNG, private; to get RNG, usethe `RngNext` familly of functions.
 
-        /**
-         * cli args:
-         *  Poktogone.exe nameP1 teamP1 nameP2 teamP2 [--dbo fileName] [--rng seed] [--dmc (damage calculator args)]
-         */
+        /// <summary>
+        /// Play a battle between the trainers defined by thir names and sets if given through args,
+        /// else ask for the names through stdin and use randomly choosen sets from the database.
+        /// If the battle succed to start, process to play a game: get players commands, play turn, resets status.
+        /// </summary>
+        /// <param name="args">`Poktogone.exe nameP1 teamP1 nameP2 teamP2 [--dbo fileName] [--rng seed] [--dmc (damage calculator args)] [--log [fileName]]`.</param>
+        /// <returns>0 if success, else last known <see cref="BattleState"/> (as an int).</returns>
         static int Main(String[] args)
         {
             Program.dbo = new SqlHelper();
@@ -81,57 +84,100 @@ namespace Poktogone.Main
             return 0;
         }
 
+        /// <summary>
+        /// Prints to stdout using the <seealso cref="Console"/>.
+        /// </summary>
+        /// <param name="o">Object to print.</param>
         public static void Print(Object o)
         {
             Console.Write(o.ToString());
         }
 
+        /// <summary>
+        /// Prints to stdout using the <seealso cref="Console"/>, then line feeds.
+        /// </summary>
+        /// <param name="o">Object to print.</param>
         public static void Println(Object o)
         {
             Console.WriteLine(o.ToString());
         }
 
+        /// <summary>
+        /// Line feeds.
+        /// </summary>
         public static void Println()
         {
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Prints to stdout then waits for an input from stdin using the <seealso cref="Console"/>.
+        /// </summary>
+        /// <param name="o">Object to print.</param>
+        /// <returns>The String read.</returns>
         public static String Input(Object o)
         {
             Program.Print(o);
             return Console.ReadLine();
         }
 
+        /// <summary>
+        /// Waits for an input from stdin using the <seealso cref="Console"/>.
+        /// </summary>
+        /// <returns>The String read.</returns>
         public static String Input()
         {
             return Console.ReadLine();
         }
 
+        /// <summary>
+        /// Clear the <seealso cref="Console"/>.
+        /// </summary>
+        /// <remarks>Only if no args where proviede at start (<seealso cref="Program.isFromCmd"/>).</remarks>
         public static void ConsoleClear()
         {
             if (!Program.isFromCmd)
                 Console.Clear();
         }
 
+        /// <summary>
+        /// Prints to the log (can be specified through the args, default to the <seealso cref="Console"/>).
+        /// </summary>
+        /// <param name="tag">Tag to display before the message</param>
+        /// <param name="c">Text to display </param>
         public static void Log(String tag, String c)
         {
+            // TOD: use the specified output (should be a file), if any.
             Console.WriteLine($"[log]{tag}: {c}");
         }
 
+        /// <summary>
+        /// Return the next pseudo random int value, from 0 (included).
+        /// </summary>
+        /// <param name="maxValue">Max value (excluded).</param>
+        /// <returns>A pseudo random, uniformly distributed, int.</returns>
         public static int RngNext(int maxValue)
         {
             return Program.rng.Next(maxValue);
         }
 
+        /// <summary>
+        /// Return the next pseudo random int value.
+        /// </summary>
+        /// <param name="minValue">Min value (included).</param>
+        /// <param name="maxValue">Max value (excluded).</param>
+        /// <returns>A pseudo random, uniformly distributed, int.</returns>
         public static int RngNext(int minValue, int maxValue)
         {
             return Program.rng.Next(minValue, maxValue);
         }
 
-        /**
-         * Data arg:
-         * "[setId1];[setId2];[setId3]"
-         */
+        /// <summary>
+        /// Parse and load from database the 3 sets specified by the argument.
+        /// </summary>
+        /// <param name="arg">"[setId1];[setId2];[setId3]"</param>
+        /// <param name="sep">Separator, use ';' by default</param>
+        /// <returns>Return a list of 3 sets.</returns>
         static Set[] ParseSets(String arg, char sep = ';')
         {
             Set[] r = new Set[3];
@@ -143,9 +189,19 @@ namespace Poktogone.Main
             return r;
         }
 
-        public static void DamageCalculator(Stage stage, Set atk, Set def, Trainer defTrainer)
+        /// <summary>
+        /// Calculate and apply the damage of a move from an attacking pokémon, to the defending pokémon of the defending trainer,
+        /// while accounding for the stage's weather, terrain [and other...].
+        /// </summary>
+        /// <param name="stage">Context for the actions.</param>
+        /// <param name="atk">Attacking pokémon.</param>
+        /// <param name="def">Defending pokémon.</param>
+        /// <param name="defTrainer">Trainer of the defending pokémon.</param>
+        /// <returns>The damage inflicted, in percents.</returns>
+        /// <remarks>Function signature may change!</remarks>
+        public static int DamageCalculator(Stage stage, Set atk, Set def, Trainer defTrainer)
         {
-            /*-*/
+            return 0; /*-*/
         }
     }
 }

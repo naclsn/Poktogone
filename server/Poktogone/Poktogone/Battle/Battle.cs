@@ -21,16 +21,14 @@ namespace Poktogone.Battle
 
     class Battle
     {
+        static String[] COMMANDS = { "attack", "switch" };
+
         private Trainer P1;
         private Trainer P2;
 
         private Stage stage;
 
-        public BattleState State
-        {
-            get;
-            private set;
-        }
+        public BattleState State { get; private set; }
 
         public Battle(Trainer P1, Trainer P2)
         {
@@ -46,6 +44,12 @@ namespace Poktogone.Battle
         {
             if (player == 1 || player == 2)
             {
+                bool isValid = false;
+                for (int k = 0; k < Battle.COMMANDS.Length && !isValid; isValid = c.StartsWith(Battle.COMMANDS[k++]))
+                    ;
+                if (!isValid)
+                    return 0;
+                
                 player -= 1;
                 Trainer[] P = { this.P1, this.P2 };
                 BattleState[] S = { BattleState.WaitingP2, BattleState.WaitingP1};
@@ -95,8 +99,8 @@ namespace Poktogone.Battle
         {
             Trainer[] r = new Trainer[] { null, null };
 
-            int prio1 = this.P1.NextAction.StartsWith("attack") /*si attaque*/ ? this.P1.Pokemon.NextMove[42/*id de l'effet "prio"*/].GetValueOrDefault(new Effect(0)).value : 6;
-            int prio2 = this.P2.NextAction.StartsWith("attack") /*si attaque*/ ? this.P2.Pokemon.NextMove[42/*id de l'effet "prio"*/].GetValueOrDefault(new Effect(0)).value : 6;
+            int prio1 = this.P1.NextAction.StartsWith("attack") ? this.P1.Pokemon.NextMove[4/*effet prio*/].GetValueOrDefault(new Effect(0)).value : 6;
+            int prio2 = this.P2.NextAction.StartsWith("attack") ? this.P2.Pokemon.NextMove[4/*effet prio*/].GetValueOrDefault(new Effect(0)).value : 6;
 
             if (prio1 < prio2)
             {
@@ -130,8 +134,8 @@ namespace Poktogone.Battle
 
         public bool Start() // return false if battle settings invalids, in this case state will be `BattleState.Unknown`
         {
-            // TODO: verify mega
             // TODO: verify.. ?
+
             this.State = BattleState.Waiting;
             return true;
         }

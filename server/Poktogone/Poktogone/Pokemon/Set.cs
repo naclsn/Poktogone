@@ -115,8 +115,7 @@ namespace Poktogone.Pokemon
         Nature _nature;
 
         int[] _mod = new int[5];
-
-        public readonly int maxHp;
+        
         private int _hp;
         public int Hp
         {
@@ -125,8 +124,8 @@ namespace Poktogone.Pokemon
             {
                 if (value < 0)
                     this._hp = 0;
-                else if (this.maxHp < value)
-                    this._hp = this.maxHp;
+                else if (this[StatTarget.HP] < value)
+                    this._hp = this[StatTarget.HP];
                 else
                     this._hp = value;
             }
@@ -158,6 +157,9 @@ namespace Poktogone.Pokemon
         {
             get
             {
+                if (stat == StatTarget.HP)
+                    return this.baseStat[stat];
+
                 int mod = this._mod[(int)stat];
                 int baz = this.baseStat[stat]; // base stats
                 double r = baz + (stat == this._evDist.ev1 || stat == this._evDist.ev2 ? 63 : 0); // EVs
@@ -171,13 +173,12 @@ namespace Poktogone.Pokemon
             }
         }
 
-        public Set(String customName, int baseHp, Base baseStat, Move[] moves, Item item, EVDist evDist, Nature nature)
+        public Set(String customName, Base baseStat, Move[] moves, Item item, EVDist evDist, Nature nature)
         {
             this.customName = customName;
 
-            this.maxHp = baseHp;
-            this.Hp = baseHp;
             this.baseStat = baseStat;
+            this.Hp = this[StatTarget.HP];
 
             this.moves = moves;
             this.item = item;
@@ -209,9 +210,10 @@ namespace Poktogone.Pokemon
                 "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
             )[0];
 
-            int[] baseStat = new int[5];
+            int[] baseStat = new int[6];
             for (int k = 0; k < 5; k++)
                 baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]) + 31; // 31: IVs
+            baseStat[5] = int.Parse(r["pokemons.hp"]);
 
             Base thisBase = new Base(r["pokemons.name"], TypeExtensions.Parse(r["pokemons.type1"]), TypeExtensions.Parse(r["pokemons.type2"]), baseStat);
 
@@ -238,7 +240,7 @@ namespace Poktogone.Pokemon
             EVDist thisEV = new EVDist(r["sets.EV1"], r["sets.EV2"]);
             Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
 
-            return new Set(r["sets.name"], int.Parse(r["pokemons.hp"]), thisBase, thisMoves, thisItem, thisEV, thisNature);
+            return new Set(r["sets.name"], thisBase, thisMoves, thisItem, thisEV, thisNature);
         }
 
         public String GetName()
@@ -258,7 +260,7 @@ namespace Poktogone.Pokemon
             if (nextMove != null)
                 potentialNext = $"\n\t\the will use {nextMove}";
 
-            return $"{this.GetName()} @{this.item}{moves}{potentialNext}";
+            return $"{this.GetName()} @{this.item}, hp: {this.Hp / this[StatTarget.HP] * 100}%{moves}{potentialNext}";
         }
     }
 }

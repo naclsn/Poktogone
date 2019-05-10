@@ -54,9 +54,9 @@ namespace Poktogone.Battle
             String pokemons = "";
 
             foreach (var p in this.pokemons)
-                pokemons += $"\n\t{p}";
+                pokemons += $"\n\t{p.GetName()}";
 
-            return $"{this.name} with: {pokemons}\nnext action: {this.NextAction}";
+            return $"{this.name} with: {this.Pokemon}\n\tnext action: {this.NextAction}\n  team: {pokemons}";
         }
     }
 }

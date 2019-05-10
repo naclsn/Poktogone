@@ -63,7 +63,7 @@ namespace Poktogone.Pokemon
     class Base
     {
         public readonly String name;
-        public readonly int[] _stats = new int[5];
+        private readonly int[] _stats = new int[6];
 
         public readonly Type type1;
         public readonly Type type2;
@@ -81,7 +81,7 @@ namespace Poktogone.Pokemon
             this.type1 = type1;
             this.type2 = type2;
 
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 6; k++)
                 this._stats[k] = baseStat[k];
         }
     }

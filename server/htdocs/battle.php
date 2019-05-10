@@ -65,8 +65,8 @@
                         $p1_team = "2;3;4"; //$battle['P1_team'];
                         $p2_team = "21;22;23"; //$battle['P2_team'];
 
-                        echo "<br>(<code>cmd /c .\\prog\\Poktogone.exe $p1_name \"$p1_team\" $p2_name \"$p2_team\" < .\\prog\\in\\$id.txt > .\\prog\\out\\$id.txt 2> .\\prog\\err\\$id.txt</code>)<br>";
-                        echo `cmd /c .\\prog\\Poktogone.exe $p1_name "$p1_team" $p2_name "$p2_team" < .\\prog\\in\\$id.txt > .\\prog\\out\\$id.txt 2> .\\prog\\err\\$id.txt`;
+                        echo "<br>(<code>cmd /c .\\prog\\Poktogone.exe \"$p1_name\" \"$p1_team\" \"$p2_name\" \"$p2_team\" < .\\prog\\in\\$id.txt > .\\prog\\out\\$id.txt 2> .\\prog\\err\\$id.txt</code>)<br>";
+                        echo `cmd /c .\\prog\\Poktogone.exe "$p1_name" "$p1_team" "$p2_name" "$p2_team" < .\\prog\\in\\$id.txt > .\\prog\\out\\$id.txt 2> .\\prog\\err\\$id.txt`;
 
                         //$o = proc_open();
 
