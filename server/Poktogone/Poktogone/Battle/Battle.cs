@@ -76,7 +76,7 @@ namespace Poktogone.Battle
             return -1;
         }
         
-        public void DoTurn(Main.SqlHelper dbo)
+        public void DoTurn(SqlHelper dbo)
         {
             // Ordre tour
             //
@@ -112,7 +112,7 @@ namespace Poktogone.Battle
             if (isP1Switch && isP2Attack && this.P2.Pokemon.NextMove.id == 85/*Poursuite*/)
                 Main.Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P2, this.P1); // p2 fait poursuite
 
-            // 2- et 3- Switch
+            // 2-, 3- et 4- Switch
             if (isP1Switch)
                 this.DoSwitch(this.P1);
             if (isP2Switch)
@@ -129,7 +129,7 @@ namespace Poktogone.Battle
             this.DoEndTurn();
         }
 
-        public void DoSwitch(Func<int, int, double> GetMatchup, Trainer t)
+        public void DoSwitch(Trainer t, Trainer t2)
         {
             // 2- Switch (+Natural cure et regenerator)
             t.SwitchTo(int.Parse(t.NextAction.Replace("switch", "").Trim()));
@@ -141,7 +141,7 @@ namespace Poktogone.Battle
 
             // 3- Hazards si switch
             if (t.HasHazards(Hazards.StealthRock))
-                t.Pokemon.Hp -= (int)t.Pokemon.Hp * 12.5 / 100 * GetMatchup(Pokemon.Type.Roche, t.Pokemon.Type1, t.Pokemon.Type2));
+                t.Pokemon.Hp -= (int)t.Pokemon.Hp * 12.5 / 100 * GetMatchup(Pokemon.Type.Roche, t.Pokemon.Type1, t.Pokemon.Type2);
 
             if (t.HasHazards(Hazards.Spikes))
                 t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 12.5 / 100);
@@ -153,7 +153,7 @@ namespace Poktogone.Battle
             if (t.HasHazards(Hazards.StickyWeb))
                 t.Pokemon[StatTarget.Speed] = -1;
 
-            if (t.Pokemon.Type1 == Pokemon.Type.Poison || t.Pokemon.Type2 == Pokemon.Type.Poison)
+            if (t.Pokemon.IsStab(Pokemon.Type.Poison))
             {
                 t.RemoveHazards(Hazards.ToxicSpikes, Hazards.ToxicSpikes2);
             }
@@ -164,6 +164,9 @@ namespace Poktogone.Battle
                 else if (t.HasHazards(Hazards.ToxicSpikes2))
                     t.Pokemon.Status = Status.BadlyPoisoned;
             }
+
+            // 4- Talents switch
+            //Sand Stream (25), Trace (30), Protean (56), Electric surge (69), Psychic surge (70), Drought (74)
         }
 
         /**
@@ -198,6 +201,14 @@ namespace Poktogone.Battle
 
         public void DoEndTurn()
         {
+            // coutners:
+            // end weather
+            // end terrain
+            // end screens
+            // end taunt
+            // end sleep
+            // end magma storm
+
             // damage pokemon from weather
             // damage pokemon from hazards
             // heal pokemon from berries
