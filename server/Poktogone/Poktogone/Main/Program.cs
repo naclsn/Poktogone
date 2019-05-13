@@ -377,29 +377,70 @@ namespace Poktogone.Main
 
             if (atk.NextMove.sps == Sps.Physic)
             {
-                /*Fonction Protéen*/
+                if (atk.ability.id == 56)//Protean
+                {
+                    atk.Type1 = atk.NextMove.type;
+                    atk.Type2 = Pokemon.Type.None;
+                }
 
                 int attackStat = atk[StatTarget.Attack];
                 int attackPower = atk.NextMove.power;
                 int defenseStat = def[StatTarget.Defence];
 
                 double atkItemMod = 1;
-                if (atk.item.id == 5) { atkItemMod *= 1.5; }
-                else if (atk.item.id == 10) { atkItemMod *= 1.3; }
+                if (atk.item.id == 5) { atkItemMod *= 1.5; }//ChoiceBand
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
 
                 double stabMod = 1;
-                if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }
+                if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
 
                 double abilityMod = 1;
-                if (atk.ability.id == 17) { abilityMod *= 1.3; }
-                else if (atk.ability.id == 20) { abilityMod *= 2; }
-                else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }
+                if (atk.ability.id == 17) { abilityMod *= 1.3; }//SheerForce
+                else if (atk.ability.id == 20) { abilityMod *= 2; }//HugePower
+                else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
+
+                /*Meteo*/
+
+                /*Terrain*/
                 
                 double typeMod = 1;
                 /*Fonction GetMatchup*/
-                if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }
+                if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
                 damageInflicted = (int) ((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+
+                /*Effects*/
+            }
+
+            if (atk.NextMove.sps == Sps.Special)
+            {
+                if (atk.ability.id == 56)//Protean
+                {
+                    atk.Type1 = atk.NextMove.type;
+                    atk.Type2 = Pokemon.Type.None;
+                }
+
+                int attackStat = atk[StatTarget.AttackSpecial];
+                int attackPower = atk.NextMove.power;
+                int defenseStat = def[StatTarget.DefenceSpecial];
+
+                double atkItemMod = 1;
+                if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+
+                double stabMod = 1;
+                if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
+
+                double abilityMod = 1;
+                if (atk.ability.id == 17) { abilityMod *= 1.3; }//SheerForce
+                else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
+
+                double typeMod = 1;
+                /*Fonction GetMatchup*/
+
+                damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+
+                /*Effects*/
             }
 
             return damageInflicted;
