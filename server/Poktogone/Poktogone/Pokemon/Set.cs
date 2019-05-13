@@ -72,7 +72,9 @@ namespace Poktogone.Pokemon
         MagmaStorm = 32,
         Colere = 64,
         Charge = 128,
-        Recharge = 256
+        Recharge = 256,
+        Taunt = 512,
+        Roost = 1024
     }
 
     enum Status
@@ -115,7 +117,7 @@ namespace Poktogone.Pokemon
         Base baseStat;
 
         Move[] moves;
-        public Item item { get; private set; }
+        public Item item { get; set; }
         public Ability ability { get; set; }
 
         private Flags flags;
@@ -217,7 +219,7 @@ namespace Poktogone.Pokemon
             this._indexNextMove = -1;
 
             this.flags = Flags.None;
-            this.status = Status.None;
+            this.Status = Status.None;
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
@@ -303,6 +305,11 @@ namespace Poktogone.Pokemon
         public int GetMaxHp()
         {
             return this.baseStat[StatTarget.HP];
+        }
+
+        public bool IsStab(Type type)
+        {
+            return (type == this.baseStat.type1 || type == this.baseStat.type2);
         }
 
         public override String ToString()
