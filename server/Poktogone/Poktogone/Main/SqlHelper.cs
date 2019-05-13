@@ -27,11 +27,11 @@ namespace Poktogone.Main
     /// </summary>
     class Table
     {
-        List<String> tables;
+        protected List<String> tables;
         List<String> joins;
         List<String> idColumns;
 
-        private Table()
+        protected Table()
         {
             this.tables = new List<String>();
             this.joins = new List<String>();
@@ -159,6 +159,19 @@ namespace Poktogone.Main
         }
     }
 
+    class SimpleTable : Table
+    {
+        public SimpleTable(String name) : base()
+        {
+            this.tables.Add(name);
+        }
+
+        public override string ToString()
+        {
+            return $"[{this.tables[0].Replace(".", "].[")}]";
+        }
+    }
+
     /// <summary>
     /// Class to use with a <seealso cref="Table"/> object to complement the select condition.
     /// Actualy unused for Poktogone, hence untested...
@@ -183,9 +196,19 @@ namespace Poktogone.Main
         /// <summary>
         /// Create a key / value paire for the WHERE clause.
         /// </summary>
-        /// <param name="key">Key</param>
-        /// <param name="value">Value</param>
+        /// <param name="key">Key, should be table.column.</param>
+        /// <param name="value">Value, will be escaped with "'" and any "'" found prior to will be replaced with "''".</param>
         public Where(String key, String value) : this()
+        {
+            this.And(key, value);
+        }
+
+        /// <summary>
+        /// Create a key / value paire for the WHERE clause.
+        /// </summary>
+        /// <param name="key">Key, should be table.column.</param>
+        /// <param name="value">Value.</param>
+        public Where(String key, int value) : this()
         {
             this.And(key, value);
         }
@@ -193,14 +216,25 @@ namespace Poktogone.Main
         /// <summary>
         /// Add a key / value paire in the WHERE clause.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="key">Key, should be table.column.</param>
+        /// <param name="value">Value, will be escaped with "'" and any "'" found prior to will be replaced with "''".</param>
+        /// <returns><code>this</code>, for chaining.</returns>
         public Where And(String key, String value)
         {
             this.keys.Add(key);
-            this.values.Add(value);
+            this.values.Add($"'{value.Replace("'", "''")}'");
             return this;
+        }
+
+        /// <summary>
+        /// Add a key / value paire in the WHERE clause.
+        /// </summary>
+        /// <param name="key">Key, should be table.column.</param>
+        /// <param name="value">Value.</param>
+        /// <returns><code>this</code>, for chaining.</returns>
+        public Where And(String key, int value)
+        {
+            return this.And(key, value.ToString());
         }
 
         /// <summary>
@@ -215,7 +249,8 @@ namespace Poktogone.Main
 
             for (int k = 0; k < this.keys.Count; k++)
             {
-                r += $"{sep}{this.keys[k]}= {this.values[k]}";
+                String tmp = $"[{this.keys[k].Replace(".", "].[")}]";
+                r += $"{sep}{tmp}= {this.values[k]}";
                 sep = " AND ";
             }
 
@@ -345,6 +380,16 @@ namespace Poktogone.Main
         public List<Dictionary<String, String>> Select(Table table, params String[] columns)
         {
             return this.Select(table, null, columns);
+        }
+
+        public List<Dictionary<String, String>> Select(String table, Where where, params String[] columns)
+        {
+            return this.Select(new SimpleTable(table), where, columns);
+        }
+
+        public List<Dictionary<String, String>> Select(String table, params String[] columns)
+        {
+            return this.Select(new SimpleTable(table), null, columns);
         }
     }
 }

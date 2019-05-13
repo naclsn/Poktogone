@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Poktogone.Pokemon;
+using Poktogone.Main;
 
 namespace Poktogone.Battle
 {
@@ -75,7 +76,7 @@ namespace Poktogone.Battle
             return -1;
         }
         
-        public void DoTurn()
+        public void DoTurn(Main.SqlHelper dbo)
         {
             // Ordre tour
             //
@@ -98,6 +99,8 @@ namespace Poktogone.Battle
             // 12- Hail / Sand + Rain dish
             // 13- Décomptes tour
 
+            Func<int, int, double> GetMatchup = (int idTypeAtk, int idTypeDef) => int.Parse(dbo.Select("matchups", new Where("type_atk", idTypeAtk).And("type_def", idTypeDef), "coef")[0]["coef"]);
+
             bool isP1Attack = this.P1.NextAction.StartsWith("attack");
             bool isP2Attack = this.P2.NextAction.StartsWith("attack");
             bool isP1Switch = this.P1.NextAction.StartsWith("switch");
@@ -105,36 +108,62 @@ namespace Poktogone.Battle
 
             // 1- Poursuite si switch
             if (isP2Switch && isP1Attack && this.P1.Pokemon.NextMove.id == 85/*Poursuite*/)
-                Main.Program.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P2); // p1 fait poursuite
+                Main.Program.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P1, this.P2); // p1 fait poursuite
             if (isP1Switch && isP2Attack && this.P2.Pokemon.NextMove.id == 85/*Poursuite*/)
-                Main.Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P1); // p2 fait poursuite
+                Main.Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P2, this.P1); // p2 fait poursuite
 
-            // 2- Switch (+Natural cure et regenerator)
+            // 2- et 3- Switch
             if (isP1Switch)
-            {
-                this.P1.SwitchTo(int.Parse(this.P1.NextAction.Replace("switch", "").Trim()));
-
-                if (this.P1.Pokemon.ability.id == 11/*Natural cure*/)
-                    this.P1.Pokemon.Status = Status.None;
-                else if (this.P1.Pokemon.ability.id == 67/*Regenerator*/)
-                    this.P1.Pokemon.Hp = (int)(this.P1.Pokemon.Hp * 1.3);
-            }
-            
-            // 3- Hazards si switch
+                this.DoSwitch(this.P1);
+            if (isP2Switch)
+                this.DoSwitch(this.P2);
 
             Trainer[] order = this.OrderPrioriry();
 
             if (this.P1.NextAction.StartsWith("attack"))
-                Main.Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[1]);
-            else if (this.P1.NextAction.StartsWith("switch"))
-                this.P1.SwitchTo(int.Parse(this.P1.NextAction.Replace("switch", "").Trim()));
+                Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[1]);
 
             if (this.P2.NextAction.StartsWith("attack"))
-                Main.Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[0]);
-            else if (this.P2.NextAction.StartsWith("switch"))
-                this.P2.SwitchTo(int.Parse(this.P2.NextAction.Replace("switch", "").Trim()));
+                Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[0]);
 
             this.DoEndTurn();
+        }
+
+        public void DoSwitch(Func<int, int, double> GetMatchup, Trainer t)
+        {
+            // 2- Switch (+Natural cure et regenerator)
+            t.SwitchTo(int.Parse(t.NextAction.Replace("switch", "").Trim()));
+
+            if (t.Pokemon.ability.id == 11/*Natural cure*/)
+                t.Pokemon.Status = Status.None;
+            else if (this.P1.Pokemon.ability.id == 67/*Regenerator*/)
+                t.Pokemon.Hp = (int)(t.Pokemon.Hp * 1.3);
+
+            // 3- Hazards si switch
+            if (t.HasHazards(Hazards.StealthRock))
+                t.Pokemon.Hp -= (int)t.Pokemon.Hp * 12.5 / 100 * GetMatchup(Pokemon.Type.Roche, t.Pokemon.Type1, t.Pokemon.Type2));
+
+            if (t.HasHazards(Hazards.Spikes))
+                t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 12.5 / 100);
+            else if (t.HasHazards(Hazards.Spikes2))
+                t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 16.66 / 100);
+            else if (t.HasHazards(Hazards.Spikes3))
+                t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 25.0 / 100);
+
+            if (t.HasHazards(Hazards.StickyWeb))
+                t.Pokemon[StatTarget.Speed] = -1;
+
+            if (t.Pokemon.Type1 == Pokemon.Type.Poison || t.Pokemon.Type2 == Pokemon.Type.Poison)
+            {
+                t.RemoveHazards(Hazards.ToxicSpikes, Hazards.ToxicSpikes2);
+            }
+            else
+            {
+                if (t.HasHazards(Hazards.ToxicSpikes))
+                    t.Pokemon.Status = Status.Poison;
+                else if (t.HasHazards(Hazards.ToxicSpikes2))
+                    t.Pokemon.Status = Status.BadlyPoisoned;
+            }
         }
 
         /**

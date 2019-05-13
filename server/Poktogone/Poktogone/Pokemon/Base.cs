@@ -65,12 +65,11 @@ namespace Poktogone.Pokemon
         public readonly String name;
         private readonly int[] _stats = new int[6];
 
-        public readonly Type type1;
-        public readonly Type type2;
+        public Type type1;
+        public Type type2;
 
         public int this[StatTarget stat]
         {
-            //private set { this._stats[(int)stat] = value; }
             get { return this._stats[(int)stat]; }
         }
 

@@ -195,7 +195,9 @@ namespace Poktogone.Pokemon
             }
             set // e.g.: shif gears -> pok[StatTarget] = 2 --> actualy does +2
             {
-                if (-7 < this._mod[(int)stat] + value && this._mod[(int)stat] + value < 7)
+                if (value == 0)
+                    this._mod[(int)stat] = 0;
+                else if (-7 < this._mod[(int)stat] + value && this._mod[(int)stat] + value < 7)
                     this._mod[(int)stat] += value;
             }
         }
@@ -217,7 +219,7 @@ namespace Poktogone.Pokemon
             this._indexNextMove = -1;
 
             this.flags = Flags.None;
-            this.status = Status.None;
+            this._status = Status.None;
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
@@ -303,6 +305,17 @@ namespace Poktogone.Pokemon
         public int GetMaxHp()
         {
             return this.baseStat[StatTarget.HP];
+        }
+
+        public Type Type1
+        {
+            get { return this.baseStat.type1; }
+            set { this.baseStat.type1 = value;  }
+        }
+        public Type Type2
+        {
+            get { return this.baseStat.type2; }
+            set { this.baseStat.type2 = value; }
         }
 
         public override String ToString()

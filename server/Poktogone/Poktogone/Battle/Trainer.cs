@@ -12,10 +12,14 @@ namespace Poktogone.Battle
         StealthRock = 1,
         Spikes = 2,
         Spikes2 = 4,
-        Spikes3 = 6,
-        StickyWeb = 8,
-        ToxicSpikes = 16,
-        ToxicSpikes2 = 48
+        Spikes3 = 8,
+        StickyWeb = 16,
+        ToxicSpikes = 32,
+        ToxicSpikes2 = 64,
+
+        Reflect = 128,
+        LightScreen = 256,
+        HealingWish = 512
     }
 
     class Trainer
@@ -73,7 +77,7 @@ namespace Poktogone.Battle
             return (this.hazards & hazards.Aggregate((Hazards s, Hazards c) => s | c)) != Hazards.None;
         }
 
-        public void RamoveHazards(params Hazards[] hazards)
+        public void RemoveHazards(params Hazards[] hazards)
         {
             this.hazards ^= hazards.Aggregate((Hazards s, Hazards c) => s | c);
         }
