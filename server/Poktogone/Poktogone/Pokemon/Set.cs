@@ -64,10 +64,11 @@ namespace Poktogone.Pokemon
     enum Tags
     {
         Substitute,
-        Fly,
-        Dig,
         Flinch,
-        Confusion
+        Confusion,
+        LeechSeed,
+        Protect,
+        MagmaStorm
     }
 
     enum Status
