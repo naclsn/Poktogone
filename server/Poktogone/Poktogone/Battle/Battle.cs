@@ -86,17 +86,41 @@ namespace Poktogone.Battle
             // 5- Mega-évo
             //
             // damageCalc
-            // -----
+            // ----------
             // 6- Attaques poké 1
             // 7- Effet attaque poké 1 (effets → recul → baies → effet de kill)
             // 8- De même poké 2
-            // -----
+            // ----------
             //
             // 9- Restes
             // 10- poison / toxic / burn
             // 11- Leech Seed
             // 12- Hail / Sand + Rain dish
-            // 13- Décompte tour
+            // 13- Décomptes tour
+
+            bool isP1Attack = this.P1.NextAction.StartsWith("attack");
+            bool isP2Attack = this.P2.NextAction.StartsWith("attack");
+            bool isP1Switch = this.P1.NextAction.StartsWith("switch");
+            bool isP2Switch = this.P2.NextAction.StartsWith("switch");
+
+            // 1- Poursuite si switch
+            if (isP2Switch && isP1Attack && this.P1.Pokemon.NextMove.id == 85/*Poursuite*/)
+                Main.Program.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P2); // p1 fait poursuite
+            if (isP1Switch && isP2Attack && this.P2.Pokemon.NextMove.id == 85/*Poursuite*/)
+                Main.Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P1); // p2 fait poursuite
+
+            // 2- Switch (+Natural cure et regenerator)
+            if (isP1Switch)
+            {
+                this.P1.SwitchTo(int.Parse(this.P1.NextAction.Replace("switch", "").Trim()));
+
+                if (this.P1.Pokemon.ability.id == 11/*Natural cure*/)
+                    this.P1.Pokemon.Status = Status.None;
+                else if (this.P1.Pokemon.ability.id == 67/*Regenerator*/)
+                    this.P1.Pokemon.Hp = (int)(this.P1.Pokemon.Hp * 1.3);
+            }
+            
+            // 3- Hazards si switch
 
             Trainer[] order = this.OrderPrioriry();
 

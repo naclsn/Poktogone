@@ -70,7 +70,7 @@ namespace Poktogone.Pokemon
 
         public int this[StatTarget stat]
         {
-            private set { this._stats[(int)stat] = value; }
+            //private set { this._stats[(int)stat] = value; }
             get { return this._stats[(int)stat]; }
         }
 

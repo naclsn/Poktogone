@@ -6,10 +6,23 @@ using System.Threading.Tasks;
 
 namespace Poktogone.Battle
 {
+    enum Hazards
+    {
+        None = 0,
+        StealthRock = 1,
+        Spikes = 2,
+        Spikes2 = 4,
+        Spikes3 = 6,
+        StickyWeb = 8,
+        ToxicSpikes = 16,
+        ToxicSpikes2 = 48
+    }
+
     class Trainer
     {
         private String name;
         private Pokemon.Set[] pokemons;
+        private Hazards hazards;
 
         private int _indexPokemonOut;
         public Pokemon.Set Pokemon
@@ -27,7 +40,7 @@ namespace Poktogone.Battle
                 if (value == "...")
                     this.Pokemon.NextMove = null;
                 else if (value.StartsWith("attack"))
-                    this.Pokemon.NextMove = Poktogone.Pokemon.Move.TmpFromName(value.Replace("attack", "").Trim());
+                    this.Pokemon.NextMove = Poktogone.Pokemon.Move.TmpFrom(-1, value.Replace("attack", "").Trim());
             }
         }
 
@@ -37,12 +50,39 @@ namespace Poktogone.Battle
             this.pokemons = pokemons;
             this._indexPokemonOut = 0;
             this.NextAction = "...";
+            this.hazards = Hazards.None;
         }
 
         public void SwitchTo(int i)
         {
             this._indexPokemonOut = i;
         }
+
+        public void SetHazards(params Hazards[] hazards)
+        {
+            this.hazards = hazards.Aggregate((Hazards s, Hazards c) => s | c);
+        }
+
+        public void AddHazards(params Hazards[] hazards)
+        {
+            this.hazards |= hazards.Aggregate((Hazards s, Hazards c) => s | c);
+        }
+
+        public bool HasHazards(params Hazards[] hazards)
+        {
+            return (this.hazards & hazards.Aggregate((Hazards s, Hazards c) => s | c)) != Hazards.None;
+        }
+
+        public void RamoveHazards(params Hazards[] hazards)
+        {
+            this.hazards ^= hazards.Aggregate((Hazards s, Hazards c) => s | c);
+        }
+
+        public void RemoveHazards()
+        {
+            this.hazards = Hazards.None;
+        }
+
 
         public String GetName()
         {

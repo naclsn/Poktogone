@@ -77,6 +77,7 @@ namespace Poktogone.Pokemon
 
     enum Status
     {
+        None,
         Burn,
         Freeze,
         Paralysis,
@@ -114,7 +115,8 @@ namespace Poktogone.Pokemon
         Base baseStat;
 
         Move[] moves;
-        Item item;
+        public Item item { get; private set; }
+        public Ability ability { get; set; }
 
         Flags flags;
         Status status;
@@ -128,7 +130,7 @@ namespace Poktogone.Pokemon
         public int Hp
         {
             get { return this._hp; }
-            private set
+            set
             {
                 if (value < 0)
                     this._hp = 0;
@@ -181,7 +183,7 @@ namespace Poktogone.Pokemon
             }
         }
 
-        public Set(String customName, Base baseStat, Move[] moves, Item item, EVDist evDist, Nature nature)
+        public Set(String customName, Base baseStat, Move[] moves, Item item, Ability ability, EVDist evDist, Nature nature)
         {
             this.customName = customName;
 
@@ -190,6 +192,7 @@ namespace Poktogone.Pokemon
 
             this.moves = moves;
             this.item = item;
+            this.ability = ability;
 
             this._evDist = evDist;
             this._nature = nature;
@@ -197,6 +200,7 @@ namespace Poktogone.Pokemon
             this._indexNextMove = -1;
 
             this.flags = Flags.None;
+            this.status = Status.None;
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
@@ -216,7 +220,7 @@ namespace Poktogone.Pokemon
                 "move2.id", "move2.name", "move2.type", "move2.sps", "move2.power", "move2.accuracy", "move2.pp", // move2
                 "move3.id", "move3.name", "move3.type", "move3.sps", "move3.power", "move3.accuracy", "move3.pp", // move3
                 "move4.id", "move4.name", "move4.type", "move4.sps", "move4.power", "move4.accuracy", "move4.pp", // move4
-                "items.name", "items.uniq", // item
+                "items.name", "items.uniq", "abilities.id", "abilities.name", // item & ability
                 "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
             )[0];
 
@@ -242,15 +246,16 @@ namespace Poktogone.Pokemon
                     moveEffects.Add(new Effect(int.Parse(effect["effects.id"]), effect["effects.desc"], int.Parse(effect["movesxeffects.percent"]), int.Parse(effect["movesxeffects.value"])));
                 }
 
-                thisMoves[k - 1] = new Move(r[$"move{k}.name"], TypeExtensions.Parse(r[$"move{k}.type"]), SpsExtensions.Parse(r[$"move{k}.sps"]), int.Parse(r[$"move{k}.power"]), int.Parse(r[$"move{k}.accuracy"]), int.Parse(r[$"move{k}.pp"]), moveEffects.ToArray());
+                thisMoves[k - 1] = new Move(int.Parse(r[$"move{k}.id"]), r[$"move{k}.name"], TypeExtensions.Parse(r[$"move{k}.type"]), SpsExtensions.Parse(r[$"move{k}.sps"]), int.Parse(r[$"move{k}.power"]), int.Parse(r[$"move{k}.accuracy"]), int.Parse(r[$"move{k}.pp"]), moveEffects.ToArray());
             }
 
-            Item thisItem = new Item(r["items.name"], r["items.uniq"] == "1");
+            Item thisItem = new Item(int.Parse(r["items.id"]), r["items.name"], r["items.uniq"] == "1");
+            Ability thisAbility = new Ability(int.Parse(r["abilities.id"]), r["abilities.name"]);
 
             EVDist thisEV = new EVDist(r["sets.EV1"], r["sets.EV2"]);
             Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
 
-            return new Set(r["sets.name"], thisBase, thisMoves, thisItem, thisEV, thisNature);
+            return new Set(r["sets.name"], thisBase, thisMoves, thisItem, thisAbility, thisEV, thisNature);
         }
 
         public void SetFlags(params Flags[] flags)
@@ -268,9 +273,19 @@ namespace Poktogone.Pokemon
             return (this.flags & flags.Aggregate((Flags s, Flags c) => s | c)) != Flags.None;
         }
 
+        public void RemoveFlags(params Flags[] flags)
+        {
+
+        }
+
         public String GetName()
         {
             return $"{this.baseStat.name} '{this.customName}'";
+        }
+
+        public int GetMaxHp()
+        {
+            return this.baseStat[StatTarget.HP];
         }
 
         public override String ToString()

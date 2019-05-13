@@ -48,6 +48,7 @@ namespace Poktogone.Pokemon
 
     class Move
     {
+        public readonly int id;
         public readonly String name;
         public readonly Type type;
         public readonly Sps sps;
@@ -69,8 +70,9 @@ namespace Poktogone.Pokemon
         public readonly int basePP;
         private int pp;
 
-        public Move(String name, Type type, Sps sps, int power, int accuracy, int basePP, Effect[] effects)
+        public Move(int id, String name, Type type, Sps sps, int power, int accuracy, int basePP, Effect[] effects)
         {
+            this.id = id;
             this.name = name;
             this.type = type;
             this.sps = sps;
@@ -86,9 +88,10 @@ namespace Poktogone.Pokemon
             return this.name;
         }
 
-        public static Move TmpFromName(String name)
+        // Used to transmit order from trainer to pokemon (in `Trainer.NextAction`' set then `Set.NextMove`' set).
+        public static Move TmpFrom(int id, String name)
         {
-            return new Move(name, 0, 0, 0, 0, 0, null);
+            return new Move(id, name, 0, 0, 0, 0, 0, null);
         }
     }
 }
