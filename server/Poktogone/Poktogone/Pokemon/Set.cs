@@ -61,13 +61,18 @@ namespace Poktogone.Pokemon
         }
     }
 
-    enum Tags
+    enum Flags
     {
-        Substitute,
-        Fly,
-        Dig,
-        Flinch,
-        Confusion
+        None = 0,
+        Substitute = 1,
+        Flinch = 2,
+        Confusion = 4,
+        LeechSeed = 8,
+        Protect = 16,
+        MagmaStorm = 32,
+        Colere = 64,
+        Charge = 128,
+        Recharge = 256
     }
 
     enum Status
@@ -110,6 +115,9 @@ namespace Poktogone.Pokemon
 
         Move[] moves;
         Item item;
+
+        Flags flags;
+        Status status;
 
         EVDist _evDist;
         Nature _nature;
@@ -187,6 +195,8 @@ namespace Poktogone.Pokemon
             this._nature = nature;
 
             this._indexNextMove = -1;
+
+            this.flags = Flags.None;
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
@@ -241,6 +251,21 @@ namespace Poktogone.Pokemon
             Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
 
             return new Set(r["sets.name"], thisBase, thisMoves, thisItem, thisEV, thisNature);
+        }
+
+        public void SetFlags(params Flags[] flags)
+        {
+            this.flags = flags.Aggregate((Flags s, Flags c) => s | c);
+        }
+
+        public void AddFlags(params Flags[] flags)
+        {
+            this.flags |= flags.Aggregate((Flags s, Flags c) => s | c);
+        }
+
+        public bool HasFlags(params Flags[] flags)
+        {
+            return (this.flags & flags.Aggregate((Flags s, Flags c) => s | c)) != Flags.None;
         }
 
         public String GetName()

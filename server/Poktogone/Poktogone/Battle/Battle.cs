@@ -77,6 +77,27 @@ namespace Poktogone.Battle
         
         public void DoTurn()
         {
+            // Ordre tour
+            //
+            // 1- Poursuite si switch
+            // 2- Switch (+Natural cure et regenerator)
+            // 3- Hazards si switch
+            // 4- Talents switch
+            // 5- Mega-évo
+            //
+            // damageCalc
+            // -----
+            // 6- Attaques poké 1
+            // 7- Effet attaque poké 1 (effets → recul → baies → effet de kill)
+            // 8- De même poké 2
+            // -----
+            //
+            // 9- Restes
+            // 10- poison / toxic / burn
+            // 11- Leech Seed
+            // 12- Hail / Sand + Rain dish
+            // 13- Décompte tour
+
             Trainer[] order = this.OrderPrioriry();
 
             if (this.P1.NextAction.StartsWith("attack"))
