@@ -269,8 +269,17 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[26] != null)//RemoveHazards
                 {
+                    bool hasReflect = false;
+                    bool hasLightScreen = true;
+
+                    if (atkTrainer.HasHazards(Hazards.Reflect)) { hasReflect = true; }
+                    if (atkTrainer.HasHazards(Hazards.LightScreen)) { hasLightScreen = true; }
+
                     defTrainer.RemoveHazards();
                     atkTrainer.RemoveHazards();
+
+                    if (hasReflect) { atkTrainer.AddHazards(Hazards.Reflect); }
+                    if (hasLightScreen) { atkTrainer.AddHazards(Hazards.LightScreen); }
                 }
                 if (atk.NextMove[38] != null)//Confusion
                 {
@@ -278,8 +287,119 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[39] != null)//Spikes
                 {
-                    defTrainer.AddHazards(Hazards.StealthRock);
+                    if (defTrainer.HasHazards(Hazards.Spikes3)) { }
+
+                    else if (defTrainer.HasHazards(Hazards.Spikes2))
+                    {
+                        defTrainer.RemoveHazards(Hazards.Spikes2);
+                        defTrainer.AddHazards(Hazards.Spikes3);
+                    }
+
+                    else if (defTrainer.HasHazards(Hazards.Spikes))
+                    {
+                        defTrainer.RemoveHazards(Hazards.Spikes);
+                        defTrainer.AddHazards(Hazards.Spikes2);
+                    }
+
+                    else
+                    {
+                        defTrainer.AddHazards(Hazards.Spikes);
+                    }
+                    
                 }
+                if (atk.NextMove[41] != null)//Poison
+                {
+                    def.Status = Status.Poison;
+                }
+                if (atk.NextMove[42] != null)//Toxic
+                {
+                    def.Status = Status.BadlyPoisoned;
+                }
+                if (atk.NextMove[44] != null)//ToxicSpikes
+                {
+                    if (defTrainer.HasHazards(Hazards.ToxicSpikes))
+                    {
+                        defTrainer.RemoveHazards(Hazards.ToxicSpikes);
+                        defTrainer.AddHazards(Hazards.ToxicSpikes2);
+                    }
+
+                    else
+                    {
+                        defTrainer.AddHazards(Hazards.ToxicSpikes);
+                    }
+                }
+                if (atk.NextMove[45] != null)//Taunt
+                {
+                    def.AddFlags(Flags.Taunt);
+                }
+                if (atk.NextMove[46] != null)//Trick
+                {
+                    Item itemTmp = atk.item;
+                    atk.item = def.item;
+                    def.item = itemTmp;
+                }
+                if (atk.NextMove[47] != null)//Reflect
+                {
+                    atkTrainer.AddHazards(Hazards.Reflect);
+                }
+                if (atk.NextMove[48] != null)//lightScreen
+                {
+                    atkTrainer.AddHazards(Hazards.LightScreen);
+                }
+                if (atk.NextMove[49] != null)//HealingWish
+                {
+                    atk.Hp = 0;
+                    atkTrainer.AddHazards(Hazards.HealingWish);
+                }
+                if (atk.NextMove[50] != null)//StickyWeb
+                {
+                    defTrainer.AddHazards(Hazards.StickyWeb);
+                }
+                if (atk.NextMove[51] != null)//Roost
+                {
+                    atk.AddFlags(Flags.Roost);
+                }
+                if (atk.NextMove[52] != null)//Haze
+                {
+                    atk[StatTarget.Attack] = 0;
+                    atk[StatTarget.Defence] = 0;
+                    atk[StatTarget.AttackSpecial] = 0;
+                    atk[StatTarget.DefenceSpecial] = 0;
+                    atk[StatTarget.Speed] = 0;
+                    def[StatTarget.Attack] = 0;
+                    def[StatTarget.Defence] = 0;
+                    def[StatTarget.AttackSpecial] = 0;
+                    def[StatTarget.DefenceSpecial] = 0;
+                    def[StatTarget.Speed] = 0;
+                }
+                return damageInflicted;
+            }
+
+            if (atk.NextMove.sps == Sps.Physic)
+            {
+                /*Fonction Protéen*/
+
+                int attackStat = atk[StatTarget.Attack];
+                int attackPower = atk.NextMove.power;
+                int defenseStat = def[StatTarget.Defence];
+
+                double atkItemMod = 1;
+                if (atk.item.id == 5) { atkItemMod *= 1.5; }
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }
+
+                double stabMod = 1;
+                if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }
+
+                double abilityMod = 1;
+                if (atk.ability.id == 17) { abilityMod *= 1.3; }
+                else if (atk.ability.id == 20) { abilityMod *= 2; }
+                else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }
+                
+                double typeMod = 1;
+                /*Fonction GetMatchup*/
+                if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }
+
+                damageInflicted = (int) ((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
             }
 
             return damageInflicted;
