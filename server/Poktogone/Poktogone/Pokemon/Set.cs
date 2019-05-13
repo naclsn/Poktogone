@@ -77,6 +77,7 @@ namespace Poktogone.Pokemon
 
     enum Status
     {
+        None,
         Burn,
         Freeze,
         Paralysis,
@@ -116,11 +117,28 @@ namespace Poktogone.Pokemon
         Move[] moves;
         Item item;
 
-        Flags flags;
-        Status status;
+        private Flags flags;
+        private Status _status;
+        public Status Status
+        {
+            get { return _status; }
+            set
+            {
+                if(value == Status.None)
+                {
+                    _status = value;
+                }
+                else if(this._status == Status.None)
+                {
+                    _status = value;
+                }
+            }
+        }
 
         EVDist _evDist;
         Nature _nature;
+
+        int nbTurns = 0;
 
         int[] _mod = new int[5];
         
@@ -128,7 +146,7 @@ namespace Poktogone.Pokemon
         public int Hp
         {
             get { return this._hp; }
-            private set
+            set
             {
                 if (value < 0)
                     this._hp = 0;
@@ -222,8 +240,8 @@ namespace Poktogone.Pokemon
 
             int[] baseStat = new int[6];
             for (int k = 0; k < 5; k++)
-                baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]) + 31; // 31: IVs
-            baseStat[5] = int.Parse(r["pokemons.hp"]);
+                baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]) + 36; // 31: IVs
+            baseStat[5] = int.Parse(r["pokemons.hp"]) + 110;
 
             Base thisBase = new Base(r["pokemons.name"], TypeExtensions.Parse(r["pokemons.type1"]), TypeExtensions.Parse(r["pokemons.type2"]), baseStat);
 
@@ -271,6 +289,11 @@ namespace Poktogone.Pokemon
         public String GetName()
         {
             return $"{this.baseStat.name} '{this.customName}'";
+        }
+
+        public int GetMaxHp()
+        {
+            return this.baseStat[StatTarget.HP];
         }
 
         public override String ToString()

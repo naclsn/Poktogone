@@ -26,8 +26,8 @@ namespace Poktogone.Battle
 
     class Stage
     {
-        private WeatherType weather;
-        private TerrainType terrain;
+        public WeatherType weather { get; set; }
+        public TerrainType terrain { get; set; }
 
         public Stage()
         {

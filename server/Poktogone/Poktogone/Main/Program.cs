@@ -199,9 +199,90 @@ namespace Poktogone.Main
         /// <param name="defTrainer">Trainer of the defending pokémon.</param>
         /// <returns>The damage inflicted, in percents.</returns>
         /// <remarks>Function signature may change!</remarks>
-        public static int DamageCalculator(Stage stage, Set atk, Set def, Trainer defTrainer)
+        public static int DamageCalculator(Stage stage, Set atk, Set def,Trainer atkTrainer, Trainer defTrainer)
         {
-            return 0; /*-*/
+            int damageInflicted = 0;
+            int critRate = 4;
+            if (atk.HasFlags(Flags.Flinch)) //Flinch
+            {
+                return 0;
+            }
+            if (atk.NextMove.sps == Sps.Stat) //Support
+            {
+                if (atk.NextMove[1] != null)//Climat
+                {
+                    stage.weather = (WeatherType) atk.NextMove[1].Value.value;
+                }
+                if (atk.NextMove[2] != null)//Brulure
+                {
+                    def.Status = Status.Burn;
+                }
+                if (atk.NextMove[7] != null)//AtkBoost
+                {
+                    atk[StatTarget.Attack] = atk.NextMove[7].Value.value;
+                }
+                if(atk.NextMove[9] != null)//SpaBoost
+                {
+                    atk[StatTarget.AttackSpecial] = atk.NextMove[8].Value.value;
+                }
+                if (atk.NextMove[10] != null)//SpdBoost
+                {
+                    atk[StatTarget.DefenceSpecial] = atk.NextMove[9].Value.value;
+                }
+                if (atk.NextMove[11] != null)//SpeBoost
+                {
+                    atk[StatTarget.Speed] = atk.NextMove[10].Value.value;
+                }
+                
+                if (atk.NextMove[12] != null)//MagmaStorm
+                {
+                    def.AddFlags(Flags.MagmaStorm);
+                }
+                if (atk.NextMove[13] != null)//Soins
+                {
+                    atk.Hp += atk.Hp * atk.NextMove[13].Value.value /100;
+                }
+                if (atk.NextMove[14] != null)//Sleep
+                {
+                    def.Status = Status.Sleep;
+                }
+                
+                if (atk.NextMove[17] != null)//InflictDamage
+                {
+                    def.Hp -= def.GetMaxHp() * atk.NextMove[17].Value.percent / 100 + atk.NextMove[17].Value.value;
+                }
+                if (atk.NextMove[18] != null)//Leechseed
+                {
+                    def.AddFlags(Flags.LeechSeed);
+                }
+                if (atk.NextMove[20] != null)//Protection
+                {
+                    atk.AddFlags(Flags.Protect);
+                }
+                if (atk.NextMove[21] != null)//Paralysis
+                {
+                    def.Status = Status.Paralysis;
+                }
+                if (atk.NextMove[24] != null)//Substitute
+                {
+                    atk.Hp -= (int) (atk.GetMaxHp() * 0.25);
+                }
+                if (atk.NextMove[26] != null)//RemoveHazards
+                {
+                    defTrainer.RemoveHazards();
+                    atkTrainer.RemoveHazards();
+                }
+                if (atk.NextMove[38] != null)//Confusion
+                {
+                    defTrainer.AddHazards(Hazards.StealthRock);
+                }
+                if (atk.NextMove[39] != null)//Spikes
+                {
+                    defTrainer.AddHazards(Hazards.StealthRock);
+                }
+            }
+
+            return damageInflicted;
         }
     }
 }
