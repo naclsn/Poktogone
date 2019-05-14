@@ -400,6 +400,28 @@ namespace Poktogone.Main
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
 
                 /*Meteo*/
+                if (stage.weather == WeatherType.Rain)
+                {
+                    if (atk.NextMove.type == Pokemon.Type.Eau)
+                    {
+                        stabMod *= 1.5;
+                    }
+                    else if (atk.NextMove.type == Pokemon.Type.Feu)
+                    {
+                        stabMod *= 0.5;
+                    }
+                }
+                if (stage.weather == WeatherType.HarshSunlight)
+                {
+                    if (atk.NextMove.type == Pokemon.Type.Eau)
+                    {
+                        stabMod *= 0.5;
+                    }
+                    else if (atk.NextMove.type == Pokemon.Type.Feu)
+                    {
+                        stabMod *= 1.5;
+                    }
+                }
 
                 /*Terrain*/
                 
@@ -408,6 +430,11 @@ namespace Poktogone.Main
                 if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
                 damageInflicted = (int) ((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+
+                if (atk.ability.id == 17)//SheerForce
+                {
+                    return damageInflicted;
+                }
 
                 /*Effects*/
             }
