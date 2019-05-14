@@ -400,7 +400,7 @@ namespace Poktogone.Main
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
 
                 /*Meteo*/
-                if (stage.weather == WeatherType.Rain)
+                if (stage.weather == WeatherType.Rain)//RainModifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -411,7 +411,7 @@ namespace Poktogone.Main
                         stabMod *= 0.5;
                     }
                 }
-                if (stage.weather == WeatherType.HarshSunlight)
+                if (stage.weather == WeatherType.HarshSunlight)//Sunmodifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -420,10 +420,43 @@ namespace Poktogone.Main
                     else if (atk.NextMove.type == Pokemon.Type.Feu)
                     {
                         stabMod *= 1.5;
+                    }
+                }
+                if (stage.weather == WeatherType.Sandstorm)//SandModifiers
+                {
+                    if (def.IsStab(Pokemon.Type.Roche))
+                    {
+                        defenseStat = (int) (defenseStat * 1.5);
                     }
                 }
 
                 /*Terrain*/
+                if (!(atk.IsStab(Pokemon.Type.Vol) || atk.ability.id == 36))
+                {
+                    if (stage.terrain == TerrainType.Eletric)
+                    {
+                        if (atk.NextMove.type == Pokemon.Type.Electrik)
+                        {
+                            stabMod *= 1.5;
+                        }
+                        if (atk.NextMove[14] != null)
+                        {
+                            return 0;
+                        }
+                    }
+                    if (stage.terrain == TerrainType.Psychic)
+                    {
+                        if (atk.NextMove.type == Pokemon.Type.Psy)
+                        {
+                            stabMod *= 1.5;
+                        }
+                        if (atk.NextMove[4] != null)
+                        {
+                            return 0;
+                        }
+                    }
+                }
+
                 
                 double typeMod = 1;
                 /*Fonction GetMatchup*/
