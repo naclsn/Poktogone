@@ -189,6 +189,16 @@ namespace Poktogone.Main
             return r;
         }
 
+        public static float GetMatchup(int idTypeAtk, int idTypeDef)
+        {
+            return float.Parse(dbo.Select("matchups", new Where("type_atk", idTypeAtk).And("type_def", idTypeDef), "coef")[0]["coef"]);
+        }
+
+        public static float GetMatchup(int idTypeAtk, int idTypeDef1, int idTypeDef2)
+        {
+            return Program.GetMatchup(idTypeAtk, idTypeDef1) * Program.GetMatchup(idTypeAtk, idTypeDef2);
+        }
+
         /// <summary>
         /// Calculate and apply the damage of a move from an attacking pokémon, to the defending pokémon of the defending trainer,
         /// while accounding for the stage's weather, terrain [and other...].

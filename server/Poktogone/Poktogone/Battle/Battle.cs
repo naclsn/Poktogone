@@ -108,9 +108,9 @@ namespace Poktogone.Battle
 
             // 1- Poursuite si switch
             if (isP2Switch && isP1Attack && this.P1.Pokemon.NextMove.id == 85/*Poursuite*/)
-                Main.Program.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P1, this.P2); // p1 fait poursuite
+                Program.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P1, this.P2); // p1 fait poursuite
             if (isP1Switch && isP2Attack && this.P2.Pokemon.NextMove.id == 85/*Poursuite*/)
-                Main.Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P2, this.P1); // p2 fait poursuite
+                Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P2, this.P1); // p2 fait poursuite
 
             // 2-, 3- et 4- Switch
             if (isP1Switch)
@@ -141,7 +141,7 @@ namespace Poktogone.Battle
 
             // 3- Hazards si switch
             if (t.HasHazards(Hazards.StealthRock))
-                t.Pokemon.Hp -= (int)t.Pokemon.Hp * 12.5 / 100 * GetMatchup(Pokemon.Type.Roche, t.Pokemon.Type1, t.Pokemon.Type2);
+                t.Pokemon.Hp -= (int)t.Pokemon.Hp * 12.5 / 100 * Program.GetMatchup(Pokemon.Type.Roche, t.Pokemon.Type1, t.Pokemon.Type2);
 
             if (t.HasHazards(Hazards.Spikes))
                 t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 12.5 / 100);
@@ -191,7 +191,7 @@ namespace Poktogone.Battle
             }
             else
             {
-                int bla = Main.Program.RngNext(2);
+                int bla = Program.RngNext(2);
                 r[bla] = this.P1;
                 r[1 - bla] = this.P2;
             }
