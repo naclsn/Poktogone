@@ -99,8 +99,6 @@ namespace Poktogone.Battle
             // 12- Hail / Sand + Rain dish
             // 13- Décomptes tour
 
-            Func<int, int, double> GetMatchup = (int idTypeAtk, int idTypeDef) => int.Parse(dbo.Select("matchups", new Where("type_atk", idTypeAtk).And("type_def", idTypeDef), "coef")[0]["coef"]);
-
             bool isP1Attack = this.P1.NextAction.StartsWith("attack");
             bool isP2Attack = this.P2.NextAction.StartsWith("attack");
             bool isP1Switch = this.P1.NextAction.StartsWith("switch");
@@ -114,55 +112,55 @@ namespace Poktogone.Battle
 
             // 2-, 3- et 4- Switch
             if (isP1Switch)
-                this.DoSwitch(this.P1);
+                this.DoSwitch(this.P1, this.P2);
             if (isP2Switch)
-                this.DoSwitch(this.P2);
+                this.DoSwitch(this.P2, this.P1);
 
             Trainer[] order = this.OrderPrioriry();
 
             if (this.P1.NextAction.StartsWith("attack"))
-                Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[1]);
+                Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
 
             if (this.P2.NextAction.StartsWith("attack"))
-                Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[0]);
+                Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
 
             this.DoEndTurn();
         }
 
-        public void DoSwitch(Trainer t, Trainer t2)
+        public void DoSwitch(Trainer self, Trainer mate)
         {
             // 2- Switch (+Natural cure et regenerator)
-            t.SwitchTo(int.Parse(t.NextAction.Replace("switch", "").Trim()));
+            self.SwitchTo(int.Parse(self.NextAction.Replace("switch", "").Trim()));
 
-            if (t.Pokemon.ability.id == 11/*Natural cure*/)
-                t.Pokemon.Status = Status.None;
+            if (self.Pokemon.ability.id == 11/*Natural cure*/)
+                self.Pokemon.Status = Status.None;
             else if (this.P1.Pokemon.ability.id == 67/*Regenerator*/)
-                t.Pokemon.Hp = (int)(t.Pokemon.Hp * 1.3);
+                self.Pokemon.Hp = (int)(self.Pokemon.Hp * 1.3);
 
             // 3- Hazards si switch
-            if (t.HasHazards(Hazards.StealthRock))
-                t.Pokemon.Hp -= (int)t.Pokemon.Hp * 12.5 / 100 * Program.GetMatchup(Pokemon.Type.Roche, t.Pokemon.Type1, t.Pokemon.Type2);
+            if (self.HasHazards(Hazards.StealthRock))
+                self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100 * Program.GetMatchup(Pokemon.Type.Roche, self.Pokemon.Type1, self.Pokemon.Type2));
 
-            if (t.HasHazards(Hazards.Spikes))
-                t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 12.5 / 100);
-            else if (t.HasHazards(Hazards.Spikes2))
-                t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 16.66 / 100);
-            else if (t.HasHazards(Hazards.Spikes3))
-                t.Pokemon.Hp -= (int)(t.Pokemon.Hp * 25.0 / 100);
+            if (self.HasHazards(Hazards.Spikes))
+                self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100);
+            else if (self.HasHazards(Hazards.Spikes2))
+                self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 16.66 / 100);
+            else if (self.HasHazards(Hazards.Spikes3))
+                self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 25.0 / 100);
 
-            if (t.HasHazards(Hazards.StickyWeb))
-                t.Pokemon[StatTarget.Speed] = -1;
+            if (self.HasHazards(Hazards.StickyWeb))
+                self.Pokemon[StatTarget.Speed] = -1;
 
-            if (t.Pokemon.IsStab(Pokemon.Type.Poison))
+            if (self.Pokemon.IsStab(Pokemon.Type.Poison))
             {
-                t.RemoveHazards(Hazards.ToxicSpikes, Hazards.ToxicSpikes2);
+                self.RemoveHazards(Hazards.ToxicSpikes, Hazards.ToxicSpikes2);
             }
             else
             {
-                if (t.HasHazards(Hazards.ToxicSpikes))
-                    t.Pokemon.Status = Status.Poison;
-                else if (t.HasHazards(Hazards.ToxicSpikes2))
-                    t.Pokemon.Status = Status.BadlyPoisoned;
+                if (self.HasHazards(Hazards.ToxicSpikes))
+                    self.Pokemon.Status = Status.Poison;
+                else if (self.HasHazards(Hazards.ToxicSpikes2))
+                    self.Pokemon.Status = Status.BadlyPoisoned;
             }
 
             // 4- Talents switch
