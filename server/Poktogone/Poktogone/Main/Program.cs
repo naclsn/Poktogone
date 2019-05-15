@@ -189,12 +189,12 @@ namespace Poktogone.Main
             return r;
         }
 
-        public static float GetMatchup(int idTypeAtk, int idTypeDef)
+        public static float GetMatchup(Pokemon.Type idTypeAtk, Pokemon.Type idTypeDef)
         {
-            return float.Parse(dbo.Select("matchups", new Where("type_atk", idTypeAtk).And("type_def", idTypeDef), "coef")[0]["coef"]);
+            return float.Parse(dbo.Select("matchups", new Where("type_atk", (int)idTypeAtk).And("type_def", (int)idTypeDef), "coef")[0]["coef"]);
         }
 
-        public static float GetMatchup(int idTypeAtk, int idTypeDef1, int idTypeDef2)
+        public static float GetMatchup(Pokemon.Type idTypeAtk, Pokemon.Type idTypeDef1, Pokemon.Type idTypeDef2)
         {
             return Program.GetMatchup(idTypeAtk, idTypeDef1) * Program.GetMatchup(idTypeAtk, idTypeDef2);
         }
