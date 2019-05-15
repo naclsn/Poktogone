@@ -76,7 +76,7 @@ namespace Poktogone.Battle
             return -1;
         }
         
-        public void DoTurn(SqlHelper dbo)
+        public void DoTurn()
         {
             // Ordre tour
             //
@@ -116,14 +116,81 @@ namespace Poktogone.Battle
             if (isP2Switch)
                 this.DoSwitch(this.P2, this.P1);
 
+            // 5- Mega-évo
+
+
+            // 6-, 7- et 8-
             Trainer[] order = this.OrderPrioriry();
-
-            if (this.P1.NextAction.StartsWith("attack"))
+            if (order[0].NextAction.StartsWith("attack"))
                 Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
-
-            if (this.P2.NextAction.StartsWith("attack"))
+            if (order[1].NextAction.StartsWith("attack"))
                 Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
 
+            // 9- Restes
+            if (this.P1.Pokemon.item.id == 9/*Restes*/)
+                this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
+            if (this.P2.Pokemon.item.id == 9/*Restes*/)
+                this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
+
+            // 10- poison / toxic / burn
+            if (this.P1.Pokemon.Status == Status.Poison)
+            {
+                if (this.P1.Pokemon.ability.id == 31/*Soint poison*/)
+                    this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() / 8.0);
+                else
+                    this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 8.0);
+            }
+            if (this.P2.Pokemon.Status == Status.Poison)
+            {
+                if (this.P2.Pokemon.ability.id == 31/*Soint poison*/)
+                    this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() / 8.0);
+                else
+                    this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 8.0);
+            }
+            /*Status.BadlyPoisoned*/
+            if (this.P1.Pokemon.Status == Status.Burn)
+                this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
+            if (this.P2.Pokemon.Status == Status.Burn)
+                this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
+
+            // 11- Leech Seed
+            if (this.P1.Pokemon.HasFlags(Flags.LeechSeed))
+            {
+                int tmp = (int)(this.P1.Pokemon.GetMaxHp() / 8.0);
+                this.P1.Pokemon.Hp -= tmp;
+                this.P2.Pokemon.Hp += tmp;
+            }
+            if (this.P2.Pokemon.HasFlags(Flags.LeechSeed))
+            {
+                int tmp = (int)(this.P2.Pokemon.GetMaxHp() / 8.0);
+                this.P2.Pokemon.Hp -= tmp;
+                this.P1.Pokemon.Hp += tmp;
+            }
+
+            // 12- Hail / Sand + Rain dish
+            if (this.stage.weather == WeatherType.Hail)
+            {
+                if (!this.P1.Pokemon.IsStab(Pokemon.Type.Glace))
+                    this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
+                if (!this.P2.Pokemon.IsStab(Pokemon.Type.Glace))
+                    this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
+            }
+            if (this.stage.weather == WeatherType.Sandstorm)
+            {
+                if (!this.P1.Pokemon.IsStab(Pokemon.Type.Roche) && !this.P1.Pokemon.IsStab(Pokemon.Type.Sol) && !this.P1.Pokemon.IsStab(Pokemon.Type.Acier))
+                    this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
+                if (!this.P2.Pokemon.IsStab(Pokemon.Type.Roche) && !this.P2.Pokemon.IsStab(Pokemon.Type.Sol) && !this.P2.Pokemon.IsStab(Pokemon.Type.Acier))
+                    this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
+            }
+            if (this.stage.weather == WeatherType.Rain)
+            {
+                if (this.P1.Pokemon.ability.id == 8/*Rain dish*/)
+                    this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
+                if (this.P2.Pokemon.ability.id == 8/*Rain dish*/)
+                    this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
+            }
+            
+            // 13- Décomptes tour
             this.DoEndTurn();
         }
 
@@ -206,10 +273,6 @@ namespace Poktogone.Battle
             // end taunt
             // end sleep
             // end magma storm
-
-            // damage pokemon from weather
-            // damage pokemon from hazards
-            // heal pokemon from berries
 
             this.P1.NextAction = "...";
             this.P2.NextAction = "...";

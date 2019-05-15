@@ -241,7 +241,7 @@ namespace Poktogone.Pokemon
                 "move2.id", "move2.name", "move2.type", "move2.sps", "move2.power", "move2.accuracy", "move2.pp", // move2
                 "move3.id", "move3.name", "move3.type", "move3.sps", "move3.power", "move3.accuracy", "move3.pp", // move3
                 "move4.id", "move4.name", "move4.type", "move4.sps", "move4.power", "move4.accuracy", "move4.pp", // move4
-                "items.name", "items.uniq", "abilities.id", "abilities.name", // item & ability
+                "items.id", "items.name", "items.uniq", "abilities.id", "abilities.name", // item & ability
                 "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
             )[0];
 
