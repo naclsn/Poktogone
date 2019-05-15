@@ -576,6 +576,14 @@ namespace Poktogone.Main
                 }
 
                 /*Effects*/
+
+                int roll = Program.RngNext(1, 101);
+
+                if (atk.NextMove[2] != null)//Burn
+                {
+                    
+                }
+
             }
 
             //====================SPECIAL=====================//
@@ -667,6 +675,7 @@ namespace Poktogone.Main
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
 
                 /*Effects*/
+
             }
 
             return damageInflicted;
