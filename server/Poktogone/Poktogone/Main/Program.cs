@@ -564,8 +564,8 @@ namespace Poktogone.Main
                 }
 
                 
-                double typeMod = 1;
-                /*Fonction GetMatchup*/
+                double typeMod = GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
+                
                 if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
                 damageInflicted = (int) ((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
@@ -576,8 +576,6 @@ namespace Poktogone.Main
                 }
 
                 /*Effects*/
-
-                int roll = Program.RngNext(1, 101);
 
                 if (atk.NextMove[2] != null)//Burn
                 {
@@ -669,8 +667,7 @@ namespace Poktogone.Main
                     }
                 }
 
-                double typeMod = 1;
-                /*Fonction GetMatchup*/
+                double typeMod = GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
 
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
 
@@ -699,6 +696,12 @@ namespace Poktogone.Main
                 }
             }
             return damageInflicted;
+        }
+
+        public static bool Roll(Move attack, int idEffect)
+        {
+            int roll = Program.RngNext(1, 101);
+            return (attack[idEffect].Value.percent <= roll);
         }
     }
 }
