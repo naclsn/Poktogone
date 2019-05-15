@@ -207,6 +207,9 @@ namespace Poktogone.Main
             {
                 return 0;
             }
+
+            //====================SUPPORT=====================//
+
             if (atk.NextMove.sps == Sps.Stat) //Support
             {
                 if (atk.NextMove[1] != null)//Climat
@@ -215,7 +218,14 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[2] != null)//Brulure
                 {
-                    def.Status = Status.Burn;
+                    if (def.ability.id == 76)
+                    {
+                        atk.Status = Status.Burn;
+                    }
+                    else
+                    {
+                        def.Status = Status.Burn;
+                    }
                 }
                 if (atk.NextMove[7] != null)//AtkBoost
                 {
@@ -233,27 +243,35 @@ namespace Poktogone.Main
                 {
                     atk[StatTarget.Speed] = atk.NextMove[10].Value.value;
                 }
-                
-                if (atk.NextMove[12] != null)//MagmaStorm
-                {
-                    def.AddFlags(Flags.MagmaStorm);
-                }
                 if (atk.NextMove[13] != null)//Soins
                 {
                     atk.Hp += atk.Hp * atk.NextMove[13].Value.value /100;
                 }
                 if (atk.NextMove[14] != null)//Sleep
                 {
-                    def.Status = Status.Sleep;
+                    if (def.ability.id == 76)
+                    {
+                        atk.Status = Status.Sleep;
+                    }
+                    else
+                    {
+                        def.Status = Status.Sleep;
+                    }
                 }
-                
                 if (atk.NextMove[17] != null)//InflictDamage
                 {
                     def.Hp -= def.GetMaxHp() * atk.NextMove[17].Value.percent / 100 + atk.NextMove[17].Value.value;
                 }
                 if (atk.NextMove[18] != null)//Leechseed
                 {
-                    def.AddFlags(Flags.LeechSeed);
+                    if (def.ability.id == 76)
+                    {
+                        atk.AddFlags(Flags.LeechSeed);
+                    }
+                    else
+                    {
+                        def.AddFlags(Flags.LeechSeed);
+                    }
                 }
                 if (atk.NextMove[20] != null)//Protection
                 {
@@ -261,7 +279,14 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[21] != null)//Paralysis
                 {
-                    def.Status = Status.Paralysis;
+                    if (def.ability.id == 76)
+                    {
+                        atk.Status = Status.Paralysis;
+                    }
+                    else
+                    {
+                        def.Status = Status.Paralysis;
+                    }
                 }
                 if (atk.NextMove[24] != null)//Substitute
                 {
@@ -281,56 +306,125 @@ namespace Poktogone.Main
                     if (hasReflect) { atkTrainer.AddHazards(Hazards.Reflect); }
                     if (hasLightScreen) { atkTrainer.AddHazards(Hazards.LightScreen); }
                 }
-                if (atk.NextMove[38] != null)//Confusion
+                if (atk.NextMove[38] != null)//StealthRock
                 {
-                    defTrainer.AddHazards(Hazards.StealthRock);
+                    if (def.ability.id == 76)
+                    {
+                        atkTrainer.AddHazards(Hazards.StealthRock);
+                    }
+                    else
+                    {
+                        defTrainer.AddHazards(Hazards.StealthRock);
+                    }
                 }
                 if (atk.NextMove[39] != null)//Spikes
                 {
-                    if (defTrainer.HasHazards(Hazards.Spikes3)) { }
-
-                    else if (defTrainer.HasHazards(Hazards.Spikes2))
+                    if (def.ability.id == 76)
                     {
-                        defTrainer.RemoveHazards(Hazards.Spikes2);
-                        defTrainer.AddHazards(Hazards.Spikes3);
-                    }
+                        if (atkTrainer.HasHazards(Hazards.Spikes3)) { }
 
-                    else if (defTrainer.HasHazards(Hazards.Spikes))
-                    {
-                        defTrainer.RemoveHazards(Hazards.Spikes);
-                        defTrainer.AddHazards(Hazards.Spikes2);
-                    }
+                        else if (atkTrainer.HasHazards(Hazards.Spikes2))
+                        {
+                            atkTrainer.RemoveHazards(Hazards.Spikes2);
+                            atkTrainer.AddHazards(Hazards.Spikes3);
+                        }
 
+                        else if (atkTrainer.HasHazards(Hazards.Spikes))
+                        {
+                            atkTrainer.RemoveHazards(Hazards.Spikes);
+                            atkTrainer.AddHazards(Hazards.Spikes2);
+                        }
+
+                        else
+                        {
+                            atkTrainer.AddHazards(Hazards.Spikes);
+                        }
+                    }
                     else
                     {
-                        defTrainer.AddHazards(Hazards.Spikes);
+                        if (defTrainer.HasHazards(Hazards.Spikes3)) { }
+
+                        else if (defTrainer.HasHazards(Hazards.Spikes2))
+                        {
+                            defTrainer.RemoveHazards(Hazards.Spikes2);
+                            defTrainer.AddHazards(Hazards.Spikes3);
+                        }
+
+                        else if (defTrainer.HasHazards(Hazards.Spikes))
+                        {
+                            defTrainer.RemoveHazards(Hazards.Spikes);
+                            defTrainer.AddHazards(Hazards.Spikes2);
+                        }
+
+                        else
+                        {
+                            defTrainer.AddHazards(Hazards.Spikes);
+                        }
                     }
+                    
                     
                 }
                 if (atk.NextMove[41] != null)//Poison
                 {
-                    def.Status = Status.Poison;
+                    if (def.ability.id == 76)
+                    {
+                        atk.Status = Status.Poison;
+                    }
+                    else
+                    {
+                        def.Status = Status.Poison;
+                    }
                 }
                 if (atk.NextMove[42] != null)//Toxic
                 {
-                    def.Status = Status.BadlyPoisoned;
+                    if (def.ability.id == 76)
+                    {
+                        atk.Status = Status.BadlyPoisoned;
+                    }
+                    else
+                    {
+                        def.Status = Status.BadlyPoisoned;
+                    }
                 }
                 if (atk.NextMove[44] != null)//ToxicSpikes
                 {
-                    if (defTrainer.HasHazards(Hazards.ToxicSpikes))
+                    if (def.ability.id == 76)
                     {
-                        defTrainer.RemoveHazards(Hazards.ToxicSpikes);
-                        defTrainer.AddHazards(Hazards.ToxicSpikes2);
-                    }
+                        if (atkTrainer.HasHazards(Hazards.ToxicSpikes))
+                        {
+                            atkTrainer.RemoveHazards(Hazards.ToxicSpikes);
+                            atkTrainer.AddHazards(Hazards.ToxicSpikes2);
+                        }
 
+                        else
+                        {
+                            atkTrainer.AddHazards(Hazards.ToxicSpikes);
+                        }
+                    }
                     else
                     {
-                        defTrainer.AddHazards(Hazards.ToxicSpikes);
+                        if (defTrainer.HasHazards(Hazards.ToxicSpikes))
+                        {
+                            defTrainer.RemoveHazards(Hazards.ToxicSpikes);
+                            defTrainer.AddHazards(Hazards.ToxicSpikes2);
+                        }
+
+                        else
+                        {
+                            defTrainer.AddHazards(Hazards.ToxicSpikes);
+                        }
                     }
                 }
                 if (atk.NextMove[45] != null)//Taunt
                 {
-                    def.AddFlags(Flags.Taunt);
+                    if (def.ability.id == 76)
+                    {
+                        atk.AddFlags(Flags.Taunt);
+                    }
+                    else
+                    {
+                        atk.AddFlags(Flags.Taunt);
+                    }
                 }
                 if (atk.NextMove[46] != null)//Trick
                 {
@@ -353,7 +447,14 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[50] != null)//StickyWeb
                 {
-                    defTrainer.AddHazards(Hazards.StickyWeb);
+                    if (def.ability.id == 76)
+                    {
+                        atkTrainer.AddHazards(Hazards.StickyWeb);
+                    }
+                    else
+                    {
+                        defTrainer.AddHazards(Hazards.StickyWeb);
+                    }
                 }
                 if (atk.NextMove[51] != null)//Roost
                 {
@@ -374,6 +475,8 @@ namespace Poktogone.Main
                 }
                 return damageInflicted;
             }
+
+            //====================PHISICAL=====================//
 
             if (atk.NextMove.sps == Sps.Physic)
             {
@@ -422,13 +525,6 @@ namespace Poktogone.Main
                         stabMod *= 1.5;
                     }
                 }
-                if (stage.weather == WeatherType.Sandstorm)//SandModifiers
-                {
-                    if (def.IsStab(Pokemon.Type.Roche))
-                    {
-                        defenseStat = (int) (defenseStat * 1.5);
-                    }
-                }
 
                 /*Terrain*/
                 if (!(atk.IsStab(Pokemon.Type.Vol) || atk.ability.id == 36))
@@ -472,7 +568,9 @@ namespace Poktogone.Main
                 /*Effects*/
             }
 
-            if (atk.NextMove.sps == Sps.Special)
+            //====================SPECIAL=====================//
+
+            if (atk.NextMove.sps == Sps.Special) //Special
             {
                 if (atk.ability.id == 56)//Protean
                 {
@@ -495,6 +593,64 @@ namespace Poktogone.Main
                 if (atk.ability.id == 17) { abilityMod *= 1.3; }//SheerForce
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
 
+                /*Meteo*/
+                if (stage.weather == WeatherType.Rain)//RainModifiers
+                {
+                    if (atk.NextMove.type == Pokemon.Type.Eau)
+                    {
+                        stabMod *= 1.5;
+                    }
+                    else if (atk.NextMove.type == Pokemon.Type.Feu)
+                    {
+                        stabMod *= 0.5;
+                    }
+                }
+                if (stage.weather == WeatherType.HarshSunlight)//Sunmodifiers
+                {
+                    if (atk.NextMove.type == Pokemon.Type.Eau)
+                    {
+                        stabMod *= 0.5;
+                    }
+                    else if (atk.NextMove.type == Pokemon.Type.Feu)
+                    {
+                        stabMod *= 1.5;
+                    }
+                }
+                if (stage.weather == WeatherType.Sandstorm)//SandModifiers
+                {
+                    if (def.IsStab(Pokemon.Type.Roche))
+                    {
+                        defenseStat = (int)(defenseStat * 1.5);
+                    }
+                }
+
+                /*Terrain*/
+                if (!(atk.IsStab(Pokemon.Type.Vol) || atk.ability.id == 36))
+                {
+                    if (stage.terrain == TerrainType.Eletric)
+                    {
+                        if (atk.NextMove.type == Pokemon.Type.Electrik)
+                        {
+                            stabMod *= 1.5;
+                        }
+                        if (atk.NextMove[14] != null)
+                        {
+                            return 0;
+                        }
+                    }
+                    if (stage.terrain == TerrainType.Psychic)
+                    {
+                        if (atk.NextMove.type == Pokemon.Type.Psy)
+                        {
+                            stabMod *= 1.5;
+                        }
+                        if (atk.NextMove[4] != null)
+                        {
+                            return 0;
+                        }
+                    }
+                }
+
                 double typeMod = 1;
                 /*Fonction GetMatchup*/
 
@@ -503,6 +659,26 @@ namespace Poktogone.Main
                 /*Effects*/
             }
 
+            return damageInflicted;
+        }
+        
+        public static int CritGen(int damageInflicted, Pokemon.Set atk) //Crit
+        {
+            int rdNumber = Program.RngNext(1, 101);
+            if (atk.NextMove[16] != null)
+            {
+                if (rdNumber <= 12)
+                {
+                    damageInflicted = (int)(damageInflicted * 1.5);
+                } 
+            }
+            else
+            {
+                if (rdNumber <= 4)
+                {
+                    damageInflicted = (int)(damageInflicted * 1.5);
+                }
+            }
             return damageInflicted;
         }
     }
