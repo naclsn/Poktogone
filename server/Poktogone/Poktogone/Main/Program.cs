@@ -212,7 +212,6 @@ namespace Poktogone.Main
         public static int DamageCalculator(Stage stage, Set atk, Set def,Trainer atkTrainer, Trainer defTrainer)
         {
             int damageInflicted = 0;
-            int critRate = 4;
             if (atk.HasFlags(Flags.Flinch)) //Flinch
             {
                 return 0;
@@ -563,24 +562,50 @@ namespace Poktogone.Main
                     }
                 }
 
-                
+
                 double typeMod = GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
-                
+
+                if (typeMod == 0)//Immunité
+                {
+                    if(atk.NextMove[27] != null)//HighJumpKick
+                    {
+                        atk.Hp -= atk.GetMaxHp() / 2;
+                    }
+                    return 0;
+                }
+
                 if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
-                damageInflicted = (int) ((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+                if(atk.NextMove[37] != null && stage.weather == WeatherType.Rain)
+                {
+                    damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+                }
+                else if (RngNext(1, 100) <= atk.NextMove.accuracy)//Hit
+                {
+                    damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+                }
+                else//Miss
+                {
+                    if (atk.NextMove[27] != null)//HighJumpKick
+                    {
+                        atk.Hp -= atk.GetMaxHp() / 2;
+                    }
+                    Print(string.Format("{0} Rate son attaque", atk.GetName()));
+                    return 0;
+                }
 
                 if (atk.ability.id == 17)//SheerForce
                 {
                     return damageInflicted;
                 }
 
-                /*Effects*/
+                EffectGen(stage, atk, def, atkTrainer, defTrainer, damageInflicted); //Effects
 
-                if (atk.NextMove[2] != null)//Burn
+                if (def.item.id == 11)//RockyHelmet
                 {
-                    
+                    atk.Hp -= (int)(atk.GetMaxHp() / 8);
                 }
+
 
             }
 
@@ -597,6 +622,11 @@ namespace Poktogone.Main
                 int attackStat = atk[StatTarget.AttackSpecial];
                 int attackPower = atk.NextMove.power;
                 int defenseStat = def[StatTarget.DefenceSpecial];
+
+                if(atk.NextMove[35] != null)
+                {
+                    defenseStat = def[StatTarget.Defence];
+                }
 
                 double atkItemMod = 1;
                 if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
@@ -671,13 +701,178 @@ namespace Poktogone.Main
 
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
 
-                /*Effects*/
+                EffectGen(stage, atk, def, atkTrainer, defTrainer, damageInflicted); //Effects
 
             }
 
             return damageInflicted;
         }
-        
+
+        public static void InflictDamage(int damage, Set atk, Set def)
+        {
+            if (def.HasFlags(Flags.Substitute) && atk.NextMove[25] == null)//Infliger les dégâts
+            {
+                Print(String.Format("Le clone prend les dégâts à la place de {0}", def.GetName()));
+                def.RemoveFlags(Flags.Substitute);
+            }
+            else
+            {
+                def.Hp -= damage;
+            }
+        }
+                
+        public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, int damageInflicted)
+        {
+            SideEffect(atk.NextMove, 2, ref def, Status.Burn);//Burn
+
+            SideEffect(atk.NextMove, 3, ref def, Flags.Flinch);//Flinch
+
+            SideEffect(atk.NextMove, 5, ref def, Flags.MagmaStorm);//MagmaStorm
+
+            if (atk.NextMove[6] != null)//Recoil
+            {
+                atk.Hp -= (int)(atk.NextMove[6].Value.value * damageInflicted / 100f);
+            }
+
+            if (atk.NextMove[7] != null)//AtkBoost
+            {
+                if (Roll(atk.NextMove, 7))
+                {
+                    atk[StatTarget.Attack] = atk.NextMove[7].Value.value;
+                }
+            }
+
+            if (atk.NextMove[8] != null)//DefBoost
+            {
+                if (Roll(atk.NextMove, 8))
+                {
+                    atk[StatTarget.Defence] = atk.NextMove[8].Value.value;
+                }
+            }
+            if (atk.NextMove[9] != null)//SpaBoost
+            {
+                if (Roll(atk.NextMove, 9))
+                {
+                    atk[StatTarget.AttackSpecial] = atk.NextMove[9].Value.value;
+                }
+            }
+            if (atk.NextMove[10] != null)//SpdBoost
+            {
+                if (Roll(atk.NextMove, 10))
+                {
+                    atk[StatTarget.DefenceSpecial] = atk.NextMove[10].Value.value;
+                }
+            }
+            if (atk.NextMove[11] != null)//SpeBoost
+            {
+                if (Roll(atk.NextMove, 11))
+                {
+                    atk[StatTarget.Speed] = atk.NextMove[11].Value.value;
+                }
+            }
+
+            if (atk.NextMove[19] != null)//MultiStrike
+            {
+                int roll = RngNext(1, 101);
+                if (roll >= 75)
+                {
+                    Print("Touché 2 fois");
+                    damageInflicted *= 2;
+                }
+                else if (roll >= 50)
+                {
+                    Print("Touché 3 fois");
+                    damageInflicted *= 3;
+                }
+                else if (roll >= 25)
+                {
+                    Print("Touché 4 fois");
+                    damageInflicted *= 4;
+                }
+                else
+                {
+                    Print("Touché 5 fois");
+                    damageInflicted *= 5;
+                }
+            }
+
+            SideEffect(atk.NextMove, 21, ref def, Status.Paralysis);//Paralysis
+
+            if (atk.NextMove[22] != null)//Pivotage
+            {
+                /*jesaispas*/
+            }
+
+            SideEffect(atk.NextMove, 23, ref def, Flags.Recharge);
+
+            if (atk.NextMove[26] != null)
+            {
+                atkTrainer.RemoveHazards();
+            }
+
+            if (atk.NextMove[7] != null)//AdvAtkBoost
+            {
+                if (Roll(atk.NextMove, 7))
+                {
+                    atk[StatTarget.Attack] = def.NextMove[7].Value.value;
+                }
+            }
+
+            if (atk.NextMove[8] != null)//AdvDefBoost
+            {
+                if (Roll(atk.NextMove, 8))
+                {
+                    atk[StatTarget.Defence] = def.NextMove[8].Value.value;
+                }
+            }
+            if (atk.NextMove[9] != null)//AdvSpaBoost
+            {
+                if (Roll(atk.NextMove, 9))
+                {
+                    atk[StatTarget.AttackSpecial] = def.NextMove[9].Value.value;
+                }
+            }
+            if (atk.NextMove[10] != null)//AdvSpdBoost
+            {
+                if (Roll(atk.NextMove, 10))
+                {
+                    atk[StatTarget.DefenceSpecial] = def.NextMove[10].Value.value;
+                }
+            }
+            if (atk.NextMove[11] != null)//AdvSpeBoost
+            {
+                if (Roll(atk.NextMove, 11))
+                {
+                    atk[StatTarget.Speed] = def.NextMove[11].Value.value;
+                }
+            }
+
+            SideEffect(atk.NextMove, 33, ref def, Flags.Confusion);//Confusion
+
+            SideEffect(atk.NextMove, 34, ref def, Flags.Colere);//Outrage
+
+            if (atk.NextMove[40] != null)//KnockOff
+            {
+                if (def.item != null)
+                {
+                    def.item = null;
+                    damageInflicted = (int)(1.5 * damageInflicted);
+                }
+            }
+
+            SideEffect(atk.NextMove, 41, ref def, Status.Poison);//Poison
+
+            SideEffect(atk.NextMove, 42, ref def, Status.BadlyPoisoned);//Toxic
+
+            if (atk.NextMove[43] != null)//Acrobatics
+            {
+                if (atk.item == null)
+                {
+                    damageInflicted = (int)(damageInflicted * 1.5);
+                }
+            }
+        }
+
         public static int CritGen(int damageInflicted, Pokemon.Set atk) //Crit
         {
             int rdNumber = Program.RngNext(1, 101);
@@ -702,6 +897,28 @@ namespace Poktogone.Main
         {
             int roll = Program.RngNext(1, 101);
             return (attack[idEffect].Value.percent <= roll);
+        }
+
+        public static void SideEffect(Move attack, int idEffect,ref Set defPoke, Status status)
+        {
+            if (attack[idEffect] != null)
+            {
+                if (Roll(attack, idEffect))
+                {
+                    defPoke.Status = status;
+                }
+            }
+        }
+
+        public static void SideEffect(Move attack, int idEffect, ref Set defPoke, Flags flag)
+        {
+            if (attack[idEffect] != null)
+            {
+                if (Roll(attack, idEffect))
+                {
+                    defPoke.AddFlags(flag);
+                }
+            }
         }
     }
 }

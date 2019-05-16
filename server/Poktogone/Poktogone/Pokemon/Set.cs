@@ -197,10 +197,20 @@ namespace Poktogone.Pokemon
             }
             set // e.g.: shif gears -> pok[StatTarget] = 2 --> actualy does +2
             {
-                if (value == 0)
-                    this._mod[(int)stat] = 0;
-                else if (-7 < this._mod[(int)stat] + value && this._mod[(int)stat] + value < 7)
-                    this._mod[(int)stat] += value;
+                if (this.ability.id == 48)//ContraryExeption
+                {
+                    if (value == 0)
+                        this._mod[(int)stat] = 0;
+                    else if (-7 < this._mod[(int)stat] + value && this._mod[(int)stat] + value < 7)
+                        this._mod[(int)stat] -= value;
+                }
+                else
+                {
+                    if (value == 0)
+                        this._mod[(int)stat] = 0;
+                    else if (-7 < this._mod[(int)stat] + value && this._mod[(int)stat] + value < 7)
+                        this._mod[(int)stat] += value;
+                }
             }
         }
 

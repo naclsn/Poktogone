@@ -75,7 +75,7 @@ namespace Poktogone.Battle
             }
             return -1;
         }
-        
+
         public void DoTurn()
         {
             // Ordre tour
@@ -122,10 +122,15 @@ namespace Poktogone.Battle
             // 6-, 7- et 8-
             Trainer[] order = this.OrderPrioriry();
             if (order[0].NextAction.StartsWith("attack"))
-                Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
+            {
+                int damage = Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
+                Program.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
+            }
             if (order[1].NextAction.StartsWith("attack"))
-                Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
-
+            { 
+                int damage = Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
+                Program.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
+            }
             // 9- Restes
             if (this.P1.Pokemon.item.id == 9/*Restes*/)
                 this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
