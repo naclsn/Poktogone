@@ -590,13 +590,13 @@ namespace Poktogone.Main
 
                 if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
-                if(atk.NextMove[37] != null && stage.Weather == WeatherType.Rain)
+                if(atk.NextMove[37] != null && stage.Weather == WeatherType.Rain)//Cas particulier de Fatal-foudre et Blizzard
                 {
-                    damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+                    damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod * atkItemMod);
                 }
                 else if (RngNext(1, 100) <= atk.NextMove.accuracy)//Hit
                 {
-                    damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
+                    damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod * atkItemMod);
                 }
                 else//Miss
                 {
@@ -733,6 +733,18 @@ namespace Poktogone.Main
             {
                 def.Hp -= damage;
             }
+            if(atk.item.id == 10 && damage != 0)
+            {
+                atk.Hp -= (int)(atk.Hp * 0.1);
+            }
+            if (atk.NextMove.sps == Sps.Physic && def.item.id == 11)
+            {
+                atk.Hp -= (int)(atk.Hp * 0.125);
+            }
+            if (atk.NextMove.sps == Sps.Physic && def.ability.id == 53)
+            {
+                atk.Hp -= (int)(atk.Hp * 0.125);
+            }
         }
                 
         public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, int damageInflicted)
@@ -742,11 +754,6 @@ namespace Poktogone.Main
             SideEffect(atk.NextMove, 3, ref def, Flags.Flinch);//Flinch
 
             SideEffect(atk.NextMove, 5, ref def, Flags.MagmaStorm);//MagmaStorm
-
-            if (atk.NextMove[6] != null)//Recoil
-            {
-                atk.Hp -= (int)(atk.NextMove[6].Value.value * damageInflicted / 100f);
-            }
 
             if (atk.NextMove[7] != null)//AtkBoost
             {
@@ -895,6 +902,7 @@ namespace Poktogone.Main
                 if (rdNumber <= 12)
                 {
                     damageInflicted = (int)(damageInflicted * 1.5);
+                    Print("Coup critique !");
                 } 
             }
             else
@@ -902,6 +910,7 @@ namespace Poktogone.Main
                 if (rdNumber <= 4)
                 {
                     damageInflicted = (int)(damageInflicted * 1.5);
+                    Print("Coup critique !");
                 }
             }
             return damageInflicted;
