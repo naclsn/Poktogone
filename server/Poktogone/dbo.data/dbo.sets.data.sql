@@ -50,7 +50,7 @@ INSERT INTO [dbo].[sets] ([id], [pokemon], [name], [move1], [move2], [move3], [m
 (48, 34, 'Scarf  all out attacker', 102, 34, 93, 48, 40, 4, 'atk', 'spe', 'spe', 'spa'),
 (49, 34, 'Scarf defog', 102, 34, 93, 103, 40, 4, 'atk', 'spe', 'spe', 'spa'),
 (50, 35, 'Special sweeper', 84, 81, 51, 75, 9, 10, 'spa', 'spe', 'spe', 'atk'),
-(51, 36, 'Physical sweeper', 38, 44, 48, 76, 42, 10, 'atk', 'spe', 'spe', 'spa'),
+(51, 35, 'Physical sweeper', 38, 44, 48, 76, 42, 10, 'atk', 'spe', 'spe', 'spa'),
 (52, 37, 'Scarf flincher', 105, 115, 9, 129, 44, 4, 'spa', 'spe', 'spe', 'atk'),
 (53, 37, 'Special sweeper', 84, 32, 105, 104, 44, 9, 'pdv', 'spe', 'spe', 'atk'),
 (54, 38, 'Physical attacker', 63, 70, 62, 65, 47, 10, 'atk', 'spe', 'spe', 'spa'),
@@ -122,3 +122,4 @@ INSERT INTO [dbo].[sets] ([id], [pokemon], [name], [move1], [move2], [move3], [m
 (120, 84, 'Mixed sweeper', 113, 69, 71, 36, 76, 18, 'spa', 'spe', 'spa', 'def'),
 (121, 85, 'Mixed sweeper', 112, 86, 70, 40, 36, 18, 'atk', 'spe', 'spe', 'spd'),
 (122, 86, 'Physical sweeper', 79, 14, 74, 37, 52, 10, 'pdv', 'spe', 'spe', 'spa');
+(123, 36, 'Special trapper', 25, 75, 124, 31, 43, 4, 'spa', 'spe', 'spe', 'atk'),
