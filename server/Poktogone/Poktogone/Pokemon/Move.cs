@@ -87,11 +87,5 @@ namespace Poktogone.Pokemon
         {
             return this.name;
         }
-
-        // Used to transmit order from trainer to pokemon (in `Trainer.NextAction`' set then `Set.NextMove`' set).
-        public static Move TmpFrom(int id, String name)
-        {
-            return new Move(id, name, 0, 0, 0, 0, 0, null);
-        }
     }
 }

@@ -85,7 +85,8 @@ namespace Poktogone.Pokemon
         Paralysis,
         Poison,
         BadlyPoisoned,
-        Sleep
+        Sleep,
+        Dead
     }
 
     struct EVDist
@@ -141,7 +142,20 @@ namespace Poktogone.Pokemon
         EVDist _evDist;
         Nature _nature;
 
-        int nbTurns = 0;
+        int nbTurns = 1;
+
+        public int GetNbTurns()
+        {
+            return this.nbTurns;
+        }
+        public void IncNbTurn()
+        {
+            this.nbTurns++;
+        }
+        public void RstNbTurn()
+        {
+            this.nbTurns = 1;
+        }
 
         int[] _mod = new int[5];
         
@@ -157,6 +171,9 @@ namespace Poktogone.Pokemon
                     this._hp = this[StatTarget.HP];
                 else
                     this._hp = value;
+
+                if (this._hp == 0)
+                    this._status = Status.Dead;
             }
         }
 
@@ -169,17 +186,11 @@ namespace Poktogone.Pokemon
                     return this.moves[this._indexNextMove];
                 return null;
             }
-            set
-            {
-                if (value != null)
-                    for (int k = 0; k < this.moves.Length; k++)
-                        if (this.moves[k].name == value.name)
-                        {
-                            this._indexNextMove = k;
-                            return;
-                        }
-                this._indexNextMove = -1;
-            }
+        }
+
+        public void SetNextMove(int i)
+        {
+            this._indexNextMove = i;
         }
 
         public int this[StatTarget stat]
@@ -255,10 +266,15 @@ namespace Poktogone.Pokemon
                 "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
             )[0];
 
+            EVDist thisEV = new EVDist(r["sets.EV1"], r["sets.EV2"]);
+            Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
+
             int[] baseStat = new int[6];
             for (int k = 0; k < 5; k++)
-                baseStat[k] = int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]) + 36; // 31: IVs
-            baseStat[5] = int.Parse(r["pokemons.hp"]) + 110;
+                baseStat[k] = 2 * int.Parse(r["pokemons." + ((StatTarget)k).ShortString()]) + 5 + 31; // 31: IVs
+            baseStat[5] = 2 * int.Parse(r["pokemons.hp"]) + 110 + 31;
+            if (thisEV.ev1 == StatTarget.HP || thisEV.ev2 == StatTarget.HP)
+                baseStat[5] += 63;
 
             Base thisBase = new Base(r["pokemons.name"], TypeExtensions.Parse(r["pokemons.type1"]), TypeExtensions.Parse(r["pokemons.type2"]), baseStat);
 
@@ -282,9 +298,6 @@ namespace Poktogone.Pokemon
 
             Item thisItem = new Item(int.Parse(r["items.id"]), r["items.name"], r["items.uniq"] == "1");
             Ability thisAbility = new Ability(int.Parse(r["abilities.id"]), r["abilities.name"]);
-
-            EVDist thisEV = new EVDist(r["sets.EV1"], r["sets.EV2"]);
-            Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
 
             return new Set(r["sets.name"], thisBase, thisMoves, thisItem, thisAbility, thisEV, thisNature);
         }
@@ -337,17 +350,25 @@ namespace Poktogone.Pokemon
 
         public override String ToString()
         {
-            String moves = "";
-            String potentialNext = "";
+            String r = "";
 
+            String moves = "";
+            String potentialNext = null;
+
+            int k = 0;
             foreach (var p in this.moves)
-                moves += $"\n\t\t- {p}";
+                moves += $"\t{k++}. {p}\n";
 
             Move nextMove = this.NextMove;
             if (nextMove != null)
-                potentialNext = $"\n\t\the will use {nextMove}";
+                potentialNext = $"will use {nextMove}";
 
-            return $"{this.GetName()} @{this.item}, hp: {this.Hp / this[StatTarget.HP] * 100}%{moves}{potentialNext}";
+            r += $"{this.GetName()} @{this.item}\n";
+            r += new String('-', r.Length - 1) + "\n\n";
+            r += $"({potentialNext ?? "waiting"}) hp: {this.Hp} / {this.GetMaxHp()} | status: {this.Status}\n";
+            r += $"{moves}";
+
+            return r;
         }
     }
 }

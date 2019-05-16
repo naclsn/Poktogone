@@ -354,8 +354,11 @@ namespace Poktogone.Main
             }
 
             List<Dictionary<String, String>> r = new List<Dictionary<String, String>>();
+            
+            String query = $"SELECT {names} FROM {table}{(where == null ? "" : $" {(table is SimpleTable ? "WHERE" : "AND")} {where}")}";
+            //Program.Log("dbo", $"Query: {query}");
 
-            using (SqlDataReader reader = this.Select($"SELECT {names} FROM {table}{(where == null ? "" : $" AND {where}")}"))
+            using (SqlDataReader reader = this.Select(query))
             {
                 while (reader.Read())
                 {

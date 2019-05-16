@@ -26,18 +26,54 @@ namespace Poktogone.Battle
 
     class Stage
     {
-        public WeatherType weather { get; set; }
-        public TerrainType terrain { get; set; }
+        private WeatherType _weather;
+        private int _weatherNbTurn;
+        public WeatherType Weather
+        {
+            get
+            {
+                return this._weather;
+            }
+            set
+            {
+                this._weather = value;
+                this._weatherNbTurn = 0;
+            }
+        }
+
+        private TerrainType _terrain;
+        private int _terrainNbTurn;
+        public TerrainType Terrain
+        {
+            get
+            {
+                return this._terrain;
+            }
+            set
+            {
+                this._terrain = value;
+                this._terrainNbTurn = 0;
+            }
+        }
 
         public Stage()
         {
-            this.weather = WeatherType.ClearSky;
-            this.terrain = TerrainType.Normal;
+            this.Weather = WeatherType.ClearSky;
+            this.Terrain = TerrainType.Normal;
+        }
+
+        public void IncNbTurn()
+        {
+            if (4 < this._weatherNbTurn++)
+                this.Weather = WeatherType.ClearSky;
+            if (4 < this._terrainNbTurn++)
+                this.Terrain = TerrainType.Normal;
         }
 
         public override string ToString()
         {
-            return $"\n\tweather: {this.weather}\n\tterrain: {this.terrain}";
+            
+            return $"\tweather: {this.Weather}\n\tterrain: {this.Terrain}\n";
         }
     }
 }

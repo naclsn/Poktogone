@@ -42,9 +42,9 @@ namespace Poktogone.Battle
                 this._nextCommand = value;
 
                 if (value == "...")
-                    this.Pokemon.NextMove = null;
+                    this.Pokemon.SetNextMove(-1);
                 else if (value.StartsWith("attack"))
-                    this.Pokemon.NextMove = Poktogone.Pokemon.Move.TmpFrom(-1, value.Replace("attack", "").Trim());
+                    this.Pokemon.SetNextMove(int.Parse(value.Replace("attack", "").Trim()));
             }
         }
 
@@ -59,7 +59,13 @@ namespace Poktogone.Battle
 
         public void SwitchTo(int i)
         {
+            this.Pokemon.RstNbTurn();
             this._indexPokemonOut = i;
+        }
+
+        public void IncNbTurn()
+        {
+            
         }
 
         public void SetHazards(params Hazards[] hazards)
@@ -95,12 +101,22 @@ namespace Poktogone.Battle
 
         public override string ToString()
         {
+            String r = "";
+
             String pokemons = "";
 
+            int k = 0;
             foreach (var p in this.pokemons)
-                pokemons += $"\n\t{p.GetName()}";
+                pokemons += $"\t{k++}: {p.GetName()} (hp: {p.Hp} / {p.GetMaxHp()} | status: {p.Status})\n";
 
-            return $"{this.name} with: {this.Pokemon}\n\tnext action: {this.NextAction}\n  team: {pokemons}";
+            r += $"{this.name}\n";
+            r += new String('=', r.Length - 1) + "\n\n";
+            r += $"(next action: {this.NextAction})\n";
+            r += $"{this.Pokemon}\n";
+            r += $"team: {pokemons}";
+            r += $"{this.hazards}";
+
+            return r;
         }
     }
 }

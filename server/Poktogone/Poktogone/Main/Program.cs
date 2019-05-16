@@ -62,14 +62,22 @@ namespace Poktogone.Main
                 do
                 {
                     Program.Println(battle);
-                    int code = battle.InputCommand(int.Parse(Program.Input("Your player num: ")), Program.Input("Your commande: "));
+                    int code = -1;
+                    try
+                    {
+                        code = battle.InputCommand(int.Parse(Program.Input("Your player num: ")), Program.Input("Your commande: "));
+                    }
+                    catch (FormatException)
+                    {
+                        Program.Print("This is not a player number... ");
+                    }
 
                     if (code < 0)
                         Program.Println("Wrong player number! (nice try tho...)");
                     else if (code == 0)
                         Program.Println("Wrong command name! (or typo...)");
 
-                    Program.Input("Press Enter to start... ");
+                    Program.Input("Press Enter to continue... ");
                     Program.ConsoleClear();
                 }
                 while (battle.State != BattleState.VictoryP1 || battle.State != BattleState.VictoryP2);
@@ -138,6 +146,7 @@ namespace Poktogone.Main
         {
             if (!Program.isFromCmd)
                 Console.Clear();
+                //Print(new String('#', 78) + "\n" + new String('\n', 8));
         }
 
         /// <summary>
@@ -148,7 +157,7 @@ namespace Poktogone.Main
         public static void Log(String tag, String c)
         {
             // TOD: use the specified output (should be a file), if any.
-            Console.WriteLine($"[log]{tag}: {c}");
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
         }
 
         /// <summary>
@@ -189,14 +198,15 @@ namespace Poktogone.Main
             return r;
         }
 
-        public static float GetMatchup(Pokemon.Type idTypeAtk, Pokemon.Type idTypeDef)
+        public static float GetMatchup(Pokemon.Type typeAtk, Pokemon.Type typeDef)
         {
-            return float.Parse(dbo.Select("matchups", new Where("type_atk", (int)idTypeAtk).And("type_def", (int)idTypeDef), "coef")[0]["coef"]);
+            if (typeDef == Pokemon.Type.None) return 1;
+            return float.Parse(dbo.Select("matchups", new Where("type_atk", (int)typeAtk).And("type_def", (int)typeDef), "coef")[0]["coef"]);
         }
 
-        public static float GetMatchup(Pokemon.Type idTypeAtk, Pokemon.Type idTypeDef1, Pokemon.Type idTypeDef2)
+        public static float GetMatchup(Pokemon.Type typeAtk, Pokemon.Type typeDef1, Pokemon.Type typeDef2)
         {
-            return Program.GetMatchup(idTypeAtk, idTypeDef1) * Program.GetMatchup(idTypeAtk, idTypeDef2);
+            return Program.GetMatchup(typeAtk, typeDef1) * (typeDef2 == Pokemon.Type.None ? 1 : Program.GetMatchup(typeAtk, typeDef2));
         }
 
         /// <summary>
@@ -223,7 +233,7 @@ namespace Poktogone.Main
             {
                 if (atk.NextMove[1] != null)//Climat
                 {
-                    stage.weather = (WeatherType) atk.NextMove[1].Value.value;
+                    stage.Weather = (WeatherType) atk.NextMove[1].Value.value;
                 }
                 if (atk.NextMove[2] != null)//Brulure
                 {
@@ -240,17 +250,21 @@ namespace Poktogone.Main
                 {
                     atk[StatTarget.Attack] = atk.NextMove[7].Value.value;
                 }
-                if(atk.NextMove[9] != null)//SpaBoost
+                if (atk.NextMove[8] != null)//DefBoost
                 {
-                    atk[StatTarget.AttackSpecial] = atk.NextMove[8].Value.value;
+                    atk[StatTarget.Defence] = atk.NextMove[8].Value.value;
+                }
+                if (atk.NextMove[9] != null)//SpaBoost
+                {
+                    atk[StatTarget.AttackSpecial] = atk.NextMove[9].Value.value;
                 }
                 if (atk.NextMove[10] != null)//SpdBoost
                 {
-                    atk[StatTarget.DefenceSpecial] = atk.NextMove[9].Value.value;
+                    atk[StatTarget.DefenceSpecial] = atk.NextMove[10].Value.value;
                 }
                 if (atk.NextMove[11] != null)//SpeBoost
                 {
-                    atk[StatTarget.Speed] = atk.NextMove[10].Value.value;
+                    atk[StatTarget.Speed] = atk.NextMove[11].Value.value;
                 }
                 if (atk.NextMove[13] != null)//Soins
                 {
@@ -512,7 +526,7 @@ namespace Poktogone.Main
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
 
                 /*Meteo*/
-                if (stage.weather == WeatherType.Rain)//RainModifiers
+                if (stage.Weather == WeatherType.Rain)//RainModifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -523,7 +537,7 @@ namespace Poktogone.Main
                         stabMod *= 0.5;
                     }
                 }
-                if (stage.weather == WeatherType.HarshSunlight)//Sunmodifiers
+                if (stage.Weather == WeatherType.HarshSunlight)//Sunmodifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -538,7 +552,7 @@ namespace Poktogone.Main
                 /*Terrain*/
                 if (!(atk.IsStab(Pokemon.Type.Vol) || atk.ability.id == 36))
                 {
-                    if (stage.terrain == TerrainType.Eletric)
+                    if (stage.Terrain == TerrainType.Eletric)
                     {
                         if (atk.NextMove.type == Pokemon.Type.Electrik)
                         {
@@ -549,7 +563,7 @@ namespace Poktogone.Main
                             return 0;
                         }
                     }
-                    if (stage.terrain == TerrainType.Psychic)
+                    if (stage.Terrain == TerrainType.Psychic)
                     {
                         if (atk.NextMove.type == Pokemon.Type.Psy)
                         {
@@ -576,7 +590,7 @@ namespace Poktogone.Main
 
                 if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
-                if(atk.NextMove[37] != null && stage.weather == WeatherType.Rain)
+                if(atk.NextMove[37] != null && stage.Weather == WeatherType.Rain)
                 {
                     damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
                 }
@@ -640,7 +654,7 @@ namespace Poktogone.Main
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
 
                 /*Meteo*/
-                if (stage.weather == WeatherType.Rain)//RainModifiers
+                if (stage.Weather == WeatherType.Rain)//RainModifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -651,7 +665,7 @@ namespace Poktogone.Main
                         stabMod *= 0.5;
                     }
                 }
-                if (stage.weather == WeatherType.HarshSunlight)//Sunmodifiers
+                if (stage.Weather == WeatherType.HarshSunlight)//Sunmodifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -662,7 +676,7 @@ namespace Poktogone.Main
                         stabMod *= 1.5;
                     }
                 }
-                if (stage.weather == WeatherType.Sandstorm)//SandModifiers
+                if (stage.Weather == WeatherType.Sandstorm)//SandModifiers
                 {
                     if (def.IsStab(Pokemon.Type.Roche))
                     {
@@ -673,7 +687,7 @@ namespace Poktogone.Main
                 /*Terrain*/
                 if (!(atk.IsStab(Pokemon.Type.Vol) || atk.ability.id == 36))
                 {
-                    if (stage.terrain == TerrainType.Eletric)
+                    if (stage.Terrain == TerrainType.Eletric)
                     {
                         if (atk.NextMove.type == Pokemon.Type.Electrik)
                         {
@@ -684,7 +698,7 @@ namespace Poktogone.Main
                             return 0;
                         }
                     }
-                    if (stage.terrain == TerrainType.Psychic)
+                    if (stage.Terrain == TerrainType.Psychic)
                     {
                         if (atk.NextMove.type == Pokemon.Type.Psy)
                         {
@@ -853,9 +867,9 @@ namespace Poktogone.Main
 
             if (atk.NextMove[40] != null)//KnockOff
             {
-                if (def.item != null)
+                if (def.item.id != 0)
                 {
-                    def.item = null;
+                    def.item.Remove();
                     damageInflicted = (int)(1.5 * damageInflicted);
                 }
             }
@@ -920,5 +934,7 @@ namespace Poktogone.Main
                 }
             }
         }
+
+
     }
 }

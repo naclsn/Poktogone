@@ -8,8 +8,8 @@ namespace Poktogone.Pokemon
 {
     class Item
     {
-        public readonly int id;
-        public readonly String name;
+        public int id;
+        public String name;
         public readonly bool oneUse;
         public bool isUsed;
 
@@ -19,6 +19,13 @@ namespace Poktogone.Pokemon
             this.name = name;
             this.oneUse = isOneUse;
             this.isUsed = false;
+        }
+
+        public void Remove(bool onUsage = false)
+        {
+            this.id = 0;
+            this.name = "No Item";
+            this.isUsed |= onUsage;
         }
 
         public override string ToString()
