@@ -135,7 +135,12 @@ namespace Poktogone.Battle
                 Program.Log("dmc", "\n\n");
                 Program.Log("dmc", $"{damage} damages to {order[1].Pokemon.GetName()} ({order[1].Pokemon.Hp} / {order[1].Pokemon.GetMaxHp()})");
                 Program.Log("dmc", $"(from {order[0].Pokemon.GetName()}'s {order[0].Pokemon.NextMove})");
+                int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
                 Program.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
+                if (order[0].Pokemon.NextMove[6] != null)//Recoil
+                {
+                    order[0].Pokemon.Hp -= (int)(order[0].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[1].Pokemon.Hp) / 100f);
+                }
             }
             if (order[1].NextAction.StartsWith("attack") && order[1].Pokemon.Status != Status.Dead)
             { 
@@ -144,6 +149,11 @@ namespace Poktogone.Battle
                 Program.Log("dmc", $"{damage} damages to {order[0].Pokemon.GetName()} ({order[0].Pokemon.Hp} / {order[0].Pokemon.GetMaxHp()})");
                 Program.Log("dmc", $"(from {order[1].Pokemon.GetName()}'s {order[1].Pokemon.NextMove})");
                 Program.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
+                int HpBeforeDmg = order[0].Pokemon.Hp; //Utilisé pour le Recul
+                if (order[1].Pokemon.NextMove[6] != null)//Recoil
+                {
+                    order[1].Pokemon.Hp -= (int)(order[1].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[0].Pokemon.Hp) / 100f);
+                }
             }
 
             // 9- Restes
