@@ -158,7 +158,8 @@ namespace Poktogone.Main
         /// <remarks>(I don't want to setup any more pipes.)</remarks>
         public static void PhpMessage(String signal, String description)
         {
-            Console.Error.Write($"{signal}/{description} (this is not an error)\n");
+            if (Program.isFromCmd)
+                Console.Error.Write($"{signal}/{description} (this is not an error)\n");
         }
 
         /// <summary>
@@ -296,7 +297,7 @@ namespace Poktogone.Main
                 {
                     def.Hp -= def.GetMaxHp() * atk.NextMove[17].Value.percent / 100 + atk.NextMove[17].Value.value;
                 }
-                if (atk.NextMove[18] != null)//Leechseed
+                if (atk.NextMove.id == 22)//if (atk.NextMove[18] != null)//Leechseed
                 {
                     if (def.ability.id == 76)
                     {
