@@ -46,8 +46,8 @@ namespace Poktogone.Main
             }
             else
             {
-                P1 = new Trainer(Program.Input("Nom du joueur 1: "), ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
-                P2 = new Trainer(Program.Input("Nom du joueur 2: "), ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
+                P1 = new Trainer(Program.Input("Player 1 name: "), ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
+                P2 = new Trainer(Program.Input("Player 2 name: "), ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
             }
             Program.Log("info", "\tLoaded!");
 
@@ -65,7 +65,7 @@ namespace Poktogone.Main
                     int code = -1;
                     try
                     {
-                        code = battle.InputCommand(int.Parse(Program.Input("Your player num: ")), Program.Input("Your commande: "));
+                        code = battle.InputCommand(int.Parse(Program.Input("Your player num: ")), Program.Input("Your command (attack / switch): "));
                     }
                     catch (FormatException)
                     {
@@ -87,8 +87,8 @@ namespace Poktogone.Main
                 Program.Println($"Couln't start battle... Last known state: {battle.State}");
                 return (int)battle.State;
             }
-
-            Console.WriteLine(battle.State);
+            
+            Program.Println(battle.State);
             return 0;
         }
 
@@ -107,7 +107,7 @@ namespace Poktogone.Main
         /// <param name="o">Object to print.</param>
         public static void Println(Object o)
         {
-            Console.WriteLine(o.ToString());
+            Program.Print(o.ToString() + "\n");
         }
 
         /// <summary>
@@ -115,7 +115,17 @@ namespace Poktogone.Main
         /// </summary>
         public static void Println()
         {
-            Console.WriteLine();
+            Program.Println("");
+        }
+
+        /// <summary>
+        /// Waits for an input from stdin using the <seealso cref="Console"/>.
+        /// </summary>
+        /// <returns>The String read.</returns>
+        public static String Input()
+        {
+            Program.PhpMessage("int", "waiting for user input");
+            return Console.ReadLine();
         }
 
         /// <summary>
@@ -126,16 +136,7 @@ namespace Poktogone.Main
         public static String Input(Object o)
         {
             Program.Print(o);
-            return Console.ReadLine();
-        }
-
-        /// <summary>
-        /// Waits for an input from stdin using the <seealso cref="Console"/>.
-        /// </summary>
-        /// <returns>The String read.</returns>
-        public static String Input()
-        {
-            return Console.ReadLine();
+            return Program.Input();
         }
 
         /// <summary>
@@ -146,7 +147,19 @@ namespace Poktogone.Main
         {
             if (!Program.isFromCmd)
                 Console.Clear();
-                //Print(new String('#', 78) + "\n" + new String('\n', 8));
+            Program.PhpMessage("clc", "clearing buffer");
+        }
+
+        /// <summary>
+        /// Used to send signals to the PHP scripts (see web-based).
+        /// </summary>
+        /// <param name="signal">Signal identifier (3 chars).</param>
+        /// <param name="description">Optionnal description of the signal.</param>
+        /// <remarks>(I don't want to setup any more pipes.)</remarks>
+        public static void PhpMessage(String signal, String description)
+        {
+            if (Program.isFromCmd)
+                Console.Error.Write($"{signal}/{description} (this is not an error)\n");
         }
 
         /// <summary>
@@ -218,7 +231,6 @@ namespace Poktogone.Main
         /// <param name="def">Defending pokémon.</param>
         /// <param name="defTrainer">Trainer of the defending pokémon.</param>
         /// <returns>The damage inflicted, in percents.</returns>
-        /// <remarks>Function signature may change!</remarks>
         public static int DamageCalculator(Stage stage, Set atk, Set def,Trainer atkTrainer, Trainer defTrainer)
         {
             int damageInflicted = 0;
@@ -285,7 +297,7 @@ namespace Poktogone.Main
                 {
                     def.Hp -= def.GetMaxHp() * atk.NextMove[17].Value.percent / 100 + atk.NextMove[17].Value.value;
                 }
-                if (atk.NextMove[18] != null)//Leechseed
+                if (atk.NextMove.id == 22)//if (atk.NextMove[18] != null)//Leechseed
                 {
                     if (def.ability.id == 76)
                     {
@@ -746,7 +758,7 @@ namespace Poktogone.Main
                 atk.Hp -= (int)(atk.Hp * 0.125);
             }
         }
-                
+
         public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, int damageInflicted)
         {
             SideEffect(atk.NextMove, 2, ref def, Status.Burn);//Burn
@@ -894,7 +906,7 @@ namespace Poktogone.Main
             }
         }
 
-        public static int CritGen(int damageInflicted, Pokemon.Set atk) //Crit
+        public static int CritGen(int damageInflicted, Set atk) //Crit
         {
             int rdNumber = Program.RngNext(1, 101);
             if (atk.NextMove[16] != null)

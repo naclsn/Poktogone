@@ -108,13 +108,25 @@ namespace Poktogone.Battle
             int k = 0;
             foreach (var p in this.pokemons)
                 pokemons += $"\t{k++}: {p.GetName()} (hp: {p.Hp} / {p.GetMaxHp()} | status: {p.Status})\n";
+            
+            String hazardsDesc = "", sep = "";
+            foreach (Hazards h in Enum.GetValues(typeof(Hazards)))
+            {
+                if (this.HasHazards(h))
+                {
+                    hazardsDesc += $"{sep}{h}";
+                    sep = ",";
+                }
+            }
+            if (hazardsDesc == "")
+                hazardsDesc = "None";
 
             r += $"{this.name}\n";
             r += new String('=', r.Length - 1) + "\n\n";
             r += $"(next action: {this.NextAction})\n";
             r += $"{this.Pokemon}\n";
             r += $"team: {pokemons}";
-            r += $"{this.hazards}";
+            r += $"hazards: {hazardsDesc}";
 
             return r;
         }

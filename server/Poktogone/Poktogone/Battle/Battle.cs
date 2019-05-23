@@ -297,9 +297,22 @@ namespace Poktogone.Battle
             }
             else
             {
-                int bla = Program.RngNext(2);
-                r[bla] = this.P1;
-                r[1 - bla] = this.P2;
+                if (this.P2.Pokemon[StatTarget.Speed] < this.P1.Pokemon[StatTarget.Speed])
+                {
+                    r[0] = this.P1;
+                    r[1] = this.P2;
+                }
+                else if (this.P1.Pokemon[StatTarget.Speed] < this.P2.Pokemon[StatTarget.Speed])
+                {
+                    r[1] = this.P1;
+                    r[0] = this.P2;
+                }
+                else
+                {
+                    int bla = Program.RngNext(2);
+                    r[bla] = this.P1;
+                    r[1 - bla] = this.P2;
+                }
             }
 
             return r;

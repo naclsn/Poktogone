@@ -363,9 +363,21 @@ namespace Poktogone.Pokemon
             if (nextMove != null)
                 potentialNext = $"will use {nextMove}";
 
+            String flagsDesc = "", sep = "";
+            foreach (Flags f in Enum.GetValues(typeof(Flags)))
+            {
+                if (this.HasFlags(f))
+                {
+                    flagsDesc += $"{sep}{f}";
+                    sep = ",";
+                }
+            }
+            if (flagsDesc == "")
+                flagsDesc = "None";
+
             r += $"{this.GetName()} @{this.item}\n";
             r += new String('-', r.Length - 1) + "\n\n";
-            r += $"({potentialNext ?? "waiting"}) hp: {this.Hp} / {this.GetMaxHp()} | status: {this.Status}\n";
+            r += $"({potentialNext ?? "waiting"}) hp: {this.Hp} / {this.GetMaxHp()} | status: {this.Status} | flags: {flagsDesc}\n";
             r += $"{moves}";
 
             return r;
