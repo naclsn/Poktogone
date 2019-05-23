@@ -22,8 +22,6 @@ namespace Poktogone.Battle
 
     class Battle
     {
-        static String[] COMMANDS = { "attack", "switch" };
-
         private Trainer P1;
         private Trainer P2;
 
@@ -45,24 +43,30 @@ namespace Poktogone.Battle
         {
             if (player == 1 || player == 2)
             {
-                bool isValid = false;
-                for (int k = 0; k < Battle.COMMANDS.Length && !isValid; isValid = c.StartsWith(Battle.COMMANDS[k++]))
-                    ;
-                if (!isValid)
+                if (!c.StartsWith("attack") && !c.StartsWith("switch"))
                     return 0;
                 
-                player -= 1;
+                player--;
                 Trainer[] P = { this.P1, this.P2 };
                 BattleState[] S = { BattleState.WaitingP2, BattleState.WaitingP1};
-                
-                // switch si ded (ne compte pas comme jouer)
+
+                if (c.StartsWith("switch") && !this.CanSwitch(P[player], int.Parse(c.Replace("switch", "").Trim())))
+                    return 0;
+
+                // switch si ded (ne compte pas comme jouer) <-- note : cette situation de devrait plus jamais arrivée...
                 if (P[player].Pokemon.Status == Status.Dead)
                 {
                     if (c.StartsWith("switch"))
                     {
-                        P[player].SwitchTo(int.Parse(c.Replace("switch", "").Trim()));
-                        Program.Println($"{P[player].GetName()} send out {P[player].Pokemon.GetName()}!");
-                        return player + 1;
+                        //P[player].SwitchTo(int.Parse(c.Replace("switch", "").Trim()));
+                        int choice = int.Parse(c.Replace("switch", "").Trim());
+                        if (this.CanSwitch(P[player], choice))
+                        {
+                            this.DoSwitch(P[player], P[1 - player], choice);
+                            Program.Println($"{P[player].GetName()} send out {P[player].Pokemon.GetName()}!");
+                            return player + 1;
+                        }
+                        else return 0;
                     }
                     else return 0;
                 }
@@ -75,7 +79,10 @@ namespace Poktogone.Battle
                     Program.Log("turn", "Playing turn in `DoTurn`");
                     this.DoTurn();
                     Program.Log("turn", "\tPlayed!");
+
                     this.State = BattleState.Waiting;
+                    if (!this.P1.HasPokemon()) this.State = BattleState.VictoryP2;
+                    if (!this.P2.HasPokemon()) this.State = BattleState.VictoryP1;
                 }
                 else
                 {
@@ -123,9 +130,9 @@ namespace Poktogone.Battle
 
             // 2-, 3- et 4- Switch
             if (isP1Switch)
-                this.DoSwitch(this.P1, this.P2);
+                this.DoSwitch(this.P1, this.P2, int.Parse(this.P1.NextAction.Replace("switch", "").Trim()));
             if (isP2Switch)
-                this.DoSwitch(this.P2, this.P1);
+                this.DoSwitch(this.P2, this.P1, int.Parse(this.P2.NextAction.Replace("switch", "").Trim()));
 
             // 6-, 7- et 8-
             Trainer[] order = this.OrderPrioriry();
@@ -251,11 +258,17 @@ namespace Poktogone.Battle
             // 13- Décomptes tour
             this.DoEndTurn();
         }
-
-        public void DoSwitch(Trainer self, Trainer mate)
+        
+        public bool CanSwitch(Trainer self, int bla)
         {
+            return self.GetAPokemon(bla).Status != Status.Dead && self.GetAPokemon(bla) != self.Pokemon;
+        }
+
+        public void DoSwitch(Trainer self, Trainer mate, int bla)
+        {
+            self.SwitchTo(bla);
+
             // 2- Switch (+Natural cure et regenerator)
-            self.SwitchTo(int.Parse(self.NextAction.Replace("switch", "").Trim()));
             if (self.Pokemon.ability.id == 11/*Natural cure*/)
                 self.Pokemon.Status = Status.None;
             else if (this.P1.Pokemon.ability.id == 67/*Regenerator*/)
@@ -369,6 +382,11 @@ namespace Poktogone.Battle
 
             this.P1.NextAction = "...";
             this.P2.NextAction = "...";
+
+            if (this.P1.Pokemon.Status == Status.Dead && this.P1.HasPokemon())
+                this.DoSwitch(this.P1, this.P2, Program.RequireSwitch(this.P1, 1));//this.P1.SwitchTo(Program.RequireSwitch(this.P1, 1));
+            if (this.P2.Pokemon.Status == Status.Dead && this.P2.HasPokemon())
+                this.DoSwitch(this.P2, this.P1, Program.RequireSwitch(this.P2, 1));//this.P2.SwitchTo(Program.RequireSwitch(this.P2, 2));
         }
 
         public bool Start() // return false if battle settings invalids, in this case state will be `BattleState.Unknown`

@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Battle\Battle.cs" />
     <Compile Include="Battle\Stage.cs" />
+    <Compile Include="Battle\Tournament.cs" />
     <Compile Include="Battle\Trainer.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\SqlHelper.cs" />

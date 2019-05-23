@@ -121,5 +121,5 @@ INSERT INTO [dbo].[sets] ([id], [pokemon], [name], [move1], [move2], [move3], [m
 (119, 83, 'Physical sweeper', 38, 74, 114, 82, 20, 18, 'pdv', 'atk', 'atk', 'spa'),
 (120, 84, 'Mixed sweeper', 113, 69, 71, 36, 76, 18, 'spa', 'spe', 'spa', 'def'),
 (121, 85, 'Mixed sweeper', 112, 86, 70, 40, 36, 18, 'atk', 'spe', 'spe', 'spd'),
-(122, 86, 'Physical sweeper', 79, 14, 74, 37, 52, 10, 'pdv', 'spe', 'spe', 'spa');
-(123, 36, 'Special trapper', 25, 75, 124, 31, 43, 4, 'spa', 'spe', 'spe', 'atk'),
+(122, 86, 'Physical sweeper', 79, 14, 74, 37, 52, 10, 'pdv', 'spe', 'spe', 'spa'),
+(123, 36, 'Special trapper', 25, 75, 124, 31, 43, 4, 'spa', 'spe', 'spe', 'atk');

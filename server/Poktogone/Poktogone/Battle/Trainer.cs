@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Poktogone.Pokemon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,11 +26,11 @@ namespace Poktogone.Battle
     class Trainer
     {
         private String name;
-        private Pokemon.Set[] pokemons;
+        private Set[] pokemons;
         private Hazards hazards;
 
         private int _indexPokemonOut;
-        public Pokemon.Set Pokemon
+        public Set Pokemon
         {
             get { return this.pokemons[_indexPokemonOut]; }
         }
@@ -48,7 +49,7 @@ namespace Poktogone.Battle
             }
         }
 
-        public Trainer(String name, Pokemon.Set[] pokemons)
+        public Trainer(String name, Set[] pokemons)
         {
             this.name = name;
             this.pokemons = pokemons;
@@ -85,7 +86,7 @@ namespace Poktogone.Battle
 
         public void RemoveHazards(params Hazards[] hazards)
         {
-            this.hazards ^= hazards.Aggregate((Hazards s, Hazards c) => s | c);
+            this.hazards &= hazards.Aggregate((Hazards s, Hazards c) => s | ~c);
         }
 
         public void RemoveHazards()
@@ -93,6 +94,16 @@ namespace Poktogone.Battle
             this.hazards = Hazards.None;
         }
 
+        public Set GetAPokemon(int i)
+        {
+            return this.pokemons[i];
+        }
+
+        public bool HasPokemon()
+        {
+            //return this.pokemons.Aggregate(false, (bool a, Set p) => a || p.Status != Status.Dead);
+            return this.pokemons[0].Status != Status.Dead || this.pokemons[1].Status != Status.Dead || this.pokemons[2].Status != Status.Dead;
+        }
 
         public String GetName()
         {

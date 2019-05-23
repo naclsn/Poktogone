@@ -319,7 +319,12 @@ namespace Poktogone.Pokemon
 
         public void RemoveFlags(params Flags[] flags)
         {
+            this.flags &= flags.Aggregate((Flags s, Flags c) => s | ~c);
+        }
 
+        public void RemoveFlags()
+        {
+            this.flags = Flags.None;
         }
 
         public String GetName()

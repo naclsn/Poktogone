@@ -16,6 +16,28 @@ namespace Poktogone.Main
         static private bool isFromCmd; // Used to know weather called with or without arguments.
         static private Random rng; // Grlobal RNG, private; to get RNG, usethe `RngNext` familly of functions.
 
+        static void Main(String[] args)
+        {
+            Program.dbo = new SqlHelper();
+            Program.isFromCmd = 0 < args.Length;
+            Program.rng = new Random();
+
+            Program.Log("info", "Connecting to sqllocaldb");
+            Program.dbo.Connect(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "Database.mdf"));
+            Program.Log("info", "\tConnected!");
+
+            Program.Log("info", "Starting tournament");
+            Tournament T = new Tournament(16, 1);
+            Program.Log("info", "\tStarted!");
+
+            Program.ConsoleClear();
+            Competitor winner = T.DoTournament();
+
+            Program.ConsoleClear();
+            Program.Println($"Fin du tournoi, {winner.name} est le grand vainqueur");
+            Program.Input("Press blabla.. ");
+        }
+
         /// <summary>
         /// Play a battle between the trainers defined by thir names and sets if given through args,
         /// else ask for the names through stdin and use randomly choosen sets from the database.
@@ -23,7 +45,8 @@ namespace Poktogone.Main
         /// </summary>
         /// <param name="args">`Poktogone.exe nameP1 teamP1 nameP2 teamP2 [--dbo fileName] [--rng seed] [--dmc (damage calculator args)] [--log [fileName]]`.</param>
         /// <returns>0 if success, else last known <see cref="BattleState"/> (as an int).</returns>
-        static int Main(String[] args)
+        /// <remarks>This function is to be used by the PHP script (see web-based).</remarks>
+        static int PhpMain(String[] args)
         {
             Program.dbo = new SqlHelper();
             Program.isFromCmd = 0 < args.Length;
@@ -69,18 +92,18 @@ namespace Poktogone.Main
                     }
                     catch (FormatException)
                     {
-                        Program.Print("This is not a player number... ");
+                        Program.Print("Not a number... ");
                     }
 
                     if (code < 0)
                         Program.Println("Wrong player number! (nice try tho...)");
                     else if (code == 0)
-                        Program.Println("Wrong command name! (or typo...)");
+                        Program.Println("Invalid command! (or typo...)");
 
                     Program.Input("Press Enter to continue... ");
                     Program.ConsoleClear();
                 }
-                while (battle.State != BattleState.VictoryP1 || battle.State != BattleState.VictoryP2);
+                while (battle.State != BattleState.VictoryP1 && battle.State != BattleState.VictoryP2);
             }
             else
             {
@@ -146,7 +169,7 @@ namespace Poktogone.Main
         public static void ConsoleClear()
         {
             if (!Program.isFromCmd)
-                Console.Clear();
+                Console.WriteLine(new String('\n', 12)); //Console.Clear();
             Program.PhpMessage("clc", "clearing buffer");
         }
 
@@ -200,7 +223,7 @@ namespace Poktogone.Main
         /// <param name="arg">"[setId1];[setId2];[setId3]"</param>
         /// <param name="sep">Separator, use ';' by default</param>
         /// <returns>Return a list of 3 sets.</returns>
-        static Set[] ParseSets(String arg, char sep = ';')
+        public static Set[] ParseSets(String arg, char sep = ';')
         {
             Set[] r = new Set[3];
             int k = 0;
@@ -229,6 +252,7 @@ namespace Poktogone.Main
         /// <param name="stage">Context for the actions.</param>
         /// <param name="atk">Attacking pokémon.</param>
         /// <param name="def">Defending pokémon.</param>
+        /// <param name="atkTrainer">Trainer of the attacking pokémon.</param>
         /// <param name="defTrainer">Trainer of the defending pokémon.</param>
         /// <returns>The damage inflicted, in percents.</returns>
         public static int DamageCalculator(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer)
@@ -356,6 +380,7 @@ namespace Poktogone.Main
                 if (atk.NextMove[24] != null)//Substitute
                 {
                     atk.Hp -= (int)(atk.GetMaxHp() * 0.25);
+                    atk.AddFlags(Flags.Substitute);
                 }
                 if (atk.NextMove[26] != null)//RemoveHazards
                 {
@@ -1031,6 +1056,25 @@ namespace Poktogone.Main
                 return true;
             }
             return false;
+        }
+
+        public static int RequireSwitch(Trainer t, int P)
+        {
+            int r = 0;
+            
+            Program.PhpMessage($"sw{P}", "forced switch");
+            try
+            {
+                while (t.GetAPokemon(r = int.Parse(Program.Input($"{t.GetName()}, qui envoyer ? "))).Status == Status.Dead)
+                    Program.Println($"{t.GetAPokemon(r).GetName()} ne veut plus se battre !");
+            }
+            catch (FormatException)
+            {
+                Program.Println("Merci d'entrer un nombre valide (0, 1 ou 2) !");
+                r = RequireSwitch(t, P);
+            }
+
+            return r;
         }
     }
 }
