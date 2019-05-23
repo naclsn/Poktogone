@@ -382,5 +382,15 @@ namespace Poktogone.Pokemon
 
             return r;
         }
+
+        public int GetMod(StatTarget mods)
+        {
+            return this._mod[(int)mods];
+        }
+
+        public int[] GetAllMods()
+        {
+            return this._mod;
+        }
     }
 }

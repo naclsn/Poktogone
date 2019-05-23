@@ -131,6 +131,7 @@ namespace Poktogone.Battle
             Trainer[] order = this.OrderPrioriry();
             if (order[0].NextAction.StartsWith("attack") && order[0].Pokemon.Status != Status.Dead)
             {
+                Set poke1before = order[1].Pokemon;
                 int damage = Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
                 Program.Log("dmc", "\n\n");
                 Program.Log("dmc", $"{damage} damages to {order[1].Pokemon.GetName()} ({order[1].Pokemon.Hp} / {order[1].Pokemon.GetMaxHp()})");
@@ -141,9 +142,17 @@ namespace Poktogone.Battle
                 {
                     order[0].Pokemon.Hp -= (int)(order[0].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[1].Pokemon.Hp) / 100f);
                 }
+                if(order[1].Pokemon.ability.id == 39)//Defiant
+                {
+                    if (Program.DefiantActive(poke1before, order[1].Pokemon))
+                    {
+                        order[1].Pokemon[StatTarget.Attack] = 2;
+                    }
+                }
             }
             if (order[1].NextAction.StartsWith("attack") && order[1].Pokemon.Status != Status.Dead)
-            { 
+            {
+                Set poke2before = order[0].Pokemon;
                 int damage = Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
                 Program.Log("dmc", "\n\n");
                 Program.Log("dmc", $"{damage} damages to {order[0].Pokemon.GetName()} ({order[0].Pokemon.Hp} / {order[0].Pokemon.GetMaxHp()})");
@@ -153,6 +162,13 @@ namespace Poktogone.Battle
                 if (order[1].Pokemon.NextMove[6] != null)//Recoil
                 {
                     order[1].Pokemon.Hp -= (int)(order[1].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[0].Pokemon.Hp) / 100f);
+                }
+                if (order[0].Pokemon.ability.id == 39)//Defiant
+                {
+                    if (Program.DefiantActive(poke2before, order[0].Pokemon))
+                    {
+                        order[0].Pokemon[StatTarget.Attack] = 2;
+                    }
                 }
             }
 
@@ -297,12 +313,23 @@ namespace Poktogone.Battle
             }
             else
             {
-                if (this.P2.Pokemon[StatTarget.Speed] < this.P1.Pokemon[StatTarget.Speed])
+                int speed1 = P1.Pokemon[StatTarget.Speed];
+                int speed2 = P2.Pokemon[StatTarget.Speed];
+                //sandrush & swiftswim & chlorophyll
+                if((P1.Pokemon.ability.id == 50 && stage.Weather == WeatherType.Sandstorm)||(P1.Pokemon.ability.id == 77 && stage.Weather == WeatherType.Rain) || (P1.Pokemon.ability.id == 7 && stage.Weather == WeatherType.HarshSunlight))
+                {
+                    speed1 *= 2;
+                }
+                if ((P2.Pokemon.ability.id == 50 && stage.Weather == WeatherType.Sandstorm) || (P2.Pokemon.ability.id == 77 && stage.Weather == WeatherType.Rain) || (P2.Pokemon.ability.id == 7 && stage.Weather == WeatherType.HarshSunlight))
+                {
+                    speed2 *= 2;
+                }
+                if (speed2 < speed1)
                 {
                     r[0] = this.P1;
                     r[1] = this.P2;
                 }
-                else if (this.P1.Pokemon[StatTarget.Speed] < this.P2.Pokemon[StatTarget.Speed])
+                else if (speed1 < speed2)
                 {
                     r[1] = this.P1;
                     r[0] = this.P2;
@@ -331,6 +358,9 @@ namespace Poktogone.Battle
             // TODO: end magma storm
             this.P1.IncNbTurn();
             this.P2.IncNbTurn();
+
+            this.P1.Pokemon.RemoveFlags(Flags.Flinch);
+            this.P2.Pokemon.RemoveFlags(Flags.Flinch);
 
             // TODO: end taunt
             // TODO: end sleep

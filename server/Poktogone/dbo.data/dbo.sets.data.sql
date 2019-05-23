@@ -9,7 +9,7 @@ INSERT INTO [dbo].[sets] ([id], [pokemon], [name], [move1], [move2], [move3], [m
 (7, 8, 'Defensive special sweeper', 119, 113, 32, 47, 10, 10, 'pdv', 'spa', 'spa', 'atk'),
 (8, 8, 'Special support', 65, 47, 111, 8, 10, 10, 'pdv', 'spa', 'spa', 'atk'),
 (9, 8, 'Stall unaware', 65, 99, 47, 113, 12, 9, 'pdv', 'def', 'def', 'atk'),
-(10, 9, 'Special sweeper', 104, 95, 26, 50, 13, 10, 'spe', 'spa', 'spe', 'atk'),
+(10, 9, 'Special sweeper', 106, 96, 26, 50, 13, 10, 'spe', 'spa', 'spe', 'atk'),
 (11, 10, 'Pressure PP stall', 27, 122, 10, 104, 14, 9, 'pdv', 'def', 'def', 'atk'),
 (12, 10, 'Special sweeper', 27, 10, 102, 101, 1, 10, 'pdv', 'spa', 'spa', 'atk'),
 (13, 11, 'Cleric', 125, 126, 17, 40, 4, 9, 'pdv', 'spd', 'spd', 'atk'),

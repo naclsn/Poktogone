@@ -87,7 +87,7 @@ namespace Poktogone.Main
                 Program.Println($"Couln't start battle... Last known state: {battle.State}");
                 return (int)battle.State;
             }
-            
+
             Program.Println(battle.State);
             return 0;
         }
@@ -231,7 +231,7 @@ namespace Poktogone.Main
         /// <param name="def">Defending pokémon.</param>
         /// <param name="defTrainer">Trainer of the defending pokémon.</param>
         /// <returns>The damage inflicted, in percents.</returns>
-        public static int DamageCalculator(Stage stage, Set atk, Set def,Trainer atkTrainer, Trainer defTrainer)
+        public static int DamageCalculator(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer)
         {
             int damageInflicted = 0;
             if (atk.HasFlags(Flags.Flinch)) //Flinch
@@ -239,13 +239,43 @@ namespace Poktogone.Main
                 return 0;
             }
 
+            if(def.ability.id == 2 && atk.NextMove.type == Pokemon.Type.Electrik)//Lightningrod
+            {
+                def[StatTarget.AttackSpecial] = 1;
+                return 0;
+            }
+            if (def.ability.id == 16 && atk.NextMove.type == Pokemon.Type.Feu)//Flashfire
+            {
+                return 0;
+            }
+            if (def.ability.id == 19 && atk.NextMove.type == Pokemon.Type.Plante)//Sapsipper
+            {
+                def[StatTarget.AttackSpecial] = 1;
+                return 0;
+            }
+            if (def.ability.id == 36 && atk.NextMove.type == Pokemon.Type.Sol)//Levitate
+            {
+                return 0;
+            }
+            if (def.ability.id == 54 && atk.NextMove.id == 77)//Bulletproof
+            {
+                return 0;
+            }
+            if (atk.HasFlags(Flags.Recharge))
+            {
+                atk.RemoveFlags(Flags.Recharge);
+                Print("Le pokémon doit se recharger !");
+                return 0;
+            }
+            
+
             //====================SUPPORT=====================//
 
             if (atk.NextMove.sps == Sps.Stat) //Support
             {
                 if (atk.NextMove[1] != null)//Climat
                 {
-                    stage.Weather = (WeatherType) atk.NextMove[1].Value.value;
+                    stage.Weather = (WeatherType)atk.NextMove[1].Value.value;
                 }
                 if (atk.NextMove[2] != null)//Brulure
                 {
@@ -280,7 +310,7 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[13] != null)//Soins
                 {
-                    atk.Hp += atk.Hp * atk.NextMove[13].Value.value /100;
+                    atk.Hp += atk.Hp * atk.NextMove[13].Value.value / 100;
                 }
                 if (atk.NextMove[14] != null)//Sleep
                 {
@@ -325,7 +355,7 @@ namespace Poktogone.Main
                 }
                 if (atk.NextMove[24] != null)//Substitute
                 {
-                    atk.Hp -= (int) (atk.GetMaxHp() * 0.25);
+                    atk.Hp -= (int)(atk.GetMaxHp() * 0.25);
                 }
                 if (atk.NextMove[26] != null)//RemoveHazards
                 {
@@ -396,8 +426,8 @@ namespace Poktogone.Main
                             defTrainer.AddHazards(Hazards.Spikes);
                         }
                     }
-                    
-                    
+
+
                 }
                 if (atk.NextMove[41] != null)//Poison
                 {
@@ -515,6 +545,11 @@ namespace Poktogone.Main
 
             if (atk.NextMove.sps == Sps.Physic)
             {
+                if (atk.NextMove.id == 36 && atk.GetNbTurns() > 1)//Bluff
+                {
+                    Print("Mais ça n'a aucun effet.");
+                }
+
                 if (atk.ability.id == 56)//Protean
                 {
                     atk.Type1 = atk.NextMove.type;
@@ -593,7 +628,7 @@ namespace Poktogone.Main
 
                 if (typeMod == 0)//Immunité
                 {
-                    if(atk.NextMove[27] != null)//HighJumpKick
+                    if (atk.NextMove[27] != null)//HighJumpKick
                     {
                         atk.Hp -= atk.GetMaxHp() / 2;
                     }
@@ -602,7 +637,7 @@ namespace Poktogone.Main
 
                 if (atk.Status == Status.Burn) { typeMod *= 1 / 2; }//Burn
 
-                if(atk.NextMove[37] != null && stage.Weather == WeatherType.Rain)//Cas particulier de Fatal-foudre et Blizzard
+                if (atk.NextMove[37] != null && stage.Weather == WeatherType.Rain)//Cas particulier de Fatal-foudre et Blizzard
                 {
                     damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod * atkItemMod);
                 }
@@ -625,7 +660,7 @@ namespace Poktogone.Main
                     return damageInflicted;
                 }
 
-                EffectGen(stage, atk, def, atkTrainer, defTrainer, damageInflicted); //Effects
+                EffectGen(stage, atk, def, atkTrainer, defTrainer, ref damageInflicted); //Effects
 
                 if (def.item.id == 11)//RockyHelmet
                 {
@@ -639,6 +674,22 @@ namespace Poktogone.Main
 
             if (atk.NextMove.sps == Sps.Special) //Special
             {
+                if (atk.NextMove.id == 123)
+                {
+                    if (atk.HasFlags(Flags.Charge) || stage.Weather == WeatherType.HarshSunlight)
+                    {
+                        atk.RemoveFlags(Flags.Charge);
+                    }
+                    else
+                    {
+                        atk.AddFlags(Flags.Charge);
+                    }
+                }
+
+                if(atk.HasFlags(Flags.Charge) || atk.HasFlags(Flags.Recharge))
+                {
+                    return 0;
+                }
                 if (atk.ability.id == 56)//Protean
                 {
                     atk.Type1 = atk.NextMove.type;
@@ -649,7 +700,7 @@ namespace Poktogone.Main
                 int attackPower = atk.NextMove.power;
                 int defenseStat = def[StatTarget.DefenceSpecial];
 
-                if(atk.NextMove[35] != null)
+                if (atk.NextMove[35] != null)
                 {
                     defenseStat = def[StatTarget.Defence];
                 }
@@ -657,6 +708,7 @@ namespace Poktogone.Main
                 double atkItemMod = 1;
                 if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
                 else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
@@ -727,7 +779,7 @@ namespace Poktogone.Main
 
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
 
-                EffectGen(stage, atk, def, atkTrainer, defTrainer, damageInflicted); //Effects
+                EffectGen(stage, atk, def, atkTrainer, defTrainer, ref damageInflicted); //Effects
 
             }
 
@@ -745,7 +797,7 @@ namespace Poktogone.Main
             {
                 def.Hp -= damage;
             }
-            if(atk.item.id == 10 && damage != 0)
+            if (atk.item.id == 10 && damage != 0)
             {
                 atk.Hp -= (int)(atk.Hp * 0.1);
             }
@@ -759,7 +811,7 @@ namespace Poktogone.Main
             }
         }
 
-        public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, int damageInflicted)
+        public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, ref int damageInflicted)
         {
             SideEffect(atk.NextMove, 2, ref def, Status.Burn);//Burn
 
@@ -836,7 +888,7 @@ namespace Poktogone.Main
                 /*jesaispas*/
             }
 
-            SideEffect(atk.NextMove, 23, ref def, Flags.Recharge);
+            SideEffect(atk.NextMove, 5, ref def, Flags.Recharge);//Recharge
 
             if (atk.NextMove[26] != null)
             {
@@ -915,7 +967,7 @@ namespace Poktogone.Main
                 {
                     damageInflicted = (int)(damageInflicted * 1.5);
                     Print("Coup critique !");
-                } 
+                }
             }
             else
             {
@@ -934,7 +986,7 @@ namespace Poktogone.Main
             return (attack[idEffect].Value.percent <= roll);
         }
 
-        public static void SideEffect(Move attack, int idEffect,ref Set defPoke, Status status)
+        public static void SideEffect(Move attack, int idEffect, ref Set defPoke, Status status)
         {
             if (attack[idEffect] != null)
             {
@@ -956,6 +1008,29 @@ namespace Poktogone.Main
             }
         }
 
-
+        public static bool DefiantActive(Set before, Set after)
+        {
+            if (before.GetMod(StatTarget.Attack) > after.GetMod(StatTarget.Attack))
+            {
+                return true;
+            }
+            if (before.GetMod(StatTarget.Defence) > after.GetMod(StatTarget.Defence))
+            {
+                return true;
+            }
+            if (before.GetMod(StatTarget.AttackSpecial) > after.GetMod(StatTarget.AttackSpecial))
+            {
+                return true;
+            }
+            if (before.GetMod(StatTarget.DefenceSpecial) > after.GetMod(StatTarget.DefenceSpecial))
+            {
+                return true;
+            }
+            if (before.GetMod(StatTarget.Speed) > after.GetMod(StatTarget.Speed))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
