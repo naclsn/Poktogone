@@ -303,6 +303,11 @@ namespace Poktogone.Main
             return this;
         }
 
+        public void Disconnect()
+        {
+            this.conn.Dispose();
+        }
+
         private void AssessConn()
         {
             if (this.conn == null)

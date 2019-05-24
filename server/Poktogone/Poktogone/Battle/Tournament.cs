@@ -24,14 +24,14 @@ namespace Poktogone.Battle
 
             this.name = name;
             this.team = team;
-            this.asTrainer = new Trainer(this.name, 1, Program.ParseSets(this.team));//TODO
+            this.asTrainer = new Trainer(this.name, this.competitorNumber + 1, Program.ParseSets(this.team));//TODO
 
             Program.Log("tournament", $"{this.name} joins the battle!");
         }
 
         public void Heal()
         {
-            this.asTrainer = new Trainer(this.name, 1, Program.ParseSets(this.team));
+            this.asTrainer = new Trainer(this.name, this.competitorNumber + 1, Program.ParseSets(this.team));
         }
     }
 
@@ -47,8 +47,8 @@ namespace Poktogone.Battle
             for (int k = 0; k < nbTrainer; k++)
                 this.competitors[k] = new Competitor(
                         k,
-                        k < nbPlayer ? Program.Input($"Nom du joueur {k + 1} : ") : Tournament.RandomName(),
-                        $"23;{Program.RngNext(123) + 1};{Program.RngNext(123) + 1}",
+                        k < nbPlayer ? Program.Input($"Nom du joueur{(nbPlayer > 1 ? $" {k + 1}" : "")} : ") : Tournament.RandomName(),
+                        $"{Program.RngNext(123) + 1};{Program.RngNext(123) + 1};{Program.RngNext(123) + 1}",
                         k < nbPlayer
                     );
         }        

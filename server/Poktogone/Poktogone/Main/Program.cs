@@ -16,11 +16,15 @@ namespace Poktogone.Main
         static private bool isFromCmd; // Used to know weather called with or without arguments.
         static private Random rng; // Grlobal RNG, private; to get RNG, usethe `RngNext` familly of functions.
 
+        static private bool verbose = false;
+
         static void Main(String[] args)
         {
             Program.dbo = new SqlHelper();
             Program.isFromCmd = 0 < args.Length;
             Program.rng = new Random();
+
+            Program.ConsoleSize(80, 40);
 
             Program.Log("info", "Connecting to sqllocaldb");
             Program.dbo.Connect(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "Database.mdf"));
@@ -35,6 +39,8 @@ namespace Poktogone.Main
 
             Program.ConsoleClear();
             Program.Println($"Fin du tournoi, {winner.name} est le grand vainqueur");
+
+            Program.dbo.Disconnect();
             Program.Input("Press blabla.. ");
         }
 
@@ -182,8 +188,18 @@ namespace Poktogone.Main
         public static void ConsoleClear()
         {
             if (!Program.isFromCmd)
-                Console.WriteLine(new String('\n', 12)); //Console.Clear();
+            {
+                if (verbose)
+                    Console.WriteLine(new String('\n', 12));
+                else Console.Clear();
+            }
             Program.PhpMessage("clc", "clearing buffer");
+        }
+
+        public static void ConsoleSize(int w, int h)
+        {
+            Console.SetWindowSize(w, h);
+            Console.SetBufferSize(w, h);
         }
 
         /// <summary>
@@ -206,8 +222,8 @@ namespace Poktogone.Main
         public static void Log(String tag, String c)
         {
             // TOD: use the specified output (should be a file), if any.
-            //Console.WriteLine($"[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
-            Program.Println($"$8$_0[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
+            if (verbose)
+                Program.Println($"$8$_0[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
         }
 
         /// <summary>
@@ -262,6 +278,13 @@ namespace Poktogone.Main
         public static int RequireSwitch(Trainer t)
         {
             int r = 0;
+
+            if (t.playerNumber != 1)
+            {
+                while (t.GetAPokemon(r = Program.RngNext(3)).Status == Status.Dead)
+                    ;
+                return r;
+            }
             
             Program.PhpMessage($"sw{t.playerNumber}", "forced switch");
             try
