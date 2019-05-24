@@ -239,7 +239,7 @@ namespace Poktogone.Pokemon
                 if (this.Status == Status.Paralysis && stat == StatTarget.Speed)//Paralysis
                     r = (int)(r * 0.5);
 
-                    return (int)(r * (mod < 0 ? 1 / (1 - .5 * mod) : 1 + .5 * mod)); // modif
+                return (int)(r * (mod < 0 ? 1 / (1 - .5 * mod) : 1 + .5 * mod)); // modif
             }
             set // e.g.: shif gears -> pok[StatTarget] = 2 --> actualy does +2
             {
@@ -548,6 +548,23 @@ namespace Poktogone.Pokemon
                 r += $"\t{k++} : {m}\n";
 
             return r;
+        }
+
+        public StatTarget GetBestStat()
+        {
+            List<int> stats = new List<int>() { this.baseStat[StatTarget.Attack], this.baseStat[StatTarget.Defence], this.baseStat[StatTarget.AttackSpecial], this.baseStat[StatTarget.DefenceSpecial], this.baseStat[StatTarget.Speed] };
+            int indBest = 0;
+            for(int i = 0; i<5; i++)
+            {
+                if (stats[i] > stats[indBest]) { indBest = i; }
+            }
+            return (StatTarget)indBest;
+        }
+
+        public void RemoveItem()
+        {
+            this.item.Remove();
+            if (this.ability.id == 26) { this[StatTarget.Speed] = 2; }
         }
     }
 }

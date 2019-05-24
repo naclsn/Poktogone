@@ -23,7 +23,7 @@ namespace Poktogone.Battle
         public static int DamageCalculator(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer)
         {
             int damageInflicted = 0;
-            if (atk.HasFlags(Flags.Flinch)) //Flinch
+            if (atk.HasFlags(Flags.Flinch) && atk.ability.id != 9) //Flinch
             {
                 return 0;
             }
@@ -50,7 +50,8 @@ namespace Poktogone.Battle
             }
             if (def.ability.id == 36 && atk.NextMove.type == Pokemon.Type.Sol)//Levitate
             {
-                return 0;
+                if (!(def.HasFlags(Flags.Roost)) && atk.ability.id != 51)//ExceptionRoost&MoldBreaker
+                    return 0;
             }
             if (def.ability.id == 54 && atk.NextMove.id == 77)//Bulletproof
             {
@@ -362,7 +363,12 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 5) { atkItemMod *= 1.5; }//ChoiceBand
-                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 10)//LifeOrb
+                {
+                    atkItemMod *= 1.3;
+                    if (atk.ability.id != 10 && atk.ability.id != 17)
+                        atk.Hp -= (int)(atk.GetMaxHp() / 10);
+                }
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
@@ -371,9 +377,14 @@ namespace Poktogone.Battle
                 if (atk.ability.id == 17) { abilityMod *= 1.3; }//SheerForce
                 else if (atk.ability.id == 20) { abilityMod *= 2; }//HugePower
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
+                else if (atk.ability.id == 3 && atk.Hp < (int) (atk.GetMaxHp()/3f) && atk.NextMove.type == Pokemon.Type.Feu) { abilityMod *= 1.3; }//Blaze
+                else if (atk.ability.id == 4 && atk.Hp < (int)(atk.GetMaxHp() / 3f) && atk.NextMove.type == Pokemon.Type.Plante) { abilityMod *= 1.3; }//Overgrow
+                else if (atk.ability.id == 5 && atk.Hp < (int)(atk.GetMaxHp() / 3f) && atk.NextMove.type == Pokemon.Type.Eau) { abilityMod *= 1.3; }//Torrent
+                else if (atk.ability.id == 21 && atk.Hp < (int)(atk.GetMaxHp() / 3f) && atk.NextMove.type == Pokemon.Type.Insecte) { abilityMod *= 1.3; }//Swarm
+                else if (atk.ability.id == 73) { abilityMod *= 1.3; }
 
-                /*Meteo*/
-                if (stage.Weather == WeatherType.Rain)//RainModifiers
+                    /*Meteo*/
+                    if (stage.Weather == WeatherType.Rain)//RainModifiers
                 {
                     if (atk.NextMove.type == Pokemon.Type.Eau)
                     {
@@ -427,6 +438,37 @@ namespace Poktogone.Battle
                     stabMod *= 0.5;
 
                 double typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
+                
+                if (atk.ability.id == 59 && atk.NextMove.type == Pokemon.Type.Normal)//Pixilate
+                {
+                    typeMod = Program.GetMatchup(Pokemon.Type.Fée, def.Type1, def.Type2);
+                    typeMod *= 1.2;
+                }
+                if (atk.ability.id == 65 && atk.NextMove.type == Pokemon.Type.Normal)//LiquidVoice
+                {
+                    typeMod = Program.GetMatchup(Pokemon.Type.Eau, def.Type1, def.Type2);
+                    typeMod *= 1.2;
+                }
+
+                if (def.HasFlags(Flags.Roost))//RoostEffectOnFlyingTypes
+                {
+                    if (def.Type1 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type2);
+                    }
+                    else if (def.Type2 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1);
+                    }
+                }
+
+                if (def.ability.id == 47 && (atk.NextMove.type == Pokemon.Type.Feu) || (atk.NextMove.type == Pokemon.Type.Glace))//ThickFat
+                    typeMod *= 0.5;
+
+                if (def.ability.id == 12 && atk.GetMod(StatTarget.Attack) > 0)//Unaware
+                {
+                    stabMod = (int)(stabMod / (1 + .5 * atk.GetMod(StatTarget.Attack)));
+                }
 
                 if (typeMod == 0)//Immunité
                 {
@@ -509,7 +551,12 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
-                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 10)//LifeOrb
+                {
+                    atkItemMod *= 1.3;
+                    if (atk.ability.id != 10 && atk.ability.id != 17)
+                        atk.Hp -= (int)(atk.GetMaxHp() / 10);
+                }
                 if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
 
                 double stabMod = 1;
@@ -581,6 +628,23 @@ namespace Poktogone.Battle
                     stabMod *= 0.5;
 
                 double typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
+
+                if (def.HasFlags(Flags.Roost))//RoostEffectOnFlyingTypes
+                {
+                    if (def.Type1 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type2);
+                    }
+                    else if (def.Type2 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1);
+                    }
+                }
+
+                if (def.ability.id == 12 && atk.GetMod(StatTarget.Attack) > 0)//Unaware
+                {
+                    stabMod = (int)(stabMod / (1 + .5 * atk.GetMod(StatTarget.Attack)));
+                }
 
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
 
@@ -738,8 +802,8 @@ namespace Poktogone.Battle
             {
                 if (def.item.id != 0)
                 {
-                    def.RemoveItem();
                     damageInflicted = (int)(1.5 * damageInflicted);
+                    def.RemoveItem();
                 }
             }
 
