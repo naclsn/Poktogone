@@ -350,7 +350,7 @@ namespace Poktogone.Battle
             {
                 if (atk.NextMove.id == 36 && atk.GetNbTurns() > 1)//Bluff
                 {
-                    Program.Print("Mais ça n'a aucun effet.");
+                    Program.Println("Mais ça n'a aucun effet.");
                 }
 
                 if (atk.ability.id == 56)//Protean
@@ -365,10 +365,8 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 5) { atkItemMod *= 1.5; }//ChoiceBand
-                else if (atk.item.id == 10)//LifeOrb
-                {
-                    atkItemMod *= 1.3;
-                }
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 17) { atkItemMod *= 2; }//LightBall
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
@@ -549,11 +547,9 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
-                else if (atk.item.id == 10)//LifeOrb
-                {
-                    atkItemMod *= 1.3;
-                }
-                if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 17) { atkItemMod *= 2; }//LightBall
+                else if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
@@ -726,22 +722,22 @@ namespace Poktogone.Battle
                 int roll = Program.RngNext(1, 101);
                 if (roll >= 75)
                 {
-                    Program.Print("Touché 2 fois");
+                    Program.Println("Touché 2 fois");
                     damageInflicted *= 2;
                 }
                 else if (roll >= 50)
                 {
-                    Program.Print("Touché 3 fois");
+                    Program.Println("Touché 3 fois");
                     damageInflicted *= 3;
                 }
                 else if (roll >= 25)
                 {
-                    Program.Print("Touché 4 fois");
+                    Program.Println("Touché 4 fois");
                     damageInflicted *= 4;
                 }
                 else
                 {
-                    Program.Print("Touché 5 fois");
+                    Program.Println("Touché 5 fois");
                     damageInflicted *= 5;
                 }
             }
@@ -759,7 +755,7 @@ namespace Poktogone.Battle
             {
                 if (Roll(atk.NextMove, 7))
                 {
-                    atk[StatTarget.Attack] = def.NextMove[7].Value.value;
+                    atk[StatTarget.Attack] = atk.NextMove[7].Value.value;
                 }
             }
 
@@ -767,28 +763,28 @@ namespace Poktogone.Battle
             {
                 if (Roll(atk.NextMove, 8))
                 {
-                    atk[StatTarget.Defence] = def.NextMove[8].Value.value;
+                    atk[StatTarget.Defence] = atk.NextMove[8].Value.value;
                 }
             }
             if (atk.NextMove[9] != null)//AdvSpaBoost
             {
                 if (Roll(atk.NextMove, 9))
                 {
-                    atk[StatTarget.AttackSpecial] = def.NextMove[9].Value.value;
+                    atk[StatTarget.AttackSpecial] = atk.NextMove[9].Value.value;
                 }
             }
             if (atk.NextMove[10] != null)//AdvSpdBoost
             {
                 if (Roll(atk.NextMove, 10))
                 {
-                    atk[StatTarget.DefenceSpecial] = def.NextMove[10].Value.value;
+                    atk[StatTarget.DefenceSpecial] = atk.NextMove[10].Value.value;
                 }
             }
             if (atk.NextMove[11] != null)//AdvSpeBoost
             {
                 if (Roll(atk.NextMove, 11))
                 {
-                    atk[StatTarget.Speed] = def.NextMove[11].Value.value;
+                    atk[StatTarget.Speed] = atk.NextMove[11].Value.value;
                 }
             }
 

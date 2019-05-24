@@ -36,7 +36,7 @@ INSERT INTO [dbo].[sets] ([id], [pokemon], [name], [move1], [move2], [move3], [m
 (34, 25, 'Spore sweeper', 20, 38, 23, 54, 22, 10, 'atk', 'spe', 'spe', 'spa'),
 (35, 26, 'Priority support', 80, 16, 40, 118, 33, 9, 'pdv', 'def', 'def', 'spa'),
 (36, 27, 'Physical sweeper', 38, 12, 74, 114, 17, 10, 'pdv', 'atk', 'atk', 'spa'),
-(37, 28, 'Assault vest attacker', 76, 70, 77, 75, 35, 3, 'pdv', 'atk', 'atk', 'spa'),
+(37, 28, 'Assault vest attacker', 76, 70, 77, 88, 35, 3, 'pdv', 'atk', 'atk', 'spa'),
 (38, 28, 'Physical sweeper', 89, 76, 29, 70, 35, 10, 'atk', 'spe', 'atk', 'spa'),
 (39, 29, 'Scarftias', 112, 87, 129, 90, 36, 4, 'spa', 'spe', 'spa', 'atk'),
 (40, 29, 'Special sweeper', 119, 111, 86, 103, 36, 9, 'pdv', 'spa', 'spa', 'atk'),
