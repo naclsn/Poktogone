@@ -162,7 +162,17 @@ namespace Poktogone.Battle
                         order[1].Pokemon[StatTarget.Attack] = 2;
                     }
                 }
-                
+
+                if (order[1].Pokemon.ability.id == 1 && Program.RngNext(3) == 0 && order[0].Pokemon.NextMove.sps == Sps.Physic)//Static
+                {
+                    order[0].Pokemon.Status = Status.Paralysis;
+                }
+
+                if (order[1].Pokemon.ability.id == 52 && Program.RngNext(3) == 0 && order[0].Pokemon.NextMove.sps == Sps.Physic)//FlameBody
+                {
+                    order[0].Pokemon.Status = Status.Burn;
+                }
+
                 if (order[0].Pokemon.NextMove[22] != null)//Pivotage
                 {
                     order[0].SwitchTo(Program.RequireSwitch(order[0]));
@@ -180,7 +190,7 @@ namespace Poktogone.Battle
                 Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
 
                 int HpBeforeDmg = order[0].Pokemon.Hp; //Utilisé pour le Recul
-                if (order[1].Pokemon.NextMove[6] != null)//Recoil
+                if (order[1].Pokemon.NextMove[6] != null && P1.Pokemon.ability.id != 10)//Recoil
                 {
                     order[1].Pokemon.Hp -= (int)(order[1].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[0].Pokemon.Hp) / 100f);
                 }
@@ -190,6 +200,16 @@ namespace Poktogone.Battle
                     {
                         order[0].Pokemon[StatTarget.Attack] = 2;
                     }
+                }
+
+                if(order[0].Pokemon.ability.id == 1 && Program.RngNext(3)==0 && order[1].Pokemon.NextMove.sps == Sps.Physic)//Static
+                {
+                    order[1].Pokemon.Status = Status.Paralysis;
+                }
+
+                if (order[0].Pokemon.ability.id == 52 && Program.RngNext(3) == 0 && order[1].Pokemon.NextMove.sps == Sps.Physic)//FlameBody
+                {
+                    order[1].Pokemon.Status = Status.Burn;
                 }
 
                 if (order[1].Pokemon.NextMove[22] != null)//Pivotage
@@ -205,46 +225,46 @@ namespace Poktogone.Battle
                 this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
 
             // 10- poison / toxic / burn
-            if (this.P1.Pokemon.Status == Status.Poison)
+            if (this.P1.Pokemon.Status == Status.Poison && P1.Pokemon.ability.id != 10)
             {
                 if (this.P1.Pokemon.ability.id == 31/*Soin poison*/)
                     this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() / 8.0);
                 else
                     this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 8.0);
             }
-            if (this.P2.Pokemon.Status == Status.Poison)
+            if (this.P2.Pokemon.Status == Status.Poison && P2.Pokemon.ability.id != 10)
             {
                 if (this.P2.Pokemon.ability.id == 31/*Soin poison*/)
                     this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() / 8.0);
                 else
                     this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 8.0);
             }
-            if (this.P1.Pokemon.Status == Status.BadlyPoisoned)
+            if (this.P1.Pokemon.Status == Status.BadlyPoisoned && P1.Pokemon.ability.id != 10)
             {
                 this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() * this.P1.Pokemon.GetNbTurns() / 16.0);
             }
-            if (this.P1.Pokemon.Status == Status.BadlyPoisoned)
+            if (this.P1.Pokemon.Status == Status.BadlyPoisoned && P2.Pokemon.ability.id != 10)
             {
                 this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() * this.P1.Pokemon.GetNbTurns() / 16.0);
             }
-            if (this.P1.Pokemon.Status == Status.Burn)
+            if (this.P1.Pokemon.Status == Status.Burn && P1.Pokemon.ability.id != 10)
             {
                 this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
             }
-            if (this.P2.Pokemon.Status == Status.Burn)
+            if (this.P2.Pokemon.Status == Status.Burn && P2.Pokemon.ability.id != 10)
             {
                 this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
             }
 
             // 11- Leech Seed
-            if (this.P1.Pokemon.HasFlags(Flags.LeechSeed))
+            if (this.P1.Pokemon.HasFlags(Flags.LeechSeed) && P1.Pokemon.ability.id != 10)
             {
                 int tmp = (int)(this.P1.Pokemon.GetMaxHp() / 8.0);
                 this.P1.Pokemon.Hp -= tmp;
                 this.P2.Pokemon.Hp += tmp;
             }
             //Program.Log("turn:11-", "P2");
-            if (this.P2.Pokemon.HasFlags(Flags.LeechSeed))
+            if (this.P2.Pokemon.HasFlags(Flags.LeechSeed) && P2.Pokemon.ability.id != 10)
             {
                 int tmp = (int)(this.P2.Pokemon.GetMaxHp() / 8.0);
                 this.P2.Pokemon.Hp -= tmp;
@@ -254,16 +274,16 @@ namespace Poktogone.Battle
             // 12- Hail / Sand + Rain dish
             if (this.stage.Weather == WeatherType.Hail)
             {
-                if (!this.P1.Pokemon.IsStab(Pokemon.Type.Glace))
+                if ((!this.P1.Pokemon.IsStab(Pokemon.Type.Glace)) && P1.Pokemon.ability.id != 10)
                     this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
-                if (!this.P2.Pokemon.IsStab(Pokemon.Type.Glace))
+                if ((!this.P2.Pokemon.IsStab(Pokemon.Type.Glace)) && P2.Pokemon.ability.id != 10)
                     this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
             }
             if (this.stage.Weather == WeatherType.Sandstorm)
             {
-                if (!this.P1.Pokemon.IsStab(Pokemon.Type.Roche) && !this.P1.Pokemon.IsStab(Pokemon.Type.Sol) && !this.P1.Pokemon.IsStab(Pokemon.Type.Acier))
+                if (!this.P1.Pokemon.IsStab(Pokemon.Type.Roche) && !this.P1.Pokemon.IsStab(Pokemon.Type.Sol) && !this.P1.Pokemon.IsStab(Pokemon.Type.Acier) && P1.Pokemon.ability.id != 10)
                     this.P1.Pokemon.Hp -= (int)(this.P1.Pokemon.GetMaxHp() / 16.0);
-                if (!this.P2.Pokemon.IsStab(Pokemon.Type.Roche) && !this.P2.Pokemon.IsStab(Pokemon.Type.Sol) && !this.P2.Pokemon.IsStab(Pokemon.Type.Acier))
+                if (!this.P2.Pokemon.IsStab(Pokemon.Type.Roche) && !this.P2.Pokemon.IsStab(Pokemon.Type.Sol) && !this.P2.Pokemon.IsStab(Pokemon.Type.Acier) && P1.Pokemon.ability.id != 10)
                     this.P2.Pokemon.Hp -= (int)(this.P2.Pokemon.GetMaxHp() / 16.0);
             }
             if (this.stage.Weather == WeatherType.Rain)
@@ -308,14 +328,14 @@ namespace Poktogone.Battle
             }
 
             // 3- Hazards si switch
-            if (self.HasHazards(Hazards.StealthRock))
+            if (self.HasHazards(Hazards.StealthRock) && self.Pokemon.ability.id != 10)
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100 * Program.GetMatchup(Pokemon.Type.Roche, self.Pokemon.Type1, self.Pokemon.Type2));
 
-            if (self.HasHazards(Hazards.Spikes))
+            if (self.HasHazards(Hazards.Spikes) && self.Pokemon.ability.id != 10)
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100);
-            else if (self.HasHazards(Hazards.Spikes2))
+            else if (self.HasHazards(Hazards.Spikes2) && self.Pokemon.ability.id != 10)
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 16.66 / 100);
-            else if (self.HasHazards(Hazards.Spikes3))
+            else if (self.HasHazards(Hazards.Spikes3) && self.Pokemon.ability.id != 10)
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 25.0 / 100);
 
             if (self.HasHazards(Hazards.StickyWeb))
@@ -349,7 +369,8 @@ namespace Poktogone.Battle
 
             if(self.Pokemon.ability.id == 34)
             {
-                mate.Pokemon[StatTarget.Attack] = -1;
+                if (mate.Pokemon.ability.id != 35)
+                    mate.Pokemon[StatTarget.Attack] = -1;
                 if (mate.Pokemon.ability.id == 39)
                     mate.Pokemon[StatTarget.Attack] = 2;
             }

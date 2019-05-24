@@ -363,7 +363,12 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 5) { atkItemMod *= 1.5; }//ChoiceBand
-                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 10)//LifeOrb
+                {
+                    atkItemMod *= 1.3;
+                    if (atk.ability.id != 10 && atk.ability.id != 17)
+                        atk.Hp -= (int)(atk.GetMaxHp() / 10);
+                }
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
@@ -372,6 +377,9 @@ namespace Poktogone.Battle
                 if (atk.ability.id == 17) { abilityMod *= 1.3; }//SheerForce
                 else if (atk.ability.id == 20) { abilityMod *= 2; }//HugePower
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
+                else if (atk.ability.id == 3 && atk.Hp < (int) (atk.GetMaxHp()/3f) && atk.NextMove.type == Pokemon.Type.Feu) { abilityMod *= 1.3; }//Blaze
+                else if (atk.ability.id == 4 && atk.Hp < (int)(atk.GetMaxHp() / 3f) && atk.NextMove.type == Pokemon.Type.Plante) { abilityMod *= 1.3; }//Overgrow
+                else if (atk.ability.id == 5 && atk.Hp < (int)(atk.GetMaxHp() / 3f) && atk.NextMove.type == Pokemon.Type.Eau) { abilityMod *= 1.3; }//Torrent
 
                 /*Meteo*/
                 if (stage.Weather == WeatherType.Rain)//RainModifiers
@@ -522,7 +530,12 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
-                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 10)//LifeOrb
+                {
+                    atkItemMod *= 1.3;
+                    if (atk.ability.id != 10 && atk.ability.id != 17)
+                        atk.Hp -= (int)(atk.GetMaxHp() / 10);
+                }
                 if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
 
                 double stabMod = 1;
