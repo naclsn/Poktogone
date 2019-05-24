@@ -149,8 +149,25 @@ namespace Poktogone.Battle
                 Program.Log("dmc", $"(from {order[0].Pokemon.GetName()}'s {order[0].Pokemon.NextMove})");
                 int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
 
-                Calc.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
-
+                if (order[0].Pokemon.ability.id == 15 || order[0].Pokemon.ability.id == 37)//Crits&InflictDamage
+                {
+                    if ((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp)//FocusSash&Sturdy
+                    {
+                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
+                        if (order[1].Pokemon.item.id == 8) { order[1].Pokemon.item.Remove(); }
+                    }
+                    Calc.InflictDamage(Calc.CritGen(damage, order[1].Pokemon), order[1].Pokemon, order[0].Pokemon);
+                }
+                else
+                {
+                    if ((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp)//FocusSash&Sturdy
+                    {
+                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
+                        if (order[1].Pokemon.item.id == 8) { order[1].Pokemon.item.Remove(); }
+                    }
+                    Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
+                }
+                
                 if (order[0].Pokemon.NextMove[6] != null)//Recoil
                 {
                     order[0].Pokemon.Hp -= (int)(order[0].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[1].Pokemon.Hp) / 100f);
@@ -187,9 +204,27 @@ namespace Poktogone.Battle
                 Program.Log("dmc", $"{damage} damages to {order[0].Pokemon.GetName()} ({order[0].Pokemon.Hp} / {order[0].Pokemon.GetMaxHp()})");
                 Program.Log("dmc", $"(from {order[1].Pokemon.GetName()}'s {order[1].Pokemon.NextMove})");
 
-                Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
+                int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
 
-                int HpBeforeDmg = order[0].Pokemon.Hp; //Utilisé pour le Recul
+                if (order[1].Pokemon.ability.id == 15 || order[1].Pokemon.ability.id == 37)//Crits&InflictDamage
+                {
+                    if ((order[0].Pokemon.ability.id == 23) || (order[0].Pokemon.item.id == 8) && order[0].Pokemon.Hp == order[0].Pokemon.GetMaxHp() && damage > order[0].Pokemon.Hp)//FocusSash&Sturdy
+                    {
+                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
+                        if (order[0].Pokemon.item.id == 8) { order[0].Pokemon.item.Remove(); }
+                    }
+                    Calc.InflictDamage(Calc.CritGen(damage, order[0].Pokemon), order[0].Pokemon, order[1].Pokemon);
+                }
+                else
+                {
+                    if ((order[0].Pokemon.ability.id == 23) || (order[0].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[0].Pokemon.GetMaxHp() && damage > order[0].Pokemon.Hp)//FocusSash&Sturdy
+                    {
+                        Calc.InflictDamage(order[0].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
+                        if (order[0].Pokemon.item.id == 8) { order[0].Pokemon.item.Remove(); }
+                    }
+                    Calc.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
+                }
+
                 if (order[1].Pokemon.NextMove[6] != null && P1.Pokemon.ability.id != 10)//Recoil
                 {
                     order[1].Pokemon.Hp -= (int)(order[1].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[0].Pokemon.Hp) / 100f);
@@ -216,6 +251,25 @@ namespace Poktogone.Battle
                 {
                     order[1].SwitchTo(Program.RequireSwitch(order[1]));
                 }
+            }
+
+            //BeastBoost
+            if(P1.Pokemon.ability.id == 71 && P2.Pokemon.Status == Status.Dead)
+            {
+                P1.Pokemon[P1.Pokemon.GetBestStat()] = 1;
+            }
+            if (P2.Pokemon.ability.id == 71 && P1.Pokemon.Status == Status.Dead)
+            {
+                P2.Pokemon[P2.Pokemon.GetBestStat()] = 1;
+            }
+            //SoulHeart
+            if (P1.Pokemon.ability.id == 72 && P2.Pokemon.Status == Status.Dead)
+            {
+                P1.Pokemon[StatTarget.AttackSpecial] = 1;
+            }
+            if (P2.Pokemon.ability.id == 72 && P1.Pokemon.Status == Status.Dead)
+            {
+                P2.Pokemon[StatTarget.AttackSpecial] = 1;
             }
 
             // 9- Restes
@@ -394,6 +448,12 @@ namespace Poktogone.Battle
 
             int prio1 = this.P1.NextAction.StartsWith("attack") ? this.P1.Pokemon.NextMove[4/*effet prio*/].GetValueOrDefault(new Effect(0)).value : 6;
             int prio2 = this.P2.NextAction.StartsWith("attack") ? this.P2.Pokemon.NextMove[4/*effet prio*/].GetValueOrDefault(new Effect(0)).value : 6;
+
+            //GaleWingsException
+            if (P1.Pokemon.NextMove.type == Pokemon.Type.Vol && P1.Pokemon.ability.id == 61 && P1.Pokemon.Hp == P1.Pokemon.GetMaxHp())
+                prio1 = 1;
+            if (P2.Pokemon.NextMove.type == Pokemon.Type.Vol && P2.Pokemon.ability.id == 61 && P2.Pokemon.Hp == P2.Pokemon.GetMaxHp())
+                prio2 = 1;
 
             if (prio1 < prio2)
             {
