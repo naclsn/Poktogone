@@ -48,7 +48,7 @@ namespace Poktogone.Battle
                 this.competitors[k] = new Competitor(
                         k,
                         k < nbPlayer ? Program.Input($"Nom du joueur {k + 1} : ") : Tournament.RandomName(),
-                        $"{Program.RngNext(123) + 1};{Program.RngNext(123) + 1};{Program.RngNext(123) + 1}",
+                        $"23;{Program.RngNext(123) + 1};{Program.RngNext(123) + 1}",
                         k < nbPlayer
                     );
         }        
