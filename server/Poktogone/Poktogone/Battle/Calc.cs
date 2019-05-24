@@ -688,11 +688,6 @@ namespace Poktogone.Battle
 
             SideEffect(atk.NextMove, 21, ref def, Status.Paralysis);//Paralysis
 
-            if (atk.NextMove[22] != null)//Pivotage
-            {
-                atkTrainer.SwitchTo(Program.RequireSwitch(atkTrainer));
-            }
-
             SideEffect(atk.NextMove, 5, ref def, Flags.Recharge);//Recharge
 
             if (atk.NextMove[26] != null)
@@ -738,8 +733,6 @@ namespace Poktogone.Battle
             }
 
             SideEffect(atk.NextMove, 33, ref def, Flags.Confusion);//Confusion
-
-            SideEffect(atk.NextMove, 34, ref def, Flags.Colere);//Outrage
 
             if (atk.NextMove[40] != null)//KnockOff
             {

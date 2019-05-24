@@ -24,14 +24,14 @@ namespace Poktogone.Battle
 
             this.name = name;
             this.team = team;
-            this.asTrainer = new Trainer(this.name, Program.ParseSets(this.team));
+            this.asTrainer = new Trainer(this.name, 1, Program.ParseSets(this.team));
 
             Program.Log("info", $"{this.name} joins the battle!");
         }
 
         public void Heal()
         {
-            this.asTrainer = new Trainer(this.name, Program.ParseSets(this.team));
+            this.asTrainer = new Trainer(this.name, 1, Program.ParseSets(this.team));
         }
     }
 
