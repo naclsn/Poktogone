@@ -69,9 +69,9 @@ namespace Poktogone.Battle
                 Program.Println();
 
                 String tmp = $"| Tour {++counter}, {battles} combats ! |";
-                Program.Println("•" + new String('-', tmp.Length - 2) + "•");
+                Program.Println("+" + new String('-', tmp.Length - 2) + "+");
                 Program.Println(tmp);
-                Program.Println("•" + new String('-', tmp.Length - 2) + "•");
+                Program.Println("+" + new String('-', tmp.Length - 2) + "+");
 
                 Program.Println();
 
