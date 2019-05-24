@@ -282,7 +282,7 @@ namespace Poktogone.Pokemon
 
         public Set Copy()
         {
-            return new Set(this.customName, this.baseStat, this.moves, this.item.Copy(), this.ability.Copy(), this._evDist, this._nature);)
+            return new Set(this.customName, this.baseStat, this.moves, this.item.Copy(), this.ability.Copy(), this._evDist, this._nature);
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
