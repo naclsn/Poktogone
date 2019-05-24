@@ -542,7 +542,7 @@ namespace Poktogone.Pokemon
             double ratio = (double) this.Hp / this.GetMaxHp();
 
             r += $"{this.GetFullName()} [{this.Type1}{(this.Type2 == Type.None ? "" : $" | {this.Type2}")}]{status}\n";
-            r += "$2" + new String('█', (int)(ratio * 60)) + "$4" + new String('█', (int)((1 - ratio) * 60)) + $"$F ({(int)(ratio * 100)}%)\n";
+            r += "$2" + new String('█', (int)(ratio * 60)) + "$4" + new String('█', (int)((1 - ratio) * 60)) + $"$F {this.Hp}/{this.GetMaxHp()} ({(int)(ratio * 100)}%)\n";
             r += $"Objet équipé : {this.item}\n";
             r += $"{flagsDesc}\n";
             r += "\n";

@@ -83,32 +83,36 @@ namespace Poktogone.Battle
             switch (this.Terrain)
             {
                 case TerrainType.Eletric:
-                    t += " électrique";
+                    t += $" électrique (tours terrain {this._terrainNbTurn + 1} / 5)";
                     break;
                 case TerrainType.Grassy:
-                    t += " herbeux";
+                    t += $" herbeux (tours terrain {this._terrainNbTurn + 1} / 5)";
                     break;
                 case TerrainType.Misty:
-                    t += " mystique";
+                    t += $" mystique (tours terrain {this._terrainNbTurn + 1} / 5)";
                     break;
                 case TerrainType.Psychic:
-                    t += " psychique";
+                    t += $" psychique (tours terrain {this._terrainNbTurn + 1} / 5)";
                     break;
             }
 
             switch (this.Weather)
             {
                 case WeatherType.Hail:
-                    r += $"La grêle s'abbat sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    r += $"La grêle s'abbat sur le terrain{t} ! (tours météo {this._weatherNbTurn + 1} / 5)";
                     break;
                 case WeatherType.HarshSunlight:
-                    r += $"le soleil brille fort sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    r += $"le soleil brille fort sur le terrain{t} ! (tours météo {this._weatherNbTurn + 1} / 5)";
                     break;
                 case WeatherType.Rain:
-                    r += $"La pluie s'abbat sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    r += $"La pluie s'abbat sur le terrain{t} ! (tours météo {this._weatherNbTurn + 1} / 5)";
                     break;
                 case WeatherType.Sandstorm:
-                    r += $"La tempête de sable fait rage sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    r += $"La tempête de sable fait rage sur le terrain{t} ! (tours météo {this._weatherNbTurn + 1} / 5)";
+                    break;
+                case WeatherType.ClearSky:
+                    if (t != "")
+                        r += $"Le terrain est{t} !";
                     break;
             }
 
