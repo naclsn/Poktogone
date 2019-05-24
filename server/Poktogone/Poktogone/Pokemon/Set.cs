@@ -282,7 +282,7 @@ namespace Poktogone.Pokemon
 
         public Set Copy()
         {
-            return new Set(this.customName, this.baseStat, this.moves, this.item.Copy(), this.ability.Copy(), this._evDist, this._nature);)
+            return new Set(this.customName, this.baseStat, this.moves, this.item.Copy(), this.ability.Copy(), this._evDist, this._nature);
         }
 
         public static Set FromDB(SqlHelper dbo, int id)
@@ -467,16 +467,16 @@ namespace Poktogone.Pokemon
                     status = " (paralisé)";
                     break;
                 case Status.Poison:
-                    status = " (empoisonner)";
+                    status = " (empoisonné)";
                     break;
                 case Status.BadlyPoisoned:
-                    status = " (gravement empoisonner)";
+                    status = " (gravement empoisonné)";
                     break;
                 case Status.Freeze:
                     status = " (gelé)";
                     break;
                 case Status.Sleep:
-                    status = " (endormis)";
+                    status = " (endormi)";
                     break;
             }
 
@@ -516,16 +516,16 @@ namespace Poktogone.Pokemon
                     status = " (paralisé)";
                     break;
                 case Status.Poison:
-                    status = " (empoisonner)";
+                    status = " (empoisonné)";
                     break;
                 case Status.BadlyPoisoned:
-                    status = " (gravement empoisonner)";
+                    status = " (gravement empoisonné)";
                     break;
                 case Status.Freeze:
                     status = " (gelé)";
                     break;
                 case Status.Sleep:
-                    status = " (endormi)s";
+                    status = " (endormi)";
                     break;
             }
 
