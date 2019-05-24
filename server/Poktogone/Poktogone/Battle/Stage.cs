@@ -64,16 +64,55 @@ namespace Poktogone.Battle
 
         public void IncNbTurn()
         {
-            if (4 < this._weatherNbTurn++)
+            if (this.Weather != WeatherType.ClearSky && 4 < this._weatherNbTurn++)
                 this.Weather = WeatherType.ClearSky;
-            if (4 < this._terrainNbTurn++)
+            if (this.Terrain != TerrainType.Normal && 4 < this._terrainNbTurn++)
                 this.Terrain = TerrainType.Normal;
         }
 
-        public override string ToString()
+        public String Repr()
         {
-            
             return $"\tweather: {this.Weather}\n\tterrain: {this.Terrain}\n";
+        }
+
+        public override String ToString()
+        {
+            String r = "";
+
+            String t = "";
+            switch (this.Terrain)
+            {
+                case TerrainType.Eletric:
+                    t += " électrique";
+                    break;
+                case TerrainType.Grassy:
+                    t += " herbeux";
+                    break;
+                case TerrainType.Misty:
+                    t += " mystique";
+                    break;
+                case TerrainType.Psychic:
+                    t += " psychique";
+                    break;
+            }
+
+            switch (this.Weather)
+            {
+                case WeatherType.Hail:
+                    r += $"La grêle s'abbat sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    break;
+                case WeatherType.HarshSunlight:
+                    r += $"le soleil brille fort sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    break;
+                case WeatherType.Rain:
+                    r += $"La pluie s'abbat sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    break;
+                case WeatherType.Sandstorm:
+                    r += $"La tempête de sable fait rage sur le terrain{t} ! (tours {this._weatherNbTurn + 1} / 5)";
+                    break;
+            }
+
+            return r;
         }
     }
 }

@@ -125,12 +125,11 @@ namespace Poktogone.Battle
             return this.name;
         }
 
-        public override string ToString()
+        public String Repr()
         {
             String r = "";
 
             String pokemons = "";
-
             int k = 0;
             foreach (var p in this.pokemons)
                 pokemons += $"\t{k++}: {p.GetName()} (hp: {p.Hp} / {p.GetMaxHp()} | status: {p.Status})\n";
@@ -150,9 +149,104 @@ namespace Poktogone.Battle
             r += $"{this.name}\n";
             r += new String('=', r.Length - 1) + "\n\n";
             r += $"(next action: {this.NextAction})\n";
-            r += $"{this.Pokemon}\n";
+            r += $"{this.Pokemon.Repr()}\n";
             r += $"team: {pokemons}";
             r += $"hazards: {hazardsDesc}";
+
+            return r;
+        }
+
+        public override String ToString()
+        {
+            String r = "";
+
+            r += $"Equipe de {this.name} : ";
+            foreach (var p in this.pokemons)
+            {
+                switch (p.Status)
+                {
+                    case Status.None:
+                        r += "o";
+                        break;
+                    case Status.Burn:
+                        r += "$Co$F";
+                        break;
+                    case Status.Dead:
+                        r += "$8o$F";
+                        break;
+                    case Status.Paralysis:
+                        r += "$Eo$F";
+                        break;
+                    case Status.Poison:
+                        r += "$Do$F";
+                        break;
+                    case Status.BadlyPoisoned:
+                        r += "$5o$F";
+                        break;
+                    case Status.Freeze:
+                        r += "$9o$F";
+                        break;
+                    case Status.Sleep:
+                        r += "z";
+                        break;
+                }
+                r += " ";
+            }
+
+            r += "\n";
+            r += $"{this.Pokemon}\n";
+
+            return r;
+        }
+
+        public String ToStringPlayer()
+        {
+            String r = "";
+
+            r += $"Ton équipe, {this.name} : ";
+            foreach (var p in this.pokemons)
+            {
+                switch (p.Status)
+                {
+                    case Status.None:
+                        r += "o";
+                        break;
+                    case Status.Burn:
+                        r += "$Co$F";
+                        break;
+                    case Status.Dead:
+                        r += "$8o$F";
+                        break;
+                    case Status.Paralysis:
+                        r += "$Eo$F";
+                        break;
+                    case Status.Poison:
+                        r += "$Do$F";
+                        break;
+                    case Status.BadlyPoisoned:
+                        r += "$5o$F";
+                        break;
+                    case Status.Freeze:
+                        r += "$9o$F";
+                        break;
+                    case Status.Sleep:
+                        r += "z";
+                        break;
+                }
+                r += " ";
+            }
+
+            r += "\n\n";
+            r += $"{this.Pokemon.ToStringPlayer()}\n";
+
+            r += "\n";
+            r += "Pokémons :\n";
+
+            int k = 0;
+            foreach (Set p in this.pokemons)
+                r += $"\t{k++} : {p.GetName()}\n";
+
+            r += "\n";
 
             return r;
         }

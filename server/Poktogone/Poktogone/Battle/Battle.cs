@@ -74,7 +74,7 @@ namespace Poktogone.Battle
                 if (P[player].Pokemon.HasFlags(Flags.Locked) && int.Parse(c.Replace("attack", "")) != P[player].Pokemon.GetIndexLastMove())
                     return 0;
                 
-                Program.Println($"{P[player].GetName()}{(this.State == S[player] ? " changes its mind and" : "")} will do '{c}'.");
+                Program.Log("command", $"{P[player].GetName()}{(this.State == S[player] ? " changes its mind and" : "")} will do '{c}'.");
                 P[player].NextAction = c;
 
                 if (this.State != BattleState.Waiting && this.State != S[player])
@@ -275,8 +275,33 @@ namespace Poktogone.Battle
                 }
             }
 
+            //baie 1
+            if (this.P1.Pokemon.item.id == 1 && this.P1.Pokemon.Hp < this.P1.Pokemon.GetMaxHp() * .5)
+            {
+                this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() * .25);
+                this.P1.Pokemon.RemoveItem();
+            }
+            //baie 2
+            if (this.P1.Pokemon.item.id == 2 && this.P1.Pokemon.Hp < this.P1.Pokemon.GetMaxHp() * .25)
+            {
+                this.P1.Pokemon.Hp += (int)(this.P1.Pokemon.GetMaxHp() * .5);
+                this.P1.Pokemon.RemoveItem();
+            }
+            //baie 1
+            if (this.P2.Pokemon.item.id == 1 && this.P2.Pokemon.Hp < this.P2.Pokemon.GetMaxHp() * .5)
+            {
+                this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() * .25);
+                this.P2.Pokemon.RemoveItem();
+            }
+            //baie 2
+            if (this.P2.Pokemon.item.id == 2 && this.P2.Pokemon.Hp < this.P2.Pokemon.GetMaxHp() * .25)
+            {
+                this.P2.Pokemon.Hp += (int)(this.P2.Pokemon.GetMaxHp() * .5);
+                this.P2.Pokemon.RemoveItem();
+            }
+
             //BeastBoost
-            if(P1.Pokemon.ability.id == 71 && P2.Pokemon.Status == Status.Dead)
+            if (P1.Pokemon.ability.id == 71 && P2.Pokemon.Status == Status.Dead)
             {
                 P1.Pokemon[P1.Pokemon.GetBestStat()] = 1;
             }
@@ -571,9 +596,25 @@ namespace Poktogone.Battle
             return true;
         }
 
-        public override string ToString()
+        public String Repr()
         {
-            return $"Battle between thoses players (currently: {this.State}):\n\n\n{this.P1}\n\n\n{this.P2}\n\n\nstage: {this.stage}\n\n";
+            return $"Battle between thoses players (currently: {this.State}):\n\n\n{this.P1.Repr()}\n\n\n{this.P2.Repr()}\n\n\nstage: {this.stage.Repr()}\n\n";
+        }
+
+        public override String ToString()
+        {
+            String r = "";
+
+            r += $"Combat entre {this.P1.GetName()} et {this.P2.GetName()}!\n";
+            r += $"{this.stage}\n";
+            r += "\n";
+            r += this.P2.ToString();
+            r += "\n";
+            r += "\n";
+            r += this.P1.ToStringPlayer();
+            r += "\n";
+
+            return r;
         }
     }
 }
