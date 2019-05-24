@@ -739,8 +739,6 @@ namespace Poktogone.Battle
 
             SideEffect(atk.NextMove, 33, ref def, Flags.Confusion);//Confusion
 
-            SideEffect(atk.NextMove, 34, ref def, Flags.Colere);//Outrage
-
             if (atk.NextMove[40] != null)//KnockOff
             {
                 if (def.item.id != 0)
