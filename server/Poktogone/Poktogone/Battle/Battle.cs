@@ -294,7 +294,8 @@ namespace Poktogone.Battle
                     Calc.InflictDamage(mate.Pokemon.Hp - 1, self.Pokemon, mate.Pokemon);
                     if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
                 }
-                Calc.InflictDamage(Calc.CritGen(damage, mate.Pokemon), self.Pokemon, mate.Pokemon);
+                else
+                    Calc.InflictDamage(Calc.CritGen(damage, mate.Pokemon), self.Pokemon, mate.Pokemon);
             }
             else
             {
@@ -303,7 +304,8 @@ namespace Poktogone.Battle
                     Calc.InflictDamage(mate.Pokemon.Hp - 1, self.Pokemon, mate.Pokemon);
                     if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
                 }
-                Calc.InflictDamage(damage, self.Pokemon, mate.Pokemon);
+                else
+                    Calc.InflictDamage(damage, self.Pokemon, mate.Pokemon);
             }
 
             if (!(self.Pokemon.HasFlags(Flags.Flinch) || (self.Pokemon.NextMove.sps != Sps.Stat && damage == 0)))
