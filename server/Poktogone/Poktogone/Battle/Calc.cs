@@ -27,6 +27,12 @@ namespace Poktogone.Battle
             {
                 return 0;
             }
+            if (atk.Status == Status.Sleep)//Sleep
+                return 0;
+
+            if (atk.Status == Status.Paralysis && Program.RngNext(3) == 0)//Paralysis
+                return 0;
+
 
             if (def.ability.id == 2 && atk.NextMove.type == Pokemon.Type.Electrik)//Lightningrod
             {
@@ -55,6 +61,10 @@ namespace Poktogone.Battle
                 atk.RemoveFlags(Flags.Recharge);
                 Program.Print("Le pokémon doit se recharger !");
                 return 0;
+            }
+            if (atk.item.id == 4 || atk.item.id == 5 || atk.item.id == 6 || atk.NextMove[34] != null)
+            {
+                atk.AddFlags(Flags.Locked);
             }
 
 
@@ -413,6 +423,8 @@ namespace Poktogone.Battle
                     }
                 }
 
+                if (defTrainer.HasHazards(Hazards.Reflect))//Reflect
+                    stabMod *= 0.5;
 
                 double typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
 
@@ -564,6 +576,9 @@ namespace Poktogone.Battle
                         }
                     }
                 }
+
+                if (defTrainer.HasHazards(Hazards.LightScreen))//LightScreen
+                    stabMod *= 0.5;
 
                 double typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
 

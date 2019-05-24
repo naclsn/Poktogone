@@ -269,13 +269,27 @@ namespace Poktogone.Battle
 
         public void DoSwitch(Trainer self, Trainer mate, int bla)
         {
+            // 1- Retirer les flags + protéen
+            self.Pokemon.RemoveFlags();
+            if (self.Pokemon.ability.id == 56)
+            {
+                self.Pokemon.Type1 = Pokemon.Type.Eau;
+                self.Pokemon.Type2 = Pokemon.Type.Tenèbres;
+            }
+
             self.SwitchTo(bla);
 
-            // 2- Switch (+Natural cure et regenerator)
+            // 2- Switch (+Natural cure, regenerator, Healing Wish)
             if (self.Pokemon.ability.id == 11/*Natural cure*/)
                 self.Pokemon.Status = Status.None;
             else if (this.P1.Pokemon.ability.id == 67/*Regenerator*/)
                 self.Pokemon.Hp = (int)(self.Pokemon.Hp * 1.3);
+            if (self.HasHazards(Hazards.HealingWish))
+            {
+                self.Pokemon.Hp = self.Pokemon.GetMaxHp();
+                self.Pokemon.Status = Status.None;
+                self.RemoveHazards(Hazards.HealingWish);
+            }
 
             // 3- Hazards si switch
             if (self.HasHazards(Hazards.StealthRock))
@@ -305,6 +319,22 @@ namespace Poktogone.Battle
 
             // 4- Talents switch
             //Sand Stream (25), Trace (30), Protean (56), Electric surge (69), Psychic surge (70), Drought (74)
+            if (self.Pokemon.ability.id == 25)
+                stage.Weather = WeatherType.Sandstorm;
+
+            if (self.Pokemon.ability.id == 30)
+            {
+                self.Pokemon.ability = mate.Pokemon.ability;
+            }
+
+            if (self.Pokemon.ability.id == 69)
+                stage.Terrain = TerrainType.Eletric;
+
+            if (self.Pokemon.ability.id == 70)
+                stage.Terrain = TerrainType.Psychic;
+
+            if (self.Pokemon.ability.id == 74)
+                stage.Weather = WeatherType.HarshSunlight;
         }
 
         /**
@@ -364,7 +394,12 @@ namespace Poktogone.Battle
         public void DoEndTurn()
         {
             // Speed Boost
-            
+            if (this.P1.Pokemon.ability.id == 27)
+                P1.Pokemon[StatTarget.Speed] = 1;
+            if (this.P2.Pokemon.ability.id == 27)
+                P2.Pokemon[StatTarget.Speed] = 1;
+
+            // counters:
             // end weather
             // end terrain
             this.stage.IncNbTurn();
@@ -376,6 +411,9 @@ namespace Poktogone.Battle
 
             this.P1.Pokemon.RemoveFlags(Flags.Flinch);
             this.P2.Pokemon.RemoveFlags(Flags.Flinch);
+
+            this.P1.Pokemon.RemoveFlags(Flags.Protect);
+            this.P2.Pokemon.RemoveFlags(Flags.Protect);
 
             // TODO: end taunt
             // TODO: end sleep
