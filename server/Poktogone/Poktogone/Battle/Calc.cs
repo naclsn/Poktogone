@@ -366,8 +366,6 @@ namespace Poktogone.Battle
                 else if (atk.item.id == 10)//LifeOrb
                 {
                     atkItemMod *= 1.3;
-                    if (atk.ability.id != 10 && atk.ability.id != 17)
-                        atk.Hp -= (int)(atk.GetMaxHp() / 10);
                 }
 
                 double stabMod = 1;
@@ -552,8 +550,6 @@ namespace Poktogone.Battle
                 else if (atk.item.id == 10)//LifeOrb
                 {
                     atkItemMod *= 1.3;
-                    if (atk.ability.id != 10 && atk.ability.id != 17)
-                        atk.Hp -= (int)(atk.GetMaxHp() / 10);
                 }
                 if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
 

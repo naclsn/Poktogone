@@ -138,7 +138,7 @@ namespace Poktogone.Battle
                 this.DoSwitch(this.P2, this.P1, int.Parse(this.P2.NextAction.Replace("switch", "").Trim()));
 
             // 6-, 7- et 8-
-            Trainer[] order = this.OrderPrioriry();
+            Trainer[] order = this.OrderPriority();
             if (order[0].NextAction.StartsWith("attack") && order[0].Pokemon.Status != Status.Dead)
             {
                 Set poke1before = order[1].Pokemon;
@@ -489,7 +489,7 @@ namespace Poktogone.Battle
         /**
          * returns first at 0, last at 1
          */
-        public Trainer[] OrderPrioriry()
+        public Trainer[] OrderPriority()
         {
             Trainer[] r = new Trainer[] { null, null };
 
@@ -497,17 +497,23 @@ namespace Poktogone.Battle
             int prio2 = this.P2.NextAction.StartsWith("attack") ? this.P2.Pokemon.NextMove[4/*effet prio*/].GetValueOrDefault(new Effect(0)).value : 6;
 
             //GaleWingsException
-            if (P1.Pokemon.NextMove.type == Pokemon.Type.Vol && P1.Pokemon.ability.id == 61 && P1.Pokemon.Hp == P1.Pokemon.GetMaxHp())
-                prio1 = 1;
-            if (P2.Pokemon.NextMove.type == Pokemon.Type.Vol && P2.Pokemon.ability.id == 61 && P2.Pokemon.Hp == P2.Pokemon.GetMaxHp())
-                prio2 = 1;
+            if (P1.Pokemon.NextMove != null)
+            {
+                if (P1.Pokemon.NextMove.type == Pokemon.Type.Vol && P1.Pokemon.ability.id == 61 && P1.Pokemon.Hp == P1.Pokemon.GetMaxHp())
+                    prio1 = 1;
+            }
+            if (P2.Pokemon.NextMove != null)
+            {
+                if (P2.Pokemon.NextMove.type == Pokemon.Type.Vol && P2.Pokemon.ability.id == 61 && P2.Pokemon.Hp == P2.Pokemon.GetMaxHp())
+                    prio2 = 1;
+            }
 
-            if (prio1 < prio2)
+            if (prio1 > prio2)
             {
                 r[0] = this.P1;
                 r[1] = this.P2;
             }
-            else if (prio2 < prio1)
+            else if (prio2 > prio1)
             {
                 r[1] = this.P1;
                 r[0] = this.P2;
