@@ -22,6 +22,8 @@ namespace Poktogone.Battle
         /// <returns>The damage inflicted, in percents.</returns>
         public static int DamageCalculator(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer)
         {
+            Program.Println($"{atk.GetName()} utilise {atk.NextMove} contre {def.GetName()}.");
+
             int damageInflicted = 0;
             if (atk.HasFlags(Flags.Flinch) && atk.ability.id != 9) //Flinch
             {
@@ -828,7 +830,7 @@ namespace Poktogone.Battle
                 if (rdNumber <= 12)
                 {
                     damageInflicted = (int)(damageInflicted * 1.5);
-                    Program.Print("Coup critique !");
+                    Program.Println("Coup critique !");
                 }
             }
             else
@@ -836,7 +838,7 @@ namespace Poktogone.Battle
                 if (rdNumber <= 4)
                 {
                     damageInflicted = (int)(damageInflicted * 1.5);
-                    Program.Print("Coup critique !");
+                    Program.Println("Coup critique !");
                 }
             }
             return damageInflicted;

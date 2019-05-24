@@ -140,118 +140,9 @@ namespace Poktogone.Battle
             // 6-, 7- et 8-
             Trainer[] order = this.OrderPrioriry();
             if (order[0].NextAction.StartsWith("attack") && order[0].Pokemon.Status != Status.Dead)
-            {
-                Set poke1before = order[1].Pokemon;
-                int damage = Calc.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
-
-                Program.Log("dmc", "\n\n");
-                Program.Log("dmc", $"{damage} damages to {order[1].Pokemon.GetName()} ({order[1].Pokemon.Hp} / {order[1].Pokemon.GetMaxHp()})");
-                Program.Log("dmc", $"(from {order[0].Pokemon.GetName()}'s {order[0].Pokemon.NextMove})");
-                int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
-
-                if (order[0].Pokemon.ability.id == 15 || order[0].Pokemon.ability.id == 37)//Crits&InflictDamage
-                {
-                    if ((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp)//FocusSash&Sturdy
-                    {
-                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
-                        if (order[1].Pokemon.item.id == 8) { order[1].Pokemon.item.Remove(); }
-                    }
-                    Calc.InflictDamage(Calc.CritGen(damage, order[1].Pokemon), order[1].Pokemon, order[0].Pokemon);
-                }
-                else
-                {
-                    if ((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp)//FocusSash&Sturdy
-                    {
-                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
-                        if (order[1].Pokemon.item.id == 8) { order[1].Pokemon.item.Remove(); }
-                    }
-                    Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
-                }
-                
-                if (order[0].Pokemon.NextMove[6] != null)//Recoil
-                {
-                    order[0].Pokemon.Hp -= (int)(order[0].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[1].Pokemon.Hp) / 100f);
-                }
-                if(order[1].Pokemon.ability.id == 39)//Defiant
-                {
-                    if (Calc.DefiantActive(poke1before, order[1].Pokemon))
-                    {
-                        order[1].Pokemon[StatTarget.Attack] = 2;
-                    }
-                }
-
-                if (order[1].Pokemon.ability.id == 1 && Program.RngNext(3) == 0 && order[0].Pokemon.NextMove.sps == Sps.Physic)//Static
-                {
-                    order[0].Pokemon.Status = Status.Paralysis;
-                }
-
-                if (order[1].Pokemon.ability.id == 52 && Program.RngNext(3) == 0 && order[0].Pokemon.NextMove.sps == Sps.Physic)//FlameBody
-                {
-                    order[0].Pokemon.Status = Status.Burn;
-                }
-
-                if (order[0].Pokemon.NextMove[22] != null)//Pivotage
-                {
-                    order[0].SwitchTo(Program.RequireSwitch(order[0]));
-                }
-            }
+                this.DoAttack(order[0], order[1]);
             if (order[1].NextAction.StartsWith("attack") && order[1].Pokemon.Status != Status.Dead)
-            {
-                Set poke2before = order[0].Pokemon;
-                int damage = Calc.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
-
-                Program.Log("dmc", "\n\n");
-                Program.Log("dmc", $"{damage} damages to {order[0].Pokemon.GetName()} ({order[0].Pokemon.Hp} / {order[0].Pokemon.GetMaxHp()})");
-                Program.Log("dmc", $"(from {order[1].Pokemon.GetName()}'s {order[1].Pokemon.NextMove})");
-
-                int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
-
-                if (order[1].Pokemon.ability.id == 15 || order[1].Pokemon.ability.id == 37)//Crits&InflictDamage
-                {
-                    if ((order[0].Pokemon.ability.id == 23) || (order[0].Pokemon.item.id == 8) && order[0].Pokemon.Hp == order[0].Pokemon.GetMaxHp() && damage > order[0].Pokemon.Hp)//FocusSash&Sturdy
-                    {
-                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
-                        if (order[0].Pokemon.item.id == 8) { order[0].Pokemon.item.Remove(); }
-                    }
-                    Calc.InflictDamage(Calc.CritGen(damage, order[0].Pokemon), order[0].Pokemon, order[1].Pokemon);
-                }
-                else
-                {
-                    if ((order[0].Pokemon.ability.id == 23) || (order[0].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[0].Pokemon.GetMaxHp() && damage > order[0].Pokemon.Hp)//FocusSash&Sturdy
-                    {
-                        Calc.InflictDamage(order[0].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
-                        if (order[0].Pokemon.item.id == 8) { order[0].Pokemon.item.Remove(); }
-                    }
-                    Calc.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
-                }
-
-                if (order[1].Pokemon.NextMove[6] != null && P1.Pokemon.ability.id != 10)//Recoil
-                {
-                    order[1].Pokemon.Hp -= (int)(order[1].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[0].Pokemon.Hp) / 100f);
-                }
-                if (order[0].Pokemon.ability.id == 39)//Defiant
-                {
-                    if (Calc.DefiantActive(poke2before, order[0].Pokemon))
-                    {
-                        order[0].Pokemon[StatTarget.Attack] = 2;
-                    }
-                }
-
-                if(order[0].Pokemon.ability.id == 1 && Program.RngNext(3)==0 && order[1].Pokemon.NextMove.sps == Sps.Physic)//Static
-                {
-                    order[1].Pokemon.Status = Status.Paralysis;
-                }
-
-                if (order[0].Pokemon.ability.id == 52 && Program.RngNext(3) == 0 && order[1].Pokemon.NextMove.sps == Sps.Physic)//FlameBody
-                {
-                    order[1].Pokemon.Status = Status.Burn;
-                }
-
-                if (order[1].Pokemon.NextMove[22] != null)//Pivotage
-                {
-                    order[1].SwitchTo(Program.RequireSwitch(order[1]));
-                }
-            }
+                this.DoAttack(order[1], order[0]);
 
             //baie 1
             if (this.P1.Pokemon.item.id == 1 && this.P1.Pokemon.Hp < this.P1.Pokemon.GetMaxHp() * .5)
@@ -376,7 +267,66 @@ namespace Poktogone.Battle
             // 13- Décomptes tour
             this.DoEndTurn();
         }
-        
+
+        public void DoAttack(Trainer self, Trainer mate)
+        {
+            Set poke1before = mate.Pokemon;
+            int damage = Calc.DamageCalculator(this.stage, self.Pokemon, mate.Pokemon, self, mate);
+
+            Program.Log("dmc", $"{damage} damages to {mate.Pokemon.GetName()} ({mate.Pokemon.Hp} / {mate.Pokemon.GetMaxHp()})");
+            Program.Log("dmc", $"(from {self.Pokemon.GetName()}'s {self.Pokemon.NextMove})");
+
+            int HpBeforeDmg = mate.Pokemon.Hp; //Utilisé pour le Recul
+
+            if (self.Pokemon.ability.id == 15 || self.Pokemon.ability.id == 37)//Crits&InflictDamage
+            {
+                if ((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage > mate.Pokemon.Hp)//FocusSash&Sturdy
+                {
+                    Calc.InflictDamage(mate.Pokemon.Hp - 1, mate.Pokemon, self.Pokemon);
+                    if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
+                }
+                Calc.InflictDamage(Calc.CritGen(damage, mate.Pokemon), mate.Pokemon, self.Pokemon);
+            }
+            else
+            {
+                if ((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage > mate.Pokemon.Hp)//FocusSash&Sturdy
+                {
+                    Calc.InflictDamage(mate.Pokemon.Hp - 1, mate.Pokemon, self.Pokemon);
+                    if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
+                }
+                Calc.InflictDamage(damage, mate.Pokemon, self.Pokemon);
+            }
+
+            if (self.Pokemon.NextMove[6] != null)//Recoil
+            {
+                self.Pokemon.Hp -= (int)(self.Pokemon.NextMove[6].Value.value * (HpBeforeDmg - mate.Pokemon.Hp) / 100f);
+                Program.Println($"{self.Pokemon.GetName()} prend des dégâts de recule...");
+            }
+            if (mate.Pokemon.ability.id == 39)//Defiant
+            {
+                if (Calc.DefiantActive(poke1before, mate.Pokemon))
+                {
+                    mate.Pokemon[StatTarget.Attack] = 2;
+                }
+            }
+
+            if (mate.Pokemon.ability.id == 1 && Program.RngNext(3) == 0 && self.Pokemon.NextMove.sps == Sps.Physic)//Static
+            {
+                self.Pokemon.Status = Status.Paralysis;
+            }
+
+            if (mate.Pokemon.ability.id == 52 && Program.RngNext(3) == 0 && self.Pokemon.NextMove.sps == Sps.Physic)//FlameBody
+            {
+                self.Pokemon.Status = Status.Burn;
+            }
+
+            if (self.Pokemon.NextMove[22] != null)//Pivotage
+            {
+                self.SwitchTo(Program.RequireSwitch(self));
+            }
+        }
+
+
         public bool CanSwitch(Trainer self, int bla)
         {
             return self.GetAPokemon(bla).Status != Status.Dead && self.GetAPokemon(bla) != self.Pokemon && !self.Pokemon.HasFlags(Flags.MagmaStorm);
@@ -392,7 +342,9 @@ namespace Poktogone.Battle
                 self.Pokemon.Type2 = Pokemon.Type.Tenèbres;
             }
 
+            Program.Println($"{self.Pokemon.GetName()}, revient !");
             self.SwitchTo(bla);
+            Program.Println($"{self.Pokemon.GetName()}, à ton tour !");
 
             // 2- Switch (+Natural cure, regenerator, Healing Wish)
             if (self.Pokemon.ability.id == 11/*Natural cure*/)
@@ -404,18 +356,31 @@ namespace Poktogone.Battle
                 self.Pokemon.Hp = self.Pokemon.GetMaxHp();
                 self.Pokemon.Status = Status.None;
                 self.RemoveHazards(Hazards.HealingWish);
+                Program.Println($"{self.Pokemon.GetName()} récupère grace au voeu soin.");
             }
 
             // 3- Hazards si switch
             if (self.HasHazards(Hazards.StealthRock) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100 * Program.GetMatchup(Pokemon.Type.Roche, self.Pokemon.Type1, self.Pokemon.Type2));
+                Program.Println($"{self.Pokemon.GetName()} est blessé par le piège de rocs.");
+            }
 
             if (self.HasHazards(Hazards.Spikes) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100);
+                Program.Println($"{self.Pokemon.GetName()} est blessé par les pics toxiques.");
+            }
             else if (self.HasHazards(Hazards.Spikes2) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 16.66 / 100);
+                Program.Println($"{self.Pokemon.GetName()} est fortement blessé par les pics toxiques.");
+            }
             else if (self.HasHazards(Hazards.Spikes3) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 25.0 / 100);
+                Program.Println($"{self.Pokemon.GetName()} est gravement blessé par les pics toxiques.");
+            }
 
             if (self.HasHazards(Hazards.StickyWeb))
             {
@@ -438,12 +403,10 @@ namespace Poktogone.Battle
 
             // 4- Talents switch
             //Sand Stream (25), Trace (30), Intimidate(34), Protean (56), Electric surge (69), Psychic surge (70), Drought (74)
-            if (self.Pokemon.ability.id == 25)
-                stage.Weather = WeatherType.Sandstorm;
-
             if (self.Pokemon.ability.id == 30)
             {
                 self.Pokemon.ability = mate.Pokemon.ability;
+                Program.Println($"Le {self.Pokemon.GetName()} de {self.GetName()} copie le talent {mate.Pokemon.ability} du {mate.Pokemon.GetName()} de {mate.GetName()} !");
             }
 
             if(self.Pokemon.ability.id == 34)
@@ -455,13 +418,28 @@ namespace Poktogone.Battle
             }
 
             if (self.Pokemon.ability.id == 69)
+            {
                 stage.Terrain = TerrainType.Eletric;
+                Program.Println("Le terrain est devenu électrique !");
+            }
 
             if (self.Pokemon.ability.id == 70)
+            {
                 stage.Terrain = TerrainType.Psychic;
+                Program.Println("Le terrain est devenu psychique !");
+            }
+
+            if (self.Pokemon.ability.id == 25)
+            {
+                stage.Weather = WeatherType.Sandstorm;
+                Program.Println("Une tempête de sable se prépare !");
+            }
 
             if (self.Pokemon.ability.id == 74)
+            {
                 stage.Weather = WeatherType.HarshSunlight;
+                Program.Println("Le soleil s'intensifit !");
+            }
         }
 
         /**
