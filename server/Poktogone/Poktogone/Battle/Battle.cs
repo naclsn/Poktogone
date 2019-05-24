@@ -319,7 +319,11 @@ namespace Poktogone.Battle
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 25.0 / 100);
 
             if (self.HasHazards(Hazards.StickyWeb))
+            {
                 self.Pokemon[StatTarget.Speed] = -1;
+                if (self.Pokemon.ability.id == 39)
+                    self.Pokemon[StatTarget.Attack] = 2;
+            }
 
             if (self.Pokemon.IsStab(Pokemon.Type.Poison))
             {
@@ -334,13 +338,20 @@ namespace Poktogone.Battle
             }
 
             // 4- Talents switch
-            //Sand Stream (25), Trace (30), Protean (56), Electric surge (69), Psychic surge (70), Drought (74)
+            //Sand Stream (25), Trace (30), Intimidate(34), Protean (56), Electric surge (69), Psychic surge (70), Drought (74)
             if (self.Pokemon.ability.id == 25)
                 stage.Weather = WeatherType.Sandstorm;
 
             if (self.Pokemon.ability.id == 30)
             {
                 self.Pokemon.ability = mate.Pokemon.ability;
+            }
+
+            if(self.Pokemon.ability.id == 34)
+            {
+                mate.Pokemon[StatTarget.Attack] = -1;
+                if (mate.Pokemon.ability.id == 39)
+                    mate.Pokemon[StatTarget.Attack] = 2;
             }
 
             if (self.Pokemon.ability.id == 69)
