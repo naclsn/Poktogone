@@ -652,8 +652,11 @@ namespace Poktogone.Battle
         {
             if (def.HasFlags(Flags.Substitute) && atk.NextMove[25] == null)//Infliger les dégâts
             {
-                Program.Print(String.Format("Le clone prend les dégâts à la place de {0}", def.GetName()));
-                def.RemoveFlags(Flags.Substitute);
+                if (damage != 0)
+                {
+                    Program.Println(String.Format("Le clone prend les dégâts à la place de {0}", def.GetName()));
+                    def.RemoveFlags(Flags.Substitute);
+                }
             }
             else
             {

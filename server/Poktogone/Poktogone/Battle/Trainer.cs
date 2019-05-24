@@ -120,6 +120,17 @@ namespace Poktogone.Battle
             return this.pokemons[0].Status != Status.Dead || this.pokemons[1].Status != Status.Dead || this.pokemons[2].Status != Status.Dead;
         }
 
+        public bool HasPokemonLeft()
+        {
+            bool r = false;
+            for (int i = 0; i < 3 && r==false; i++)
+            {
+                if (i != this._indexPokemonOut) 
+                    r = this.pokemons[i].Status != Status.Dead;
+            }
+            return r;
+        }
+
         public String GetName()
         {
             return this.name;

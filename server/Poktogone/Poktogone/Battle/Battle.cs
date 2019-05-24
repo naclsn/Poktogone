@@ -332,7 +332,20 @@ namespace Poktogone.Battle
 
             if (self.Pokemon.NextMove[22] != null)//Pivotage
             {
-                self.SwitchTo(Program.RequireSwitch(self));
+                if (self.Pokemon.NextMove[22].Value.value == -1)//Hurlement
+                {
+                    if (mate.HasPokemonLeft())
+                        mate.SwitchTo(Program.RequireSwitch(mate));
+                    else
+                        Program.Println($"{mate.GetName()} n'a pas d'autre pokémon jouable !");
+                }
+                else//U-Turn&VoltSwitch
+                {
+                    if (self.HasPokemonLeft())
+                        self.SwitchTo(Program.RequireSwitch(self));
+                    else
+                        Program.Println($"{self.GetName()} n'a pas d'autre pokémon jouable !");
+                }
             }
         }
 
