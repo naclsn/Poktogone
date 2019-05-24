@@ -306,7 +306,8 @@ namespace Poktogone.Battle
                 Calc.InflictDamage(damage, self.Pokemon, mate.Pokemon);
             }
 
-            Calc.EffectGen(stage, self.Pokemon, mate.Pokemon, self, mate, damage); //Effects
+            if (!(self.Pokemon.HasFlags(Flags.Flinch) || (self.Pokemon.NextMove.sps != Sps.Stat && damage == 0)))
+                Calc.EffectGen(stage, self.Pokemon, mate.Pokemon, self, mate, damage); //Effects
 
             if (self.Pokemon.NextMove[6] != null)//Recoil
             {

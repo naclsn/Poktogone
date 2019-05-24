@@ -255,7 +255,7 @@ namespace Poktogone.Battle
 
             int k = 0;
             foreach (Set p in this.pokemons)
-                r += $"\t{k++} : {p.GetName()}\n";
+                r += $"\t{k++} : {p.GetFullName()}\n";
 
             r += "\n";
 
