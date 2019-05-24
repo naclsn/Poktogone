@@ -675,7 +675,7 @@ namespace Poktogone.Battle
 
             if (atk.NextMove[22] != null)//Pivotage
             {
-                atkTrainer.SwitchTo(Program.RequireSwitch(atkTrainer, atkTrainer.playerNumber));
+                atkTrainer.SwitchTo(Program.RequireSwitch(atkTrainer));
             }
 
             SideEffect(atk.NextMove, 5, ref def, Flags.Recharge);//Recharge

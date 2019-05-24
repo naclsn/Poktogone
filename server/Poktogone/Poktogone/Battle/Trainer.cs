@@ -50,13 +50,14 @@ namespace Poktogone.Battle
             }
         }
 
-        public Trainer(String name, Set[] pokemons)
+        public Trainer(String name, int playerNumber, Set[] pokemons)
         {
             this.name = name;
             this.pokemons = pokemons;
             this._indexPokemonOut = 0;
             this.NextAction = "...";
             this.hazards = Hazards.None;
+            this.playerNumber = playerNumber;
         }
 
         public void SwitchTo(int i)

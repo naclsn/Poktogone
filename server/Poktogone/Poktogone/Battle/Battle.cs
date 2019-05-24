@@ -70,6 +70,9 @@ namespace Poktogone.Battle
                     }
                     else return 0;
                 }
+
+                if (P[player].Pokemon.HasFlags(Flags.Locked) && int.Parse(c.Replace("attack", "")) != P[player].Pokemon.GetIndexLastMove())
+                    return 0;
                 
                 Program.Println($"{P[player].GetName()}{(this.State == S[player] ? " changes its mind and" : "")} will do '{c}'.");
                 P[player].NextAction = c;
@@ -261,7 +264,7 @@ namespace Poktogone.Battle
         
         public bool CanSwitch(Trainer self, int bla)
         {
-            return self.GetAPokemon(bla).Status != Status.Dead && self.GetAPokemon(bla) != self.Pokemon;
+            return self.GetAPokemon(bla).Status != Status.Dead && self.GetAPokemon(bla) != self.Pokemon && !self.Pokemon.HasFlags(Flags.MagmaStorm);
         }
 
         public void DoSwitch(Trainer self, Trainer mate, int bla)
@@ -384,9 +387,9 @@ namespace Poktogone.Battle
             this.P2.NextAction = "...";
 
             if (this.P1.Pokemon.Status == Status.Dead && this.P1.HasPokemon())
-                this.DoSwitch(this.P1, this.P2, Program.RequireSwitch(this.P1, 1));//this.P1.SwitchTo(Program.RequireSwitch(this.P1, 1));
+                this.DoSwitch(this.P1, this.P2, Program.RequireSwitch(this.P1));//this.P1.SwitchTo(Program.RequireSwitch(this.P1, 1));
             if (this.P2.Pokemon.Status == Status.Dead && this.P2.HasPokemon())
-                this.DoSwitch(this.P2, this.P1, Program.RequireSwitch(this.P2, 2));//this.P2.SwitchTo(Program.RequireSwitch(this.P2, 2));
+                this.DoSwitch(this.P2, this.P1, Program.RequireSwitch(this.P2));//this.P2.SwitchTo(Program.RequireSwitch(this.P2, 2));
         }
 
         public bool Start() // return false if battle settings invalids, in this case state will be `BattleState.Unknown`
