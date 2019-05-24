@@ -50,7 +50,8 @@ namespace Poktogone.Battle
             }
             if (def.ability.id == 36 && atk.NextMove.type == Pokemon.Type.Sol)//Levitate
             {
-                return 0;
+                if (!(def.HasFlags(Flags.Roost)))
+                    return 0;
             }
             if (def.ability.id == 54 && atk.NextMove.id == 77)//Bulletproof
             {
@@ -428,6 +429,18 @@ namespace Poktogone.Battle
 
                 double typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
 
+                if (def.HasFlags(Flags.Roost))//RoostEffectOnFlyingTypes
+                {
+                    if (def.Type1 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type2);
+                    }
+                    else if (def.Type2 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1);
+                    }
+                }
+
                 if (typeMod == 0)//Immunité
                 {
                     if (atk.NextMove[27] != null)//HighJumpKick
@@ -581,6 +594,18 @@ namespace Poktogone.Battle
                     stabMod *= 0.5;
 
                 double typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1, def.Type2);
+
+                if (def.HasFlags(Flags.Roost))//RoostEffectOnFlyingTypes
+                {
+                    if (def.Type1 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type2);
+                    }
+                    else if (def.Type2 == Pokemon.Type.Vol)
+                    {
+                        typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1);
+                    }
+                }
 
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
 
