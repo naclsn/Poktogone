@@ -70,12 +70,11 @@ namespace Poktogone.Pokemon
         LeechSeed = 8,
         Protect = 16,
         MagmaStorm = 32,
-        Colere = 64,
+        Locked = 64,
         Charge = 128,
         Recharge = 256,
         Taunt = 512,
         Roost = 1024,
-        Locked = 2048
     }
 
     enum Status
@@ -407,6 +406,11 @@ namespace Poktogone.Pokemon
         public int[] GetAllMods()
         {
             return this._mod;
+        }
+
+        public int GetIndexLastMove()
+        {
+            return _indexLastMove;
         }
     }
 }

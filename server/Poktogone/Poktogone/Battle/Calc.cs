@@ -56,6 +56,10 @@ namespace Poktogone.Battle
                 Program.Print("Le pokémon doit se recharger !");
                 return 0;
             }
+            if (atk.item.id == 4 || atk.item.id == 5 || atk.item.id == 6 || atk.NextMove[34] != null)
+            {
+                atk.AddFlags(Flags.Locked);
+            }
 
 
             //====================SUPPORT=====================//

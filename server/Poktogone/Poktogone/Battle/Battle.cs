@@ -266,6 +266,9 @@ namespace Poktogone.Battle
 
         public void DoSwitch(Trainer self, Trainer mate, int bla)
         {
+            // 1- Retirer les flags
+            self.Pokemon.RemoveFlags();
+
             self.SwitchTo(bla);
 
             // 2- Switch (+Natural cure et regenerator)
@@ -374,6 +377,9 @@ namespace Poktogone.Battle
 
             this.P1.Pokemon.RemoveFlags(Flags.Flinch);
             this.P2.Pokemon.RemoveFlags(Flags.Flinch);
+
+            this.P1.Pokemon.RemoveFlags(Flags.Protect);
+            this.P2.Pokemon.RemoveFlags(Flags.Protect);
 
             // TODO: end taunt
             // TODO: end sleep
