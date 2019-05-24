@@ -149,25 +149,36 @@ namespace Poktogone.Battle
                 Program.Log("dmc", $"(from {order[0].Pokemon.GetName()}'s {order[0].Pokemon.NextMove})");
                 int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
 
+                if (order[0].Pokemon.NextMove[40] != null)//KnockOff
+                {
+                    if (order[1].Pokemon.item.id != 0)
+                    {
+                        damage = (int)(1.5 * damage);
+                        order[1].Pokemon.RemoveItem();
+                    }
+                }
+
                 if (order[0].Pokemon.ability.id == 15 || order[0].Pokemon.ability.id == 37)//Crits&InflictDamage
                 {
-                    if ((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp)//FocusSash&Sturdy
+                    if (((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8)) && (order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp))//FocusSash&Sturdy
                     {
-                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
+                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
                         if (order[1].Pokemon.item.id == 8) { order[1].Pokemon.item.Remove(); }
                     }
-                    Calc.InflictDamage(Calc.CritGen(damage, order[1].Pokemon), order[1].Pokemon, order[0].Pokemon);
+                    Calc.InflictDamage(Calc.CritGen(damage, order[1].Pokemon), order[0].Pokemon, order[1].Pokemon);
                 }
                 else
                 {
                     if ((order[1].Pokemon.ability.id == 23) || (order[1].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[1].Pokemon.GetMaxHp() && damage > order[1].Pokemon.Hp)//FocusSash&Sturdy
                     {
-                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
+                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
                         if (order[1].Pokemon.item.id == 8) { order[1].Pokemon.item.Remove(); }
                     }
-                    Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
+                    Calc.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
                 }
-                
+
+                Calc.EffectGen(stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1], damage); //Effects
+
                 if (order[0].Pokemon.NextMove[6] != null)//Recoil
                 {
                     order[0].Pokemon.Hp -= (int)(order[0].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[1].Pokemon.Hp) / 100f);
@@ -206,24 +217,35 @@ namespace Poktogone.Battle
 
                 int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
 
-                if (order[1].Pokemon.ability.id == 15 || order[1].Pokemon.ability.id == 37)//Crits&InflictDamage
+                if (order[1].Pokemon.NextMove[40] != null)//KnockOff
+                {
+                    if (order[0].Pokemon.item.id != 0)
+                    {
+                        damage = (int)(1.5 * damage);
+                        order[0].Pokemon.RemoveItem();
+                    }
+                }
+
+                if (order[0].Pokemon.ability.id == 15 || order[0].Pokemon.ability.id == 37)//Crits&InflictDamage
                 {
                     if ((order[0].Pokemon.ability.id == 23) || (order[0].Pokemon.item.id == 8) && order[0].Pokemon.Hp == order[0].Pokemon.GetMaxHp() && damage > order[0].Pokemon.Hp)//FocusSash&Sturdy
                     {
-                        Calc.InflictDamage(order[1].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
+                        Calc.InflictDamage(order[0].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
                         if (order[0].Pokemon.item.id == 8) { order[0].Pokemon.item.Remove(); }
                     }
-                    Calc.InflictDamage(Calc.CritGen(damage, order[0].Pokemon), order[0].Pokemon, order[1].Pokemon);
+                    Calc.InflictDamage(Calc.CritGen(damage, order[0].Pokemon), order[1].Pokemon, order[0].Pokemon);
                 }
                 else
                 {
                     if ((order[0].Pokemon.ability.id == 23) || (order[0].Pokemon.item.id == 8) && order[1].Pokemon.Hp == order[0].Pokemon.GetMaxHp() && damage > order[0].Pokemon.Hp)//FocusSash&Sturdy
                     {
-                        Calc.InflictDamage(order[0].Pokemon.Hp - 1, order[0].Pokemon, order[1].Pokemon);
+                        Calc.InflictDamage(order[0].Pokemon.Hp - 1, order[1].Pokemon, order[0].Pokemon);
                         if (order[0].Pokemon.item.id == 8) { order[0].Pokemon.item.Remove(); }
                     }
-                    Calc.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
+                    Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
                 }
+
+                Calc.EffectGen(stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0], damage); //Effects
 
                 if (order[1].Pokemon.NextMove[6] != null && P1.Pokemon.ability.id != 10)//Recoil
                 {
@@ -478,6 +500,10 @@ namespace Poktogone.Battle
                 {
                     speed2 *= 2;
                 }
+                //Scarfs
+                if (P1.Pokemon.item.id == 4) { speed1 = (int) (speed1 * 1.5); }
+                if (P2.Pokemon.item.id == 4) { speed1 = (int)(speed2 * 1.5); }
+
                 if (speed2 < speed1)
                 {
                     r[0] = this.P1;
