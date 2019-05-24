@@ -63,6 +63,16 @@ namespace Poktogone.Battle
             this.playerNumber = playerNumber;
         }
 
+        public Trainer Copy()
+        {
+            Set[] copySet = new Set[this.pokemons.Length];
+
+            for (int k = 0; k < copySet.Length; k++)
+                copySet[k] = this.pokemons[k].Copy();
+
+            return new Trainer(this.name, this.playerNumber, copySet);
+        }
+
         public void SwitchTo(int i)
         {
             this.Pokemon.RstNbTurn();

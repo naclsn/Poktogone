@@ -21,6 +21,11 @@ namespace Poktogone.Pokemon
             this.isUsed = false;
         }
 
+        public Item Copy()
+        {
+            return new Item(this.id, this.name, this.oneUse);
+        }
+
         public void Remove(bool onUsage = false)
         {
             this.id = 0;
@@ -43,6 +48,11 @@ namespace Poktogone.Pokemon
         {
             this.id = id;
             this.name = name;
+        }
+
+        public Ability Copy()
+        {
+            return new Ability(this.id, this.name);
         }
     }
 }

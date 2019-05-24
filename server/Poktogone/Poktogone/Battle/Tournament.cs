@@ -29,9 +29,14 @@ namespace Poktogone.Battle
             Program.Log("tournament", $"{this.name} joins the battle!");
         }
 
-        public void Heal()
+        /*public void Heal()
         {
-            this.asTrainer = new Trainer(this.name, this.competitorNumber + 1, Program.ParseSets(this.team));
+            //this.asTrainer = new Trainer(this.name, this.competitorNumber + 1, Program.ParseSets(this.team));
+        }*/
+
+        public Trainer GetTrainer()
+        {
+            return this.asTrainer.Copy();
         }
     }
 
@@ -87,7 +92,8 @@ namespace Poktogone.Battle
                     // player exist
                     if (C1.isPlayer || C2.isPlayer)
                     {
-                        Battle battle = new Battle(C1.asTrainer, C2.asTrainer);
+                        //Battle battle = new Battle(C1.asTrainer, C2.asTrainer);
+                        Battle battle = new Battle(C1.GetTrainer(), C2.GetTrainer());
 
                         battle.Start();
                         do
@@ -130,7 +136,7 @@ namespace Poktogone.Battle
                         while (battle.State != BattleState.VictoryP1 && battle.State != BattleState.VictoryP2);
 
                         winner = battle.State == BattleState.VictoryP1 ? C1 : C2;
-                        winner.Heal();
+                        //winner.Heal();
                     }
                     else winner = this.competitors[lefts[2 * k + Program.RngNext(2)]];
                     
