@@ -506,8 +506,6 @@ namespace Poktogone.Battle
                     return damageInflicted;
                 }
 
-                EffectGen(stage, atk, def, atkTrainer, defTrainer, ref damageInflicted); //Effects
-
                 if (def.item.id == 11)//RockyHelmet
                 {
                     atk.Hp -= (int)(atk.GetMaxHp() / 8);
@@ -649,9 +647,6 @@ namespace Poktogone.Battle
                 }
 
                 damageInflicted = (int)((((42 * attackStat * attackPower / defenseStat) / 50) + 2) * stabMod * typeMod * abilityMod);
-
-                EffectGen(stage, atk, def, atkTrainer, defTrainer, ref damageInflicted); //Effects
-
             }
 
             return damageInflicted;
@@ -682,7 +677,7 @@ namespace Poktogone.Battle
             }
         }
 
-        public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, ref int damageInflicted)
+        public static void EffectGen(Stage stage, Set atk, Set def, Trainer atkTrainer, Trainer defTrainer, int damageInflicted)
         {
             SideEffect(atk.NextMove, 2, ref def, Status.Burn);//Burn
 
@@ -799,15 +794,6 @@ namespace Poktogone.Battle
             }
 
             SideEffect(atk.NextMove, 33, ref def, Flags.Confusion);//Confusion
-
-            if (atk.NextMove[40] != null)//KnockOff
-            {
-                if (def.item.id != 0)
-                {
-                    damageInflicted = (int)(1.5 * damageInflicted);
-                    def.RemoveItem();
-                }
-            }
 
             SideEffect(atk.NextMove, 41, ref def, Status.Poison);//Poison
 
