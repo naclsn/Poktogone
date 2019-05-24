@@ -55,7 +55,7 @@ namespace Poktogone.Pokemon
                 case StatTarget.AttackSpecial: return "spa";
                 case StatTarget.DefenceSpecial: return "spd";
                 case StatTarget.Speed: return "spe";
-                case StatTarget.HP: return "pdv"; // TODO: rename in DB "pdv" to "hp"
+                case StatTarget.HP: return "pdv";
                 default: return "oof";
             }
         }
@@ -66,7 +66,7 @@ namespace Poktogone.Pokemon
         None = 0,
         Substitute = 1,
         Flinch = 2,
-        Confusion = 4,
+        Confusion = 4,//pas utilisée
         LeechSeed = 8,
         Protect = 16,
         MagmaStorm = 32,
@@ -214,7 +214,11 @@ namespace Poktogone.Pokemon
                 int baz = this.baseStat[stat]; // base stats
                 double r = baz + (stat == this._evDist.ev1 || stat == this._evDist.ev2 ? 63 : 0); // EVs
                 r = (int)(r * (this._nature.up == stat ? 1.1 : this._nature.down == stat ? .9 : 1)); // nature
-                return (int)(r * (mod < 0 ? 1 / (1 - .5 * mod) : 1 + .5 * mod)); // modif
+
+                if (this.Status == Status.Paralysis && stat == StatTarget.Speed)//Paralysis
+                    r = (int)(r * 0.5);
+
+                    return (int)(r * (mod < 0 ? 1 / (1 - .5 * mod) : 1 + .5 * mod)); // modif
             }
             set // e.g.: shif gears -> pok[StatTarget] = 2 --> actualy does +2
             {
