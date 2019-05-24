@@ -398,7 +398,66 @@ namespace Poktogone.Battle
             // 13- Décomptes tour
             this.DoEndTurn();
         }
-        
+
+        public void DoAttack(Trainer self, Trainer mate)
+        {
+            Set poke1before = mate.Pokemon;
+            int damage = Calc.DamageCalculator(this.stage, self.Pokemon, mate.Pokemon, self, mate);
+
+            Program.Log("dmc", $"{damage} damages to {mate.Pokemon.GetName()} ({mate.Pokemon.Hp} / {mate.Pokemon.GetMaxHp()})");
+            Program.Log("dmc", $"(from {self.Pokemon.GetName()}'s {self.Pokemon.NextMove})");
+
+            int HpBeforeDmg = mate.Pokemon.Hp; //Utilisé pour le Recul
+
+            if (self.Pokemon.ability.id == 15 || self.Pokemon.ability.id == 37)//Crits&InflictDamage
+            {
+                if ((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage > mate.Pokemon.Hp)//FocusSash&Sturdy
+                {
+                    Calc.InflictDamage(mate.Pokemon.Hp - 1, mate.Pokemon, self.Pokemon);
+                    if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
+                }
+                Calc.InflictDamage(Calc.CritGen(damage, mate.Pokemon), mate.Pokemon, self.Pokemon);
+            }
+            else
+            {
+                if ((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage > mate.Pokemon.Hp)//FocusSash&Sturdy
+                {
+                    Calc.InflictDamage(mate.Pokemon.Hp - 1, mate.Pokemon, self.Pokemon);
+                    if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
+                }
+                Calc.InflictDamage(damage, mate.Pokemon, self.Pokemon);
+            }
+
+            if (self.Pokemon.NextMove[6] != null)//Recoil
+            {
+                self.Pokemon.Hp -= (int)(self.Pokemon.NextMove[6].Value.value * (HpBeforeDmg - mate.Pokemon.Hp) / 100f);
+                Program.Println($"{self.Pokemon.GetName()} prend des dégâts de recule...");
+            }
+            if (mate.Pokemon.ability.id == 39)//Defiant
+            {
+                if (Calc.DefiantActive(poke1before, mate.Pokemon))
+                {
+                    mate.Pokemon[StatTarget.Attack] = 2;
+                }
+            }
+
+            if (mate.Pokemon.ability.id == 1 && Program.RngNext(3) == 0 && self.Pokemon.NextMove.sps == Sps.Physic)//Static
+            {
+                self.Pokemon.Status = Status.Paralysis;
+            }
+
+            if (mate.Pokemon.ability.id == 52 && Program.RngNext(3) == 0 && self.Pokemon.NextMove.sps == Sps.Physic)//FlameBody
+            {
+                self.Pokemon.Status = Status.Burn;
+            }
+
+            if (self.Pokemon.NextMove[22] != null)//Pivotage
+            {
+                self.SwitchTo(Program.RequireSwitch(self));
+            }
+        }
+
+
         public bool CanSwitch(Trainer self, int bla)
         {
             return self.GetAPokemon(bla).Status != Status.Dead && self.GetAPokemon(bla) != self.Pokemon && !self.Pokemon.HasFlags(Flags.MagmaStorm);
@@ -414,7 +473,9 @@ namespace Poktogone.Battle
                 self.Pokemon.Type2 = Pokemon.Type.Tenèbres;
             }
 
+            Program.Println($"{self.Pokemon.GetName()}, revient !");
             self.SwitchTo(bla);
+            Program.Println($"{self.Pokemon.GetName()}, à ton tour !");
 
             // 2- Switch (+Natural cure, regenerator, Healing Wish)
             if (self.Pokemon.ability.id == 11/*Natural cure*/)
@@ -426,18 +487,31 @@ namespace Poktogone.Battle
                 self.Pokemon.Hp = self.Pokemon.GetMaxHp();
                 self.Pokemon.Status = Status.None;
                 self.RemoveHazards(Hazards.HealingWish);
+                Program.Println($"{self.Pokemon.GetName()} récupère grace au voeu soin.");
             }
 
             // 3- Hazards si switch
             if (self.HasHazards(Hazards.StealthRock) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100 * Program.GetMatchup(Pokemon.Type.Roche, self.Pokemon.Type1, self.Pokemon.Type2));
+                Program.Println($"{self.Pokemon.GetName()} est blessé par le piège de rocs.");
+            }
 
             if (self.HasHazards(Hazards.Spikes) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 12.5 / 100);
+                Program.Println($"{self.Pokemon.GetName()} est blessé par les pics toxiques.");
+            }
             else if (self.HasHazards(Hazards.Spikes2) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 16.66 / 100);
+                Program.Println($"{self.Pokemon.GetName()} est fortement blessé par les pics toxiques.");
+            }
             else if (self.HasHazards(Hazards.Spikes3) && self.Pokemon.ability.id != 10)
+            {
                 self.Pokemon.Hp -= (int)(self.Pokemon.Hp * 25.0 / 100);
+                Program.Println($"{self.Pokemon.GetName()} est gravement blessé par les pics toxiques.");
+            }
 
             if (self.HasHazards(Hazards.StickyWeb))
             {
@@ -460,12 +534,10 @@ namespace Poktogone.Battle
 
             // 4- Talents switch
             //Sand Stream (25), Trace (30), Intimidate(34), Protean (56), Electric surge (69), Psychic surge (70), Drought (74)
-            if (self.Pokemon.ability.id == 25)
-                stage.Weather = WeatherType.Sandstorm;
-
             if (self.Pokemon.ability.id == 30)
             {
                 self.Pokemon.ability = mate.Pokemon.ability;
+                Program.Println($"Le {self.Pokemon.GetName()} de {self.GetName()} copie le talent {mate.Pokemon.ability} du {mate.Pokemon.GetName()} de {mate.GetName()} !");
             }
 
             if(self.Pokemon.ability.id == 34)
@@ -477,13 +549,28 @@ namespace Poktogone.Battle
             }
 
             if (self.Pokemon.ability.id == 69)
+            {
                 stage.Terrain = TerrainType.Eletric;
+                Program.Println("Le terrain est devenu électrique !");
+            }
 
             if (self.Pokemon.ability.id == 70)
+            {
                 stage.Terrain = TerrainType.Psychic;
+                Program.Println("Le terrain est devenu psychique !");
+            }
+
+            if (self.Pokemon.ability.id == 25)
+            {
+                stage.Weather = WeatherType.Sandstorm;
+                Program.Println("Une tempête de sable se prépare !");
+            }
 
             if (self.Pokemon.ability.id == 74)
+            {
                 stage.Weather = WeatherType.HarshSunlight;
+                Program.Println("Le soleil s'intensifit !");
+            }
         }
 
         /**
