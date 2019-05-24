@@ -28,6 +28,7 @@ namespace Poktogone.Battle
         private String name;
         private Set[] pokemons;
         private Hazards hazards;
+        public int playerNumber;
 
         private int _indexPokemonOut;
         public Set Pokemon

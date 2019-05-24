@@ -386,7 +386,7 @@ namespace Poktogone.Battle
             if (this.P1.Pokemon.Status == Status.Dead && this.P1.HasPokemon())
                 this.DoSwitch(this.P1, this.P2, Program.RequireSwitch(this.P1, 1));//this.P1.SwitchTo(Program.RequireSwitch(this.P1, 1));
             if (this.P2.Pokemon.Status == Status.Dead && this.P2.HasPokemon())
-                this.DoSwitch(this.P2, this.P1, Program.RequireSwitch(this.P2, 1));//this.P2.SwitchTo(Program.RequireSwitch(this.P2, 2));
+                this.DoSwitch(this.P2, this.P1, Program.RequireSwitch(this.P2, 2));//this.P2.SwitchTo(Program.RequireSwitch(this.P2, 2));
         }
 
         public bool Start() // return false if battle settings invalids, in this case state will be `BattleState.Unknown`
