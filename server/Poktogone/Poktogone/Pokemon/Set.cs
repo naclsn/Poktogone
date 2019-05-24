@@ -74,7 +74,8 @@ namespace Poktogone.Pokemon
         Charge = 128,
         Recharge = 256,
         Taunt = 512,
-        Roost = 1024
+        Roost = 1024,
+        Locked = 2048
     }
 
     enum Status
@@ -151,6 +152,7 @@ namespace Poktogone.Pokemon
         public void IncNbTurn()
         {
             this.nbTurns++;
+            this._indexLastMove = this._indexNextMove;
         }
         public void RstNbTurn()
         {
@@ -192,7 +194,16 @@ namespace Poktogone.Pokemon
         {
             this._indexNextMove = i;
         }
-
+        private int _indexLastMove;
+        public Move LastMove
+        {
+            get
+            {
+                if (-1 < this._indexLastMove)
+                    return this.moves[this._indexLastMove];
+                return null;
+            }
+        }
         public int this[StatTarget stat]
         {
             get

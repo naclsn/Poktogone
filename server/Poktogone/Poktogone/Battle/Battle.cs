@@ -127,9 +127,9 @@ namespace Poktogone.Battle
 
             // 1- Poursuite si switch
             if (isP2Switch && isP1Attack && this.P1.Pokemon.NextMove.id == 85/*Poursuite*/)
-                Program.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P1, this.P2); // p1 fait poursuite
+                Calc.DamageCalculator(this.stage, this.P1.Pokemon, this.P2.Pokemon, this.P1, this.P2); // p1 fait poursuite
             if (isP1Switch && isP2Attack && this.P2.Pokemon.NextMove.id == 85/*Poursuite*/)
-                Program.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P2, this.P1); // p2 fait poursuite
+                Calc.DamageCalculator(this.stage, this.P2.Pokemon, this.P1.Pokemon, this.P2, this.P1); // p2 fait poursuite
 
             // 2-, 3- et 4- Switch
             if (isP1Switch)
@@ -142,19 +142,19 @@ namespace Poktogone.Battle
             if (order[0].NextAction.StartsWith("attack") && order[0].Pokemon.Status != Status.Dead)
             {
                 Set poke1before = order[1].Pokemon;
-                int damage = Program.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
+                int damage = Calc.DamageCalculator(this.stage, order[0].Pokemon, order[1].Pokemon, order[0], order[1]);
                 Program.Log("dmc", "\n\n");
                 Program.Log("dmc", $"{damage} damages to {order[1].Pokemon.GetName()} ({order[1].Pokemon.Hp} / {order[1].Pokemon.GetMaxHp()})");
                 Program.Log("dmc", $"(from {order[0].Pokemon.GetName()}'s {order[0].Pokemon.NextMove})");
                 int HpBeforeDmg = order[1].Pokemon.Hp; //Utilisé pour le Recul
-                Program.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
+                Calc.InflictDamage(damage, order[0].Pokemon, order[1].Pokemon);
                 if (order[0].Pokemon.NextMove[6] != null)//Recoil
                 {
                     order[0].Pokemon.Hp -= (int)(order[0].Pokemon.NextMove[6].Value.value * (HpBeforeDmg - order[1].Pokemon.Hp) / 100f);
                 }
                 if(order[1].Pokemon.ability.id == 39)//Defiant
                 {
-                    if (Program.DefiantActive(poke1before, order[1].Pokemon))
+                    if (Calc.DefiantActive(poke1before, order[1].Pokemon))
                     {
                         order[1].Pokemon[StatTarget.Attack] = 2;
                     }
@@ -163,11 +163,11 @@ namespace Poktogone.Battle
             if (order[1].NextAction.StartsWith("attack") && order[1].Pokemon.Status != Status.Dead)
             {
                 Set poke2before = order[0].Pokemon;
-                int damage = Program.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
+                int damage = Calc.DamageCalculator(this.stage, order[1].Pokemon, order[0].Pokemon, order[1], order[0]);
                 Program.Log("dmc", "\n\n");
                 Program.Log("dmc", $"{damage} damages to {order[0].Pokemon.GetName()} ({order[0].Pokemon.Hp} / {order[0].Pokemon.GetMaxHp()})");
                 Program.Log("dmc", $"(from {order[1].Pokemon.GetName()}'s {order[1].Pokemon.NextMove})");
-                Program.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
+                Calc.InflictDamage(damage, order[1].Pokemon, order[0].Pokemon);
                 int HpBeforeDmg = order[0].Pokemon.Hp; //Utilisé pour le Recul
                 if (order[1].Pokemon.NextMove[6] != null)//Recoil
                 {
@@ -175,7 +175,7 @@ namespace Poktogone.Battle
                 }
                 if (order[0].Pokemon.ability.id == 39)//Defiant
                 {
-                    if (Program.DefiantActive(poke2before, order[0].Pokemon))
+                    if (Calc.DefiantActive(poke2before, order[0].Pokemon))
                     {
                         order[0].Pokemon[StatTarget.Attack] = 2;
                     }
