@@ -558,6 +558,7 @@ namespace Poktogone.Battle
                 if (atk.ability.id == 17) { abilityMod *= 1.3; }//SheerForce
                 else if (atk.ability.id == 22 && atk.NextMove.power < 60) { abilityMod *= 1.5; }//Technician
 
+
                 /*Meteo*/
                 if (stage.Weather == WeatherType.Rain)//RainModifiers
                 {
@@ -631,6 +632,12 @@ namespace Poktogone.Battle
                     {
                         typeMod = Program.GetMatchup(atk.NextMove.type, def.Type1);
                     }
+                }
+
+                if (atk.ability.id == 59 && atk.NextMove.type == Pokemon.Type.Normal)//Pixilate
+                {
+                    typeMod = Program.GetMatchup(Pokemon.Type.Fée, def.Type1, def.Type2);
+                    typeMod *= 1.2;
                 }
 
                 if (def.ability.id == 12 && atk.GetMod(StatTarget.Attack) > 0)//Unaware
