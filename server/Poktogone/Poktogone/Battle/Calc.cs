@@ -365,10 +365,8 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 5) { atkItemMod *= 1.5; }//ChoiceBand
-                else if (atk.item.id == 10)//LifeOrb
-                {
-                    atkItemMod *= 1.3;
-                }
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 17) { atkItemMod *= 2; }//LightBall
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
@@ -549,11 +547,9 @@ namespace Poktogone.Battle
 
                 double atkItemMod = 1;
                 if (atk.item.id == 6) { atkItemMod *= 1.5; }//ChoiceSpecs
-                else if (atk.item.id == 10)//LifeOrb
-                {
-                    atkItemMod *= 1.3;
-                }
-                if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
+                else if (atk.item.id == 10) { atkItemMod *= 1.3; }//LifeOrb
+                else if (atk.item.id == 17) { atkItemMod *= 2; }//LightBall
+                else if (def.item.id == 3) { atkItemMod *= 0.66; }//AssaultVest
 
                 double stabMod = 1;
                 if (atk.IsStab(atk.NextMove.type)) { stabMod *= 1.5; }//STAB
