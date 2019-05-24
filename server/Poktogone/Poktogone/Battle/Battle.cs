@@ -289,7 +289,7 @@ namespace Poktogone.Battle
 
             if (self.Pokemon.ability.id == 15 || self.Pokemon.ability.id == 37)//Crits&InflictDamage
             {
-                if (((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8)) && (mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage >= mate.Pokemon.Hp))//FocusSash&Sturdy
+                if (((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8)) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage >= mate.Pokemon.Hp)//FocusSash&Sturdy
                 {
                     Calc.InflictDamage(mate.Pokemon.Hp - 1, self.Pokemon, mate.Pokemon);
                     if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
@@ -299,7 +299,7 @@ namespace Poktogone.Battle
             }
             else
             {
-                if ((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage >= mate.Pokemon.Hp)//FocusSash&Sturdy
+                if (((mate.Pokemon.ability.id == 23) || (mate.Pokemon.item.id == 8)) && mate.Pokemon.Hp == mate.Pokemon.GetMaxHp() && damage >= mate.Pokemon.Hp)//FocusSash&Sturdy
                 {
                     Calc.InflictDamage(mate.Pokemon.Hp - 1, self.Pokemon, mate.Pokemon);
                     if (mate.Pokemon.item.id == 8) { mate.Pokemon.item.Remove(); }
