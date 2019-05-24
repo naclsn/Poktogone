@@ -282,6 +282,7 @@ namespace Poktogone.Pokemon
 
         public static Set FromDB(SqlHelper dbo, int id)
         {
+            Program.Log("dbo", "Selecting set from database : no " + id);
             var r = dbo.Select(
                 new Table("sets", id)
                     .Join("pokemons", "sets.pokemon")
@@ -300,6 +301,7 @@ namespace Poktogone.Pokemon
                 "items.id", "items.name", "items.uniq", "abilities.id", "abilities.name", // item & ability
                 "sets.EV1", "sets.EV2", "sets.nature+", "sets.nature-" // evDist, nature
             )[0];
+            Program.Log("dbo", "\tSelected!");
 
             EVDist thisEV = new EVDist(r["sets.EV1"], r["sets.EV2"]);
             Nature thisNature = new Nature(r["sets.nature+"], r["sets.nature-"]);
@@ -362,11 +364,6 @@ namespace Poktogone.Pokemon
             this.flags = Flags.None;
         }
 
-        public String GetName()
-        {
-            return $"{this.baseStat.name} '{this.customName}'";
-        }
-
         public int GetMaxHp()
         {
             return this.baseStat[StatTarget.HP];
@@ -388,7 +385,32 @@ namespace Poktogone.Pokemon
             return (type == this.baseStat.type1 || type == this.baseStat.type2);
         }
 
-        public override String ToString()
+        public int GetMod(StatTarget mods)
+        {
+            return this._mod[(int)mods];
+        }
+
+        public int[] GetAllMods()
+        {
+            return this._mod;
+        }
+
+        public int GetIndexLastMove()
+        {
+            return _indexLastMove;
+        }
+
+        public String GetName()
+        {
+            return $"{this.baseStat.name}";
+        }
+
+        public String GetFullName()
+        {
+            return $"{this.baseStat.name} '{this.customName}'";
+        }
+
+        public String Repr()
         {
             String r = "";
 
@@ -396,8 +418,8 @@ namespace Poktogone.Pokemon
             String potentialNext = null;
 
             int k = 0;
-            foreach (var p in this.moves)
-                moves += $"\t{k++}. {p}\n";
+            foreach (var m in this.moves)
+                moves += $"\t{k++}. {m}\n";
 
             Move nextMove = this.NextMove;
             if (nextMove != null)
@@ -415,7 +437,7 @@ namespace Poktogone.Pokemon
             if (flagsDesc == "")
                 flagsDesc = "None";
 
-            r += $"{this.GetName()} @{this.item}\n";
+            r += $"{this.GetFullName()} @{this.item}\n";
             r += new String('-', r.Length - 1) + "\n\n";
             r += $"({potentialNext ?? "waiting"}) hp: {this.Hp} / {this.GetMaxHp()} | status: {this.Status} | flags: {flagsDesc}\n";
             r += $"{moves}";
@@ -423,19 +445,109 @@ namespace Poktogone.Pokemon
             return r;
         }
 
-        public int GetMod(StatTarget mods)
+        public override String ToString()
         {
-            return this._mod[(int)mods];
+            String r = "";
+
+            String status = "";
+            switch (this.Status)
+            {
+                case Status.Burn:
+                    status = " (brulé)";
+                    break;
+                case Status.Dead:
+                    status = " (mort)";
+                    break;
+                case Status.Paralysis:
+                    status = " (paralisé)";
+                    break;
+                case Status.Poison:
+                    status = " (empoisonner)";
+                    break;
+                case Status.BadlyPoisoned:
+                    status = " (gravement empoisonner)";
+                    break;
+                case Status.Freeze:
+                    status = " (gelé)";
+                    break;
+                case Status.Sleep:
+                    status = " (endormis)";
+                    break;
+            }
+
+            String flagsDesc = "", sep = "";
+            foreach (Flags f in Enum.GetValues(typeof(Flags)))
+            {
+                if (this.HasFlags(f))
+                {
+                    flagsDesc += $"{sep}{f}";
+                    sep = ",";
+                }
+            }
+
+            double ratio = (double)this.Hp / this.GetMaxHp();
+            
+            r += $"{this.GetName()}{status}\n";
+            r += "$2" + new String('█', (int)(ratio * 60)) + "$4" + new String('█', (int)((1 - ratio) * 60)) + $"$F ({(int)(ratio * 100)}%)";
+            r += $"{flagsDesc}\n";
+
+            return r;
         }
 
-        public int[] GetAllMods()
+        public String ToStringPlayer()
         {
-            return this._mod;
-        }
+            String r = "";
 
-        public int GetIndexLastMove()
-        {
-            return _indexLastMove;
+            String status = "";
+            switch (this.Status)
+            {
+                case Status.Burn:
+                    status = " (brulé)";
+                    break;
+                case Status.Dead:
+                    status = " (mort)";
+                    break;
+                case Status.Paralysis:
+                    status = " (paralisé)";
+                    break;
+                case Status.Poison:
+                    status = " (empoisonner)";
+                    break;
+                case Status.BadlyPoisoned:
+                    status = " (gravement empoisonner)";
+                    break;
+                case Status.Freeze:
+                    status = " (gelé)";
+                    break;
+                case Status.Sleep:
+                    status = " (endormi)s";
+                    break;
+            }
+
+            String flagsDesc = "", sep = "";
+            foreach (Flags f in Enum.GetValues(typeof(Flags)))
+            {
+                if (this.HasFlags(f))
+                {
+                    flagsDesc += $"{sep}{f}";
+                    sep = ",";
+                }
+            }
+
+            double ratio = (double) this.Hp / this.GetMaxHp();
+
+            r += $"{this.GetFullName()} [{this.Type1}{(this.Type2 == Type.None ? "" : $" | {this.Type2}")}]{status}\n";
+            r += "$2" + new String('█', (int)(ratio * 60)) + "$4" + new String('█', (int)((1 - ratio) * 60)) + $"$F ({(int)(ratio * 100)}%)\n";
+            r += $"Objet équipé : {this.item}\n";
+            r += $"{flagsDesc}\n";
+            r += "\n";
+            r += "Attaques :\n";
+
+            int k = 0;
+            foreach (Move m in this.moves)
+                r += $"\t{k++} : {m}\n";
+
+            return r;
         }
     }
 }

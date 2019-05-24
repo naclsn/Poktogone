@@ -121,7 +121,20 @@ namespace Poktogone.Main
         /// <param name="o">Object to print.</param>
         public static void Print(Object o)
         {
-            Console.Write(o.ToString());
+            foreach (String c in ("F$_0" + o.ToString()).Split('$'))
+            {
+                if (0 < c.Length && c[0] == '_')
+                {
+                    Console.BackgroundColor = (ConsoleColor)int.Parse("" + c[1], System.Globalization.NumberStyles.HexNumber);
+                    Console.Write(c.Substring(2));
+                }
+                else if (0 < c.Length)
+                {
+                    Console.ForegroundColor = (ConsoleColor)int.Parse("" + c[0], System.Globalization.NumberStyles.HexNumber);
+                    Console.Write(c.Substring(1));
+                }
+                else Console.Write(c);
+            }
         }
 
         /// <summary>
@@ -193,7 +206,8 @@ namespace Poktogone.Main
         public static void Log(String tag, String c)
         {
             // TOD: use the specified output (should be a file), if any.
-            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
+            //Console.WriteLine($"[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
+            Program.Println($"$8$_0[{DateTime.Now.ToString("HH:mm")}] {tag}: {c}");
         }
 
         /// <summary>

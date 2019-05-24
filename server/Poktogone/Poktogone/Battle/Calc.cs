@@ -738,7 +738,7 @@ namespace Poktogone.Battle
             {
                 if (def.item.id != 0)
                 {
-                    def.item.Remove();
+                    def.RemoveItem();
                     damageInflicted = (int)(1.5 * damageInflicted);
                 }
             }

@@ -24,9 +24,9 @@ namespace Poktogone.Battle
 
             this.name = name;
             this.team = team;
-            this.asTrainer = new Trainer(this.name, 1, Program.ParseSets(this.team));
+            this.asTrainer = new Trainer(this.name, 1, Program.ParseSets(this.team));//TODO
 
-            Program.Log("info", $"{this.name} joins the battle!");
+            Program.Log("tournament", $"{this.name} joins the battle!");
         }
 
         public void Heal()
@@ -60,16 +60,18 @@ namespace Poktogone.Battle
 
             for (int k = 0; k < this.competitors.Length; lefts.Add(k++))
                 ;
-            
+
+            int counter = 0;
             while (1 < lefts.Count)
             {
                 int battles = lefts.Count / 2;
 
                 Program.Println();
 
-                String tmp = $"Premier tour : {battles} combats !";
+                String tmp = $"| Tour {++counter}, {battles} combats ! |";
+                Program.Println("•" + new String('-', tmp.Length - 2) + "•");
                 Program.Println(tmp);
-                Program.Println(new String('#', tmp.Length));
+                Program.Println("•" + new String('-', tmp.Length - 2) + "•");
 
                 Program.Println();
 
@@ -80,7 +82,7 @@ namespace Poktogone.Battle
                     Competitor C1 = this.competitors[lefts[2 * k]];
                     Competitor C2 = this.competitors[lefts[2 * k + 1]];
 
-                    Program.Println($"Combat entre {C1.name} et {C2.name}.");
+                    Program.Println($"Début du combat entre {C1.name} et {C2.name}.");
 
                     // player exist
                     if (C1.isPlayer || C2.isPlayer)
