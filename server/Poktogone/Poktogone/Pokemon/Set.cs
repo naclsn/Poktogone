@@ -144,6 +144,9 @@ namespace Poktogone.Pokemon
         Nature _nature;
 
         int nbTurns = 1;
+        int magmaStormCount;
+        int tauntCounter;
+        int sleepCounter;
 
         public int GetNbTurns()
         {
@@ -153,6 +156,24 @@ namespace Poktogone.Pokemon
         {
             this.nbTurns++;
             this._indexLastMove = this._indexNextMove;
+
+            if (this.HasFlags(Flags.MagmaStorm) && 3 < this.magmaStormCount++)
+            {
+                this.RemoveFlags(Flags.MagmaStorm);
+                this.magmaStormCount = 0;
+            }
+
+            if (this.HasFlags(Flags.Taunt) && 3 < this.tauntCounter++)
+            {
+                this.RemoveFlags(Flags.Taunt);
+                this.tauntCounter = 0;
+            }
+
+            if (this.Status == Status.Sleep && 2 < this.sleepCounter++)
+            {
+                this.Status = Status.None;
+                this.sleepCounter = 0;
+            }
         }
         public void RstNbTurn()
         {

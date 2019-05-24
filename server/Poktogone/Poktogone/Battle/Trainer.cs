@@ -30,6 +30,9 @@ namespace Poktogone.Battle
         private Hazards hazards;
         public int playerNumber;
 
+        private int reflectCounter;
+        private int lightScreenCounter;
+
         private int _indexPokemonOut;
         public Set Pokemon
         {
@@ -42,7 +45,7 @@ namespace Poktogone.Battle
             set
             {
                 this._nextCommand = value;
-
+                
                 if (value == "...")
                     this.Pokemon.SetNextMove(-1);
                 else if (value.StartsWith("attack"))
@@ -68,7 +71,17 @@ namespace Poktogone.Battle
 
         public void IncNbTurn()
         {
-            
+            if (this.HasHazards(Hazards.Reflect) && 4 < this.reflectCounter++)
+            {
+                this.RemoveHazards(Hazards.Reflect);
+                this.reflectCounter = 0;
+            }
+
+            if (this.HasHazards(Hazards.LightScreen) && 4 < this.lightScreenCounter++)
+            {
+                this.RemoveHazards(Hazards.LightScreen);
+                this.lightScreenCounter = 0;
+            }
         }
 
         public void SetHazards(params Hazards[] hazards)

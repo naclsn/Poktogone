@@ -245,8 +245,6 @@ namespace Poktogone.Main
             return Program.GetMatchup(typeAtk, typeDef1) * (typeDef2 == Pokemon.Type.None ? 1 : Program.GetMatchup(typeAtk, typeDef2));
         }
 
-        
-
         public static int RequireSwitch(Trainer t)
         {
             int r = 0;

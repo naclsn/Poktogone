@@ -332,7 +332,7 @@ namespace Poktogone.Battle
                 int speed1 = P1.Pokemon[StatTarget.Speed];
                 int speed2 = P2.Pokemon[StatTarget.Speed];
                 //sandrush & swiftswim & chlorophyll
-                if((P1.Pokemon.ability.id == 50 && stage.Weather == WeatherType.Sandstorm)||(P1.Pokemon.ability.id == 77 && stage.Weather == WeatherType.Rain) || (P1.Pokemon.ability.id == 7 && stage.Weather == WeatherType.HarshSunlight))
+                if((P1.Pokemon.ability.id == 50 && stage.Weather == WeatherType.Sandstorm) || (P1.Pokemon.ability.id == 77 && stage.Weather == WeatherType.Rain) || (P1.Pokemon.ability.id == 7 && stage.Weather == WeatherType.HarshSunlight))
                 {
                     speed1 *= 2;
                 }
@@ -364,8 +364,7 @@ namespace Poktogone.Battle
         public void DoEndTurn()
         {
             // Speed Boost
-
-            // counters:
+            
             // end weather
             // end terrain
             this.stage.IncNbTurn();

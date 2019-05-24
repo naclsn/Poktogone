@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Battle\Battle.cs" />
+    <Compile Include="Battle\Calc.cs" />
     <Compile Include="Battle\Stage.cs" />
     <Compile Include="Battle\Tournament.cs" />
     <Compile Include="Battle\Trainer.cs" />
