@@ -595,6 +595,16 @@ namespace Poktogone.Battle
                     prio2 = 1;
             }
 
+            //PranksterException
+            if (P1.Pokemon.NextMove != null)
+            {
+                if(P1.Pokemon.ability.id == 33 && P1.Pokemon.NextMove.sps == Sps.Stat) { prio1 += 1; }
+            }
+            if (P2.Pokemon.NextMove != null)
+            {
+                if (P2.Pokemon.ability.id == 33 && P2.Pokemon.NextMove.sps == Sps.Stat) { prio2 += 1; }
+            }
+
             if (prio1 > prio2)
             {
                 r[0] = this.P1;
