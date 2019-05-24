@@ -64,13 +64,13 @@ namespace Poktogone.Main
             Program.Log("info", "Loading players' sets");
             if (Program.isFromCmd)
             {
-                P1 = new Trainer(args[0], ParseSets(args[1]));
-                P2 = new Trainer(args[2], ParseSets(args[3]));
+                P1 = new Trainer(args[0], 1, ParseSets(args[1]));
+                P2 = new Trainer(args[2], 2, ParseSets(args[3]));
             }
             else
             {
-                P1 = new Trainer(Program.Input("Player 1 name: "), ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
-                P2 = new Trainer(Program.Input("Player 2 name: "), ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
+                P1 = new Trainer(Program.Input("Player 1 name: "), 1, ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
+                P2 = new Trainer(Program.Input("Player 2 name: "), 2, ParseSets($"{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1};{Program.rng.Next(121) + 1}"));
             }
             Program.Log("info", "\tLoaded!");
 
@@ -247,11 +247,11 @@ namespace Poktogone.Main
 
         
 
-        public static int RequireSwitch(Trainer t, int P)
+        public static int RequireSwitch(Trainer t)
         {
             int r = 0;
             
-            Program.PhpMessage($"sw{P}", "forced switch");
+            Program.PhpMessage($"sw{t.playerNumber}", "forced switch");
             try
             {
                 while (t.GetAPokemon(r = int.Parse(Program.Input($"{t.GetName()}, qui envoyer ? "))).Status == Status.Dead)
@@ -260,7 +260,7 @@ namespace Poktogone.Main
             catch (FormatException)
             {
                 Program.Println("Merci d'entrer un nombre valide (0, 1 ou 2) !");
-                r = RequireSwitch(t, P);
+                r = RequireSwitch(t);
             }
 
             return r;
